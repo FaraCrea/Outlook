@@ -7,23 +7,27 @@
 <title>Outlook Cepat</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-:root{--bg:#f3f4f6;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--pri:#0f6cbd;--bd:#d9dde3;--ok:#1a7f4b;--err:#c0392b;--chip:#e8f1fb}
+:root{--bg:#f3f4f6;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--pri:#0f6cbd;--bd:#d9dde3;--err:#c0392b;--chip:#e8f1fb}
 @media (prefers-color-scheme:dark){:root{--bg:#111418;--card:#1b2027;--tx:#e8eaed;--mut:#9aa3ad;--bd:#2f3640;--chip:#1c2f45;--pri:#4aa3f0}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;padding-bottom:80px}
-header{background:#0f6cbd;color:#fff;padding:0 16px;position:sticky;top:0;z-index:5;display:flex;align-items:center;height:46px}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;padding-bottom:84px}
+header{background:#0f6cbd;color:#fff;padding:0 12px 0 16px;position:sticky;top:0;z-index:5;display:flex;align-items:center;height:46px}
 header b{flex:1;font-size:16px;font-weight:600}
 header button{background:transparent;color:#fff;border:0;font:inherit;font-size:14px;padding:6px 10px;min-height:0;opacity:.7;border-radius:0}
 header button.on{opacity:1;border-bottom:2px solid #fff}
 main{padding:10px 12px;max-width:640px;margin:auto}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
 h3{margin:0 0 6px;font-size:11.5px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
-input,select,textarea{width:100%;min-height:40px;padding:7px 10px;border:1px solid var(--bd);border-radius:8px;font-size:15px;background:var(--bg);color:var(--tx);font:inherit}
+input,select,textarea{width:100%;min-height:40px;padding:7px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;font-size:15px}
 textarea{min-height:56px}
 button{font:inherit;font-size:14px;white-space:nowrap;border:0;border-radius:8px;min-height:40px;padding:7px 14px;background:var(--pri);color:#fff}
 button.sec{background:transparent;color:var(--pri);border:1px solid var(--pri)}
-button.x{background:transparent;color:var(--err);min-height:40px;padding:6px 10px}
+button i{pointer-events:none}
+.ib{background:transparent;color:var(--mut);min-height:34px;width:34px;padding:0;flex:none;font-size:14px}
+.ib.pri{color:var(--pri)}.ib.del{color:var(--err)}.ib:disabled{opacity:.25}
+.add{width:100%;margin-top:8px;min-height:38px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{background:var(--chip);color:var(--tx);border:1px solid transparent;border-radius:999px;padding:5px 13px;min-height:34px;font-size:14px}
 .chip.on{background:var(--pri);color:#fff}
@@ -31,216 +35,312 @@ button.x{background:transparent;color:var(--err);min-height:40px;padding:6px 10p
 .row>*{min-width:0}
 .item{border-top:1px dashed var(--bd);padding-top:8px;margin-top:8px}
 .item:first-of-type{border-top:0;padding-top:0;margin-top:0}
-.seg{display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden;flex:none}
+.seg{display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden;flex:none}
 .seg button{border-radius:0;background:transparent;color:var(--mut);min-height:32px;padding:4px 10px;font-size:13px}
 .seg button.on{background:var(--pri);color:#fff}
-.ct{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--bd)}
+.ct{display:flex;align-items:center;gap:4px;padding:6px 0;border-top:1px solid var(--bd)}
 .ct:first-of-type{border-top:0}
-.ct .nm{flex:1;line-height:1.25;overflow-wrap:anywhere;font-size:14px}
+.ct .nm{flex:1;line-height:1.25;overflow-wrap:anywhere;font-size:14px;min-width:0}
 .ct small{display:block;color:var(--mut);font-size:12px}
+.mut{color:var(--mut);font-size:12.5px}
 .warn{color:var(--err)}
 .prev{background:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
 .prev b{display:block;color:var(--mut);font-size:12px;font-weight:600;margin-top:6px}
 .prev b:first-child{margin-top:0}
-.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:8px 12px calc(8px + env(safe-area-inset-bottom));z-index:6}
-.bar .in{max-width:640px;margin:auto}
-.bar button{width:100%;min-height:46px;font-size:15px;font-weight:600}
-.bar button:disabled{background:var(--bd);color:var(--mut)}
-.msg{font-size:12px;margin-bottom:4px;min-height:0}
-.hide{display:none}
-.mut{color:var(--mut);font-size:13px}
-details summary{padding:8px 0;font-weight:600;font-size:14px}
 .pv{position:sticky;top:46px;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .pv .hd{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:28px}
 .pv .hd .sj{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;font-weight:600}
 .pv .hd .ar{color:var(--mut);font-size:12px}
 .pv .bd{margin-top:6px;max-height:34vh;overflow:auto}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:8px 12px calc(8px + env(safe-area-inset-bottom));z-index:6}
+.bar .in{max-width:640px;margin:auto}
+.bar button{width:100%;min-height:46px;font-size:15px;font-weight:600}
+.bar button:disabled{background:var(--bd);color:var(--mut)}
+.msg{font-size:12px;margin-bottom:4px}
+.hide{display:none!important}
+details.dsec{padding:0}
+details.dsec>summary{list-style:none;padding:12px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:10px;cursor:pointer}
+details.dsec>summary::-webkit-details-marker{display:none}
+details.dsec>summary .c{margin-left:auto;color:var(--mut);transition:transform .15s}
+details.dsec[open]>summary .c{transform:rotate(180deg)}
+details.dsec>.in{padding:0 12px 12px}
+details.sub>summary{padding:8px 0;font-weight:600;font-size:14px;cursor:pointer}
+.sp{border-top:1px solid var(--bd);padding:8px 0}
+.sp:first-of-type{border-top:0}
+.sp .l2{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;color:var(--mut)}
+.sp .l2 input{width:64px;min-height:32px;padding:3px 8px;text-align:center}
+.ex{background:var(--chip);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:600;overflow-wrap:anywhere;margin-bottom:8px}
+label.f{display:block;font-size:12.5px;color:var(--mut);margin-top:8px}
+label.f input,label.f select{margin-top:3px;color:var(--tx)}
+dialog{border:0;border-radius:14px;padding:16px;width:min(92vw,420px);background:var(--card);color:var(--tx)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h4{margin:0 0 4px;font-size:16px}
+dialog .row{margin-top:14px;justify-content:flex-end}
+.toast{position:fixed;left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom));background:#222;color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;z-index:9;text-align:center;max-width:616px;margin:auto}
+.fl{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:14px}
+.fl span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
 <header><b>Outlook Cepat</b><button id="tOrder" class="on">Order</button><button id="tData">Data</button></header>
 
-<!-- ============ ORDER ============ -->
+<!-- ================= ORDER ================= -->
 <main id="vOrder">
-  <div class="card pv" id="pv"><div class="hd" id="pvHd"><h3 style="margin:0">Pratinjau</h3><div class="sj" id="pvSj"></div><span class="ar" id="pvAr">▾</span></div>
+  <div class="card pv" id="pv"><div class="hd" id="pvHd"><h3 style="margin:0">Pratinjau</h3><div class="sj" id="pvSj"></div><span class="ar" id="pvAr"><i class="fa-solid fa-chevron-down"></i></span></div>
     <div class="bd" id="pvBd"><div class="prev" id="prev"></div>
-    <div class="row" style="margin-top:8px"><button class="sec" id="cpSub" style="flex:1">Salin subjek</button><button class="sec" id="cpBody" style="flex:1">Salin isi</button></div></div></div>
-  <div class="card"><h3>1 · Penerima (To / CC)</h3><div class="mut" style="margin-bottom:4px">Pilih To / CC. Pilihan diingat untuk order berikutnya.</div><div id="rcpt"></div></div>
+    <div class="row" style="margin-top:8px"><button class="sec" id="cpSub" style="flex:1"><i class="fa-regular fa-copy"></i> Salin subjek</button><button class="sec" id="cpBody" style="flex:1"><i class="fa-regular fa-copy"></i> Salin isi</button></div></div></div>
+
+  <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcpt"></div></div>
   <div class="card"><h3>2 · Merk</h3><div class="chips" id="brands"></div></div>
-  <div class="card"><h3>3 · Jenis</h3><div class="chips" id="jenis"></div></div>
-  <div class="card"><h3>4 · Rumah sakit / instansi</h3>
-    <select id="rs"></select><div class="mut" style="margin-top:4px">Belum ada di daftar? Tambah di tab Data.</div></div>
-  <div class="card"><h3>5 · Barang &amp; jumlah</h3>
-    <div id="items"></div>
-    <button class="sec" id="addItem" style="margin-top:12px;width:100%">+ Tambah barang</button></div>
-  <div class="card"><h3>6 · Tanggal</h3>
+  <div class="card" id="cJenis"><h3>3 · Jenis</h3><div class="chips" id="jenis"></div></div>
+  <div class="card" id="cRs"><h3>4 · Rumah sakit / instansi</h3><select id="rs"></select><div class="mut" style="margin-top:4px">Belum ada di daftar? Tambah di tab Data.</div></div>
+  <div class="card"><h3>5 · Barang &amp; jumlah</h3><div id="items"></div>
+    <button class="sec add" id="addItem"><i class="fa-solid fa-plus"></i> Tambah barang</button></div>
+  <div class="card" id="cDate"><h3>6 · Tanggal</h3>
     <div class="row"><input type="date" id="date" style="flex:1"><div id="dateTxt" style="font-weight:600;min-width:96px;text-align:right"></div></div></div>
+  <div class="card"><h3>Lampiran (opsional)</h3><div id="files"></div>
+    <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah gambar / PDF / file<input type="file" id="fileIn" multiple hidden></label>
+    <div class="mut" id="fileNote" style="margin-top:6px"></div></div>
   <div class="card"><h3>Catatan (opsional)</h3><textarea id="note" placeholder="Ditambahkan di bawah daftar barang"></textarea></div>
 </main>
 
-<!-- ============ DATA ============ -->
+<!-- ================= DATA ================= -->
 <main id="vData" class="hide">
-  <div class="card"><h3>Merk &amp; barang</h3><div id="dBrands"></div>
-    <div class="row" style="margin-top:10px"><input id="nbName" placeholder="Merk baru, mis. HAEMONETICS"><button id="nbAdd">Tambah</button></div></div>
-  <div class="card"><h3>Rumah sakit / instansi</h3><div id="dRs"></div>
-    <div class="row" style="margin-top:10px"><input id="nrName" placeholder="mis. RS SARDJITO"><button id="nrAdd">Tambah</button></div></div>
-  <div class="card"><h3>Kontak penerima</h3><div id="dCt"></div>
-    <input id="ncName" placeholder="Nama (mis. TMID Jogja Ops)" style="margin-top:10px">
-    <input id="ncMail" type="email" inputmode="email" autocapitalize="off" placeholder="Alamat email" style="margin-top:8px">
-    <button id="ncAdd" style="width:100%;margin-top:8px">Tambah kontak</button></div>
-  <div class="card"><h3>Cadangan</h3>
+  <details class="card dsec"><summary><i class="fa-solid fa-heading"></i> Format subjek <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
+    <div class="ex" id="sEx"></div>
+    <div id="sParts"></div>
+    <button class="sec add" data-act="sAddText"><i class="fa-solid fa-plus"></i> Tambah teks tetap</button>
+    <label class="f">Pemisah antar barang<input id="isep" style="width:80px"></label>
+    <label class="f">Format tanggal<select id="dfmt"><option value="dMy2">22 OCT 26</option><option value="dMy4">22 OCT 2026</option><option value="slash">22/10/2026</option></select></label>
+    <button class="sec add" data-act="sReset"><i class="fa-solid fa-rotate-left"></i> Kembalikan format standar</button></div></details>
+
+  <details class="card dsec"><summary><i class="fa-solid fa-envelope-open-text"></i> Kalimat isi email <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
+    <label class="f">Salam<input id="mGreet"></label>
+    <label class="f">Kalimat pembuka<input id="mIntro"></label></div></details>
+
+  <details class="card dsec"><summary><i class="fa-solid fa-user-group"></i> Kontak penerima <i class="fa-solid fa-chevron-down c"></i></summary><div class="in"><div id="dCt"></div>
+    <button class="sec add" data-act="cAdd"><i class="fa-solid fa-plus"></i> Tambah kontak</button></div></details>
+
+  <details class="card dsec"><summary><i class="fa-solid fa-tags"></i> Merk &amp; barang <i class="fa-solid fa-chevron-down c"></i></summary><div class="in"><div id="dBrands"></div>
+    <button class="sec add" data-act="bAdd"><i class="fa-solid fa-plus"></i> Tambah merk</button></div></details>
+
+  <details class="card dsec"><summary><i class="fa-solid fa-list-check"></i> Jenis order <i class="fa-solid fa-chevron-down c"></i></summary><div class="in"><div id="dJenis"></div>
+    <button class="sec add" data-act="jAdd"><i class="fa-solid fa-plus"></i> Tambah jenis</button></div></details>
+
+  <details class="card dsec"><summary><i class="fa-solid fa-hospital"></i> Rumah sakit / instansi <i class="fa-solid fa-chevron-down c"></i></summary><div class="in"><div id="dRs"></div>
+    <button class="sec add" data-act="rAdd"><i class="fa-solid fa-plus"></i> Tambah RS</button></div></details>
+
+  <details class="card dsec"><summary><i class="fa-solid fa-floppy-disk"></i> Cadangan data <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <div class="mut">Data tersimpan di HP ini saja. Salin sebagai cadangan, atau pindahkan ke HP lain.</div>
-    <div class="row" style="margin-top:8px"><button class="sec" id="exp" style="flex:1">Salin data</button><button class="sec" id="imp" style="flex:1">Tempel data</button></div></div>
+    <div class="row" style="margin-top:8px"><button class="sec" id="exp" style="flex:1">Salin data</button><button class="sec" id="imp" style="flex:1">Tempel data</button></div></div></details>
 </main>
 
-<div class="bar"><div class="in"><div class="msg warn" id="msg"></div><button id="go">OK → Buka Outlook</button></div></div>
+<div class="bar"><div class="in"><div class="msg warn" id="msg"></div><button id="go"><i class="fa-regular fa-paper-plane"></i> <span id="goTx">OK → Buka Outlook</span></button></div></div>
+
+<dialog id="dlg"><h4 id="dTitle"></h4><div id="dBody"></div><div class="msg warn" id="dErr" style="margin-top:6px"></div>
+  <div class="row"><button class="sec" id="dNo">Batal</button><button id="dOk">Simpan</button></div></dialog>
+<div class="toast hide" id="toast"></div>
 
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const KEY='outlookcepat.order.v1';
-const JENIS=['BELI PUTUS','ECAT','NON ECAT'];
 const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
+/* ---------- data ---------- */
+const defParts=()=>[{k:'text',t:'ORDER_CJ',pre:'',on:true},{k:'brand',pre:'_',on:true},{k:'jenis',pre:'_',on:true},{k:'rs',pre:'_',on:true},{k:'items',pre:'_',on:true},{k:'date',pre:' #',on:true}];
 const seed=()=>({
   brands:[{name:'HAEMONETICS',items:['997CFE','BPF4BBS']},{name:'WEGO',items:['PL3VAE']}],
   rs:['RS SARDJITO','PMI KAB SLEMAN','RSA UGM'],
-  contacts:[
-    {name:'Doni Kurniawan',email:'',role:'to'},{name:'Niken Dyah Sintasari',email:'',role:'to'},
-    {name:'TMID Blood Bank Ops',email:'',role:'to'},{name:'TMID Jogja Ops',email:'',role:'to'},
-    {name:'TMID Solo Ops',email:'',role:'to'},{name:'Tmid Semarang Ops',email:'',role:'to'},
-    {name:'TMID JKT Warehouse',email:'',role:'to'},{name:'TMID LDS Jakarta',email:'',role:'to'}]
+  jenis:['BELI PUTUS','ECAT','NON ECAT'],
+  contacts:['Doni Kurniawan','Niken Dyah Sintasari','TMID Blood Bank Ops','TMID Jogja Ops','TMID Solo Ops','Tmid Semarang Ops','TMID JKT Warehouse','TMID LDS Jakarta'].map(n=>({name:n,email:'',role:'to'})),
+  subj:{parts:defParts(),isep:'+',dfmt:'dMy2'},
+  mail:{greet:'Dear Ops,',intro:'Please help me to prepare this order below'}
 });
+function norm(x){const s=seed();
+  x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.contacts=x.contacts||s.contacts;
+  x.subj=x.subj||{};x.subj.parts=x.subj.parts||defParts();x.subj.isep=x.subj.isep??'+';x.subj.dfmt=x.subj.dfmt||'dMy2';
+  x.mail=x.mail||s.mail;return x}
 let D;try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-if(!D||!D.brands)D=seed();
+D=norm(D&&D.brands?D:seed());
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
-
-// state form (tidak disimpan; kontak role disimpan di D)
 const F={brand:null,jenis:null,rs:'',items:[{item:'',qty:'',unit:'ea'}]};
-
-const dateStr=v=>{if(!v)return'';const [y,m,d]=v.split('-');return `${d} ${MON[+m-1]} ${y.slice(2)}`};
+let FILES=[];
 const todayISO=()=>{const t=new Date();return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`};
-
+const dateStr=v=>{if(!v)return'';const [y,m,d]=v.split('-'),f=D.subj.dfmt;return f==='dMy4'?`${d} ${MON[+m-1]} ${y}`:f==='slash'?`${d}/${m}/${y}`:`${d} ${MON[+m-1]} ${y.slice(2)}`};
 const brandObj=()=>D.brands.find(b=>b.name===F.brand);
 const validItems=()=>F.items.filter(i=>i.item&&+i.qty>0);
+const partOn=k=>D.subj.parts.some(p=>p.k===k&&p.on);
+const move=(a,i,d)=>{const j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]]};
+function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('hide');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add('hide'),2600)}
+const ib=(act,icon,title,at='',cls='')=>`<button class="ib ${cls}" data-act="${act}" ${at} title="${title}" aria-label="${title}"><i class="fa-solid fa-${icon}"></i></button>`;
 
-function subject(){
-  const it=validItems().map(i=>i.item).join('+');
-  return `ORDER_CJ_${F.brand||'(MERK)'}_${F.jenis||'(JENIS)'}_${F.rs||'(RS)'}_${it||'(BARANG)'} #${dateStr($('date').value)}`}
+/* ---------- dialog ---------- */
+function ask(title,fields,cb){
+  $('dTitle').textContent=title;$('dErr').textContent='';
+  $('dBody').innerHTML=fields.map((f,n)=>`<label class="f">${esc(f.label)}<input id="df${n}" type="${f.type||'text'}" value="${esc(f.val||'')}" placeholder="${esc(f.ph||'')}" ${f.type==='email'?'inputmode="email" autocapitalize="off"':''} ${f.up?'style="text-transform:uppercase"':''}></label>`).join('');
+  $('dOk').onclick=()=>{const v=fields.map((f,n)=>{let x=$('df'+n).value.trim();return f.up?x.toUpperCase():x});const err=cb(v);if(err){$('dErr').textContent=err;return}$('dlg').close()};
+  $('dNo').onclick=()=>$('dlg').close();
+  $('dlg').showModal();setTimeout(()=>{const e=$('df0');if(e)e.focus()},50)}
+const mailOk=v=>!v||/^\S+@\S+\.\S+$/.test(v);
+
+/* ---------- subjek & isi ---------- */
+function subject(sample){
+  const V=sample?{brand:'HAEMONETICS',jenis:'NON ECAT',rs:'RS SARDJITO',items:['997CFE','BPF4BBS'].join(D.subj.isep),date:dateStr(todayISO())}
+   :{brand:F.brand||'(MERK)',jenis:F.jenis||'(JENIS)',rs:F.rs||'(RS)',items:validItems().map(i=>i.item).join(D.subj.isep)||'(BARANG)',date:dateStr($('date').value)};
+  let o='',first=true;
+  for(const p of D.subj.parts){if(!p.on)continue;const v=p.k==='text'?p.t:V[p.k];if(!v)continue;o+=(first?'':p.pre)+v;first=false}
+  return o}
 function body(){
-  const L=['Dear Ops,','','Please help me to prepare this order below',''];
+  const L=[D.mail.greet,'',D.mail.intro,''];
   validItems().forEach(i=>L.push(`${i.item}: ${+i.qty} ${i.unit||'ea'}`));
   const n=$('note').value.trim();if(n)L.push('',n);
   return L.join('\r\n')}
+const addr=c=>(c.email||c.name).replace(/[,;]/g,' ').trim();
+const rcpt=r=>D.contacts.filter(c=>c.role===r).map(addr);
 
 function problems(){const p=[];
-  if(!F.brand)p.push('Pilih merk');
-  if(!F.jenis)p.push('Pilih jenis');
-  if(!F.rs)p.push('Pilih rumah sakit');
-  if(!validItems().length)p.push('Isi barang dan jumlah');
-  const to=D.contacts.filter(c=>c.role==='to');
-  if(!to.length)p.push('Pilih minimal 1 penerima (To)');
-  else if(!to.some(c=>c.email))p.push('Penerima To belum punya email: ketuk "Isi email"');
+  if(!rcpt('to').length)p.push('Pilih minimal 1 penerima (To)');
+  else if(!F.brand)p.push('Pilih merk');
+  else if(partOn('jenis')&&!F.jenis)p.push('Pilih jenis');
+  else if(partOn('rs')&&!F.rs)p.push('Pilih rumah sakit');
+  else if(!validItems().length)p.push('Isi barang dan jumlah');
   return p}
-const noMail=()=>D.contacts.filter(c=>c.role!=='off'&&!c.email);
 
-// ---------- render order
-function renderBrands(){
-  $('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Data.</span>'}
-function renderJenis(){
-  $('jenis').innerHTML=JENIS.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${j}">${j}</button>`).join('')}
-function renderRs(){
-  $('rs').innerHTML='<option value="">— pilih —</option>'+D.rs.map(r=>`<option ${F.rs===r?'selected':''}>${esc(r)}</option>`).join('')}
+/* ---------- render order ---------- */
+function renderRcpt(){
+  $('rcpt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}${c.email?`<small>${esc(c.email)}</small>`:''}</div>
+    <div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${c.role===r?'on':''}" data-r="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`).join('')||'<span class="mut">Belum ada kontak. Tambah di tab Data.</span>'}
+const renderBrands=()=>$('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Data.</span>';
+const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis. Tambah di tab Data.</span>';
+const renderRs=()=>$('rs').innerHTML='<option value="">— pilih —</option>'+D.rs.map(r=>`<option ${F.rs===r?'selected':''}>${esc(r)}</option>`).join('');
 function renderItems(){
   const its=brandObj()?brandObj().items:[];
   $('items').innerHTML=F.items.map((r,n)=>`<div class="item" data-n="${n}">
-    <div class="row"><select data-k="item" style="flex:1"><option value="">— pilih barang —</option>${its.map(x=>`<option ${r.item===x?'selected':''}>${esc(x)}</option>`).join('')}</select>
-      ${F.items.length>1?'<button class="x" data-del>Hapus</button>':''}</div>
+    <div class="row"><select data-k="item" style="flex:1"><option value="">${F.brand?'— pilih barang —':'Pilih merk dulu'}</option>${its.map(x=>`<option ${r.item===x?'selected':''}>${esc(x)}</option>`).join('')}</select>
+      ${F.items.length>1?'<button class="ib del" data-del title="Hapus baris" aria-label="Hapus baris"><i class="fa-solid fa-trash"></i></button>':''}</div>
     <div class="row" style="margin-top:8px"><input data-k="qty" type="number" inputmode="numeric" min="1" placeholder="Jumlah" value="${r.qty}" style="flex:1">
-      <input data-k="unit" value="${esc(r.unit)}" style="width:90px" aria-label="Satuan"></div></div>`).join('')}
-function renderRcpt(){
-  $('rcpt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}<small class="${c.email?'':'warn'}">${c.email?esc(c.email):'email belum diisi'}</small></div>
-    ${c.email?'':`<button class="sec" data-em="${i}" style="min-height:32px;padding:3px 10px;font-size:13px">Isi email</button>`}
-    <div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${c.role===r?'on':''}" data-r="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`).join('')||'<span class="mut">Belum ada kontak. Tambah di tab Data.</span>'}
+      <input data-k="unit" value="${esc(r.unit)}" style="width:80px" aria-label="Satuan"></div></div>`).join('')}
+function renderFiles(){
+  $('files').innerHTML=FILES.map((f,i)=>`<div class="fl"><i class="fa-solid ${f.type.startsWith('image/')?'fa-image':f.type==='application/pdf'?'fa-file-pdf':'fa-file'}" style="color:var(--mut)"></i><span>${esc(f.name)}</span><small class="mut">${f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'}</small>
+    <button class="ib del" data-fd="${i}" title="Hapus lampiran" aria-label="Hapus lampiran"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
+  $('fileNote').textContent=FILES.length?'Dengan lampiran, email dibuka lewat menu Bagikan HP. Penerima tidak otomatis terisi: To disalin ke clipboard, tempel di kolom To.':'';
+  $('goTx').textContent=FILES.length?'OK → Bagikan ke Outlook (+ lampiran)':'OK → Buka Outlook'}
 function renderPrev(){
   $('pvSj').textContent=subject();
+  $('cJenis').classList.toggle('hide',!partOn('jenis'));$('cRs').classList.toggle('hide',!partOn('rs'));$('cDate').classList.toggle('hide',!partOn('date'));
   $('dateTxt').textContent=dateStr($('date').value);
-  const to=D.contacts.filter(c=>c.role==='to').map(c=>c.name).join('; ')||'—',cc=D.contacts.filter(c=>c.role==='cc').map(c=>c.name).join('; ')||'—';
-  $('prev').innerHTML=`<b>To</b>${esc(to)}<b>CC</b>${esc(cc)}<b>Subjek</b>${esc(subject())}<b>Isi</b>${esc(body().replace(/\r\n/g,'\n'))}`;
-  const p=problems(),nm=noMail();
-  $('msg').textContent=p.length?p[0]:(nm.length?`${nm.length} kontak terpilih belum punya email dan dilewati`:'');
-  $('go').disabled=!!p.length}
-const renderAll=()=>{renderBrands();renderJenis();renderRs();renderItems();renderRcpt();renderPrev()};
+  const to=rcpt('to').join('; ')||'—',cc=rcpt('cc').join('; ')||'—';
+  $('prev').innerHTML=`<b>To</b>${esc(to)}<b>CC</b>${esc(cc)}<b>Subjek</b>${esc(subject())}<b>Isi</b>${esc(body().replace(/\r\n/g,'\n'))}`+(FILES.length?`<b>Lampiran</b>${esc(FILES.map(f=>f.name).join(', '))}`:'');
+  const p=problems();$('msg').textContent=p[0]||'';$('go').disabled=!!p.length}
+const renderAll=()=>{renderRcpt();renderBrands();renderJenis();renderRs();renderItems();renderFiles();renderPrev()};
 
-// ---------- events order
+/* ---------- events order ---------- */
 $('brands').onclick=e=>{const b=e.target.dataset.b;if(!b)return;if(F.brand!==b){F.brand=b;F.items=[{item:'',qty:'',unit:'ea'}]}renderBrands();renderItems();renderPrev()};
 $('jenis').onclick=e=>{const j=e.target.dataset.j;if(!j)return;F.jenis=j;renderJenis();renderPrev()};
 $('rs').onchange=e=>{F.rs=e.target.value;renderPrev()};
 $('addItem').onclick=()=>{F.items.push({item:'',qty:'',unit:'ea'});renderItems()};
-$('items').addEventListener('change',e=>{const box=e.target.closest('.item');if(!box)return;const r=F.items[+box.dataset.n];
-  if(e.target.dataset.k==='item'){
-    r.item=e.target.value}
-  renderPrev()});
-$('items').addEventListener('input',e=>{const box=e.target.closest('.item');if(!box)return;const r=F.items[+box.dataset.n],k=e.target.dataset.k;
-  if(k==='qty'||k==='unit'){r[k]=e.target.value;renderPrev()}});
+$('items').addEventListener('change',e=>{const box=e.target.closest('.item');if(!box||e.target.dataset.k!=='item')return;F.items[+box.dataset.n].item=e.target.value;renderPrev()});
+$('items').addEventListener('input',e=>{const box=e.target.closest('.item');if(!box)return;const k=e.target.dataset.k;if(k==='qty'||k==='unit'){F.items[+box.dataset.n][k]=e.target.value;renderPrev()}});
 $('items').addEventListener('click',e=>{if(!e.target.matches('[data-del]'))return;F.items.splice(+e.target.closest('.item').dataset.n,1);renderItems();renderPrev()});
 $('date').oninput=renderPrev;$('note').oninput=renderPrev;
-$('rcpt').addEventListener('click',e=>{const em=e.target.dataset.em;
-  if(em!==undefined){const c=D.contacts[+em],v=(prompt('Email untuk '+c.name+':','')||'').trim();if(!v)return;if(!/^\S+@\S+\.\S+$/.test(v))return alert('Format email salah.');c.email=v;save();renderRcpt();renderPrev();return}
-  const r=e.target.dataset.r;if(!r)return;D.contacts[+e.target.parentNode.dataset.i].role=r;save();renderRcpt();renderPrev()});
+$('rcpt').addEventListener('click',e=>{const r=e.target.dataset.r;if(!r)return;D.contacts[+e.target.parentNode.dataset.i].role=r;save();renderRcpt();renderPrev()});
+$('fileIn').onchange=e=>{FILES.push(...e.target.files);e.target.value='';renderFiles();renderPrev()};
+$('files').addEventListener('click',e=>{const i=e.target.dataset.fd;if(i===undefined)return;FILES.splice(+i,1);renderFiles();renderPrev()});
 const copy=async t=>{try{await navigator.clipboard.writeText(t);return true}catch(e){return false}};
-$('cpSub').onclick=async()=>alert(await copy(subject())?'Subjek tersalin.':'Gagal menyalin.');
-$('cpBody').onclick=async()=>alert(await copy(body())?'Isi tersalin.':'Gagal menyalin.');
+$('cpSub').onclick=async()=>toast(await copy(subject())?'Subjek tersalin':'Gagal menyalin');
+$('cpBody').onclick=async()=>toast(await copy(body())?'Isi tersalin':'Gagal menyalin');
 
-$('go').onclick=()=>{
+$('go').onclick=async()=>{
   if(problems().length)return;
-  const m=r=>D.contacts.filter(c=>c.role===r&&c.email).map(c=>c.email.trim()).join(',');
+  if(FILES.length){
+    const data={files:FILES,title:subject(),text:body()};
+    if(navigator.canShare&&navigator.canShare(data)){
+      await copy(rcpt('to').join('; '));
+      try{await navigator.share(data)}catch(e){}
+      return}
+    if(!confirm('HP/browser ini tidak bisa membagikan lampiran. Buka email tanpa lampiran?'))return}
+  const m=r=>rcpt(r).map(encodeURIComponent).join(',');
   const q=['subject='+encodeURIComponent(subject()),'body='+encodeURIComponent(body())];
   if(m('cc'))q.unshift('cc='+m('cc'));
   location.href='mailto:'+m('to')+'?'+q.join('&')};
 
-// ---------- data tab
-function renderData(){
-  $('dBrands').innerHTML=D.brands.map((b,i)=>`<details><summary>${esc(b.name)} <span class="mut">(${b.items.length} barang)</span></summary>
-    ${b.items.map((x,j)=>`<div class="ct"><div class="nm">${esc(x)}</div><button class="x" data-bi="${i}" data-ij="${j}">Hapus</button></div>`).join('')}
-    <div class="row" style="margin-top:8px"><input data-nb="${i}" placeholder="Barang baru"><button data-addi="${i}">Tambah</button></div>
-    <button class="x" data-delb="${i}" style="margin-top:6px">Hapus merk ini</button></details>`).join('');
-  $('dRs').innerHTML=D.rs.map((r,i)=>`<div class="ct"><div class="nm">${esc(r)}</div><button class="x" data-dr="${i}">Hapus</button></div>`).join('');
-  $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}<small class="${c.email?'':'warn'}">${c.email?esc(c.email):'email belum diisi'}</small></div>
-    <button class="sec" data-ce="${i}" style="min-height:38px;padding:4px 12px">Email</button><button class="x" data-dc="${i}">Hapus</button></div>`).join('')}
-$('dBrands').addEventListener('click',e=>{const d=e.target.dataset;
-  if(d.bi!==undefined){D.brands[+d.bi].items.splice(+d.ij,1)}
-  else if(d.addi!==undefined){const inp=document.querySelector(`[data-nb="${d.addi}"]`),n=inp.value.trim().toUpperCase();if(!n)return;const b=D.brands[+d.addi];if(!b.items.includes(n))b.items.push(n)}
-  else if(d.delb!==undefined){if(!confirm('Hapus merk '+D.brands[+d.delb].name+' beserta barangnya?'))return;const b=D.brands.splice(+d.delb,1)[0];if(F.brand===b.name){F.brand=null;F.items=[{item:'',qty:'',unit:'ea'}]}}
-  else return;
-  save();renderData();renderAll()});
-$('nbAdd').onclick=()=>{const n=$('nbName').value.trim().toUpperCase();if(!n||D.brands.some(b=>b.name===n))return;D.brands.push({name:n,items:[]});$('nbName').value='';save();renderData();renderAll()};
-$('dRs').onclick=e=>{const i=e.target.dataset.dr;if(i===undefined)return;if(!confirm('Hapus '+D.rs[+i]+'?'))return;const r=D.rs.splice(+i,1)[0];if(F.rs===r)F.rs='';save();renderData();renderAll()};
-$('nrAdd').onclick=()=>{const n=$('nrName').value.trim().toUpperCase();if(!n||D.rs.includes(n))return;D.rs.push(n);D.rs.sort();$('nrName').value='';save();renderData();renderAll()};
-$('dCt').onclick=e=>{const d=e.target.dataset;
-  if(d.ce!==undefined){const c=D.contacts[+d.ce],v=prompt('Email untuk '+c.name+':',c.email);if(v===null)return;c.email=v.trim()}
-  else if(d.dc!==undefined){if(!confirm('Hapus '+D.contacts[+d.dc].name+'?'))return;D.contacts.splice(+d.dc,1)}
-  else return;
-  save();renderData();renderAll()};
-$('ncAdd').onclick=()=>{const n=$('ncName').value.trim(),m=$('ncMail').value.trim();if(!n)return;if(m&&!/^\S+@\S+\.\S+$/.test(m))return alert('Format email salah.');
-  D.contacts.push({name:n,email:m,role:'off'});$('ncName').value=$('ncMail').value='';save();renderData();renderAll()};
-$('exp').onclick=async()=>alert(await copy(JSON.stringify(D))?'Data tersalin. Simpan di catatan/chat sendiri.':'Gagal menyalin.');
-$('imp').onclick=()=>{const t=prompt('Tempel data hasil "Salin data":');if(!t)return;
-  try{const x=JSON.parse(t);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return;D=x;save();renderData();renderAll()}catch(e){alert('Data tidak valid.')}};
-
-// ---------- preview collapse
+/* ---------- preview collapse ---------- */
 let pvOpen=false;try{pvOpen=localStorage.getItem('oc.pv')==='1'}catch(e){}
-const setPv=()=>{$('pvBd').classList.toggle('hide',!pvOpen);$('pvAr').textContent=pvOpen?'▴':'▾';$('pvSj').classList.toggle('hide',pvOpen)};
+const setPv=()=>{$('pvBd').classList.toggle('hide',!pvOpen);$('pvAr').innerHTML=`<i class="fa-solid fa-chevron-${pvOpen?'up':'down'}"></i>`;$('pvSj').classList.toggle('hide',pvOpen)};
 $('pvHd').onclick=()=>{pvOpen=!pvOpen;try{localStorage.setItem('oc.pv',pvOpen?'1':'0')}catch(e){}setPv()};
-setPv();
 
-// ---------- tabs
-const tab=t=>{$('vOrder').classList.toggle('hide',t!=='o');$('vData').classList.toggle('hide',t!=='d');$('tOrder').classList.toggle('on',t==='o');$('tData').classList.toggle('on',t==='d');document.querySelector('.bar').classList.toggle('hide',t!=='o');scrollTo(0,0);if(t==='d')renderData()};
+/* ---------- data tab ---------- */
+let openB=-1;
+const PL={brand:'Merk',jenis:'Jenis',rs:'Rumah sakit',items:'Barang',date:'Tanggal'};
+function renderData(){
+  const P=D.subj.parts;
+  $('sEx').textContent=subject(true);
+  $('sParts').innerHTML=P.map((p,i)=>`<div class="sp"><div class="row">
+    ${ib('sTog',p.on?'eye':'eye-slash',p.on?'Tampil (ketuk untuk sembunyikan)':'Sembunyi (ketuk untuk tampilkan)',`data-i="${i}"`,p.on?'pri':'')}
+    ${p.k==='text'?`<input data-sp="t" data-i="${i}" value="${esc(p.t)}" aria-label="Teks tetap" ${p.on?'':'style="opacity:.5"'}>`:`<div style="flex:1;font-weight:600;${p.on?'':'opacity:.5;text-decoration:line-through'}">${PL[p.k]}</div>`}
+    ${ib('sUp','arrow-up','Naikkan',`data-i="${i}" ${i===0?'disabled':''}`)}${ib('sDn','arrow-down','Turunkan',`data-i="${i}" ${i===P.length-1?'disabled':''}`)}
+    ${p.k==='text'?ib('sDel','trash','Hapus',`data-i="${i}"`,'del'):''}</div>
+    <div class="l2">Pemisah sebelumnya <input data-sp="pre" data-i="${i}" value="${esc(p.pre)}" aria-label="Pemisah" ${i===0?'disabled':''}></div></div>`).join('');
+  $('isep').value=D.subj.isep;$('dfmt').value=D.subj.dfmt;$('mGreet').value=D.mail.greet;$('mIntro').value=D.mail.intro;
+
+  $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}<small>${c.email?esc(c.email):'tanpa email (ditulis nama)'}</small></div>
+    ${ib('cUp','arrow-up','Naikkan',`data-i="${i}" ${i===0?'disabled':''}`)}${ib('cDn','arrow-down','Turunkan',`data-i="${i}" ${i===D.contacts.length-1?'disabled':''}`)}${ib('cEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('cDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
+
+  $('dBrands').innerHTML=D.brands.map((b,i)=>`<details class="sub" ${openB===i?'open':''}><summary>${esc(b.name)} <span class="mut">(${b.items.length} barang)</span></summary>
+    <div class="row" style="justify-content:flex-end">${ib('bEd','pen','Ubah nama merk',`data-i="${i}"`,'pri')}${ib('bDel','trash','Hapus merk',`data-i="${i}"`,'del')}</div>
+    ${b.items.map((x,j)=>`<div class="ct"><div class="nm">${esc(x)}</div>${ib('iEd','pen','Ubah',`data-i="${i}" data-j="${j}"`,'pri')}${ib('iDel','trash','Hapus',`data-i="${i}" data-j="${j}"`,'del')}</div>`).join('')}
+    <button class="sec add" data-act="iAdd" data-i="${i}"><i class="fa-solid fa-plus"></i> Tambah barang</button></details>`).join('');
+
+  $('dJenis').innerHTML=D.jenis.map((x,i)=>`<div class="ct"><div class="nm">${esc(x)}</div>${ib('jUp','arrow-up','Naikkan',`data-i="${i}" ${i===0?'disabled':''}`)}${ib('jDn','arrow-down','Turunkan',`data-i="${i}" ${i===D.jenis.length-1?'disabled':''}`)}${ib('jEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('jDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
+  $('dRs').innerHTML=D.rs.map((x,i)=>`<div class="ct"><div class="nm">${esc(x)}</div>${ib('rEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('rDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('')}
+const upd=()=>{save();renderData();renderAll()};
+$('vData').addEventListener('click',e=>{
+  const bt=e.target.closest('[data-act]');if(!bt||bt.disabled)return;
+  const a=bt.dataset.act,i=+bt.dataset.i,j=+bt.dataset.j,P=D.subj.parts;
+  switch(a){
+    case 'sTog':P[i].on=!P[i].on;return upd();
+    case 'sUp':move(P,i,-1);return upd();
+    case 'sDn':move(P,i,1);return upd();
+    case 'sDel':P.splice(i,1);return upd();
+    case 'sAddText':return ask('Teks tetap baru',[{label:'Teks',ph:'mis. URGENT'}],v=>{if(!v[0])return'Isi teksnya';P.push({k:'text',t:v[0],pre:'_',on:true});upd()});
+    case 'sReset':if(!confirm('Kembalikan format subjek ke standar?'))return;D.subj.parts=defParts();D.subj.isep='+';D.subj.dfmt='dMy2';return upd();
+    case 'cUp':move(D.contacts,i,-1);return upd();
+    case 'cDn':move(D.contacts,i,1);return upd();
+    case 'cDel':if(!confirm('Hapus '+D.contacts[i].name+'?'))return;D.contacts.splice(i,1);return upd();
+    case 'cAdd':return ask('Kontak baru',[{label:'Nama',ph:'mis. TMID Jogja Ops'},{label:'Email (boleh kosong)',type:'email'}],v=>{if(!v[0])return'Isi nama';if(!mailOk(v[1]))return'Format email salah';D.contacts.push({name:v[0],email:v[1],role:'off'});upd()});
+    case 'cEd':{const c=D.contacts[i];return ask('Ubah kontak',[{label:'Nama',val:c.name},{label:'Email (boleh kosong)',type:'email',val:c.email}],v=>{if(!v[0])return'Isi nama';if(!mailOk(v[1]))return'Format email salah';c.name=v[0];c.email=v[1];upd()})}
+    case 'jUp':move(D.jenis,i,-1);return upd();
+    case 'jDn':move(D.jenis,i,1);return upd();
+    case 'jDel':{if(!confirm('Hapus jenis '+D.jenis[i]+'?'))return;const x=D.jenis.splice(i,1)[0];if(F.jenis===x)F.jenis=null;return upd()}
+    case 'jAdd':return ask('Jenis baru',[{label:'Nama jenis',ph:'mis. TENDER',up:true}],v=>{if(!v[0])return'Isi nama';if(D.jenis.includes(v[0]))return'Sudah ada';D.jenis.push(v[0]);upd()});
+    case 'jEd':{const o=D.jenis[i];return ask('Ubah jenis',[{label:'Nama jenis',val:o,up:true}],v=>{if(!v[0])return'Isi nama';D.jenis[i]=v[0];if(F.jenis===o)F.jenis=v[0];upd()})}
+    case 'bAdd':return ask('Merk baru',[{label:'Nama merk',ph:'mis. HAEMONETICS',up:true}],v=>{if(!v[0])return'Isi nama';if(D.brands.some(b=>b.name===v[0]))return'Sudah ada';D.brands.push({name:v[0],items:[]});openB=D.brands.length-1;upd()});
+    case 'bEd':{openB=i;const b=D.brands[i],o=b.name;return ask('Ubah nama merk',[{label:'Nama merk',val:o,up:true}],v=>{if(!v[0])return'Isi nama';b.name=v[0];if(F.brand===o)F.brand=v[0];upd()})}
+    case 'bDel':{if(!confirm('Hapus merk '+D.brands[i].name+' beserta barangnya?'))return;const b=D.brands.splice(i,1)[0];if(F.brand===b.name){F.brand=null;F.items=[{item:'',qty:'',unit:'ea'}]}openB=-1;return upd()}
+    case 'iAdd':{openB=i;return ask('Barang baru ('+D.brands[i].name+')',[{label:'Kode / nama barang',ph:'mis. 997CFE',up:true}],v=>{if(!v[0])return'Isi nama';const b=D.brands[i];if(b.items.includes(v[0]))return'Sudah ada';b.items.push(v[0]);upd()})}
+    case 'iEd':{openB=i;const b=D.brands[i],o=b.items[j];return ask('Ubah barang',[{label:'Kode / nama barang',val:o,up:true}],v=>{if(!v[0])return'Isi nama';b.items[j]=v[0];F.items.forEach(r=>{if(r.item===o&&F.brand===b.name)r.item=v[0]});upd()})}
+    case 'iDel':{openB=i;const b=D.brands[i],o=b.items[j];if(!confirm('Hapus barang '+o+'?'))return;b.items.splice(j,1);F.items.forEach(r=>{if(r.item===o&&F.brand===b.name)r.item=''});return upd()}
+    case 'rAdd':return ask('RS / instansi baru',[{label:'Nama',ph:'mis. RS SARDJITO',up:true}],v=>{if(!v[0])return'Isi nama';if(D.rs.includes(v[0]))return'Sudah ada';D.rs.push(v[0]);D.rs.sort();upd()});
+    case 'rEd':{const o=D.rs[i];return ask('Ubah RS / instansi',[{label:'Nama',val:o,up:true}],v=>{if(!v[0])return'Isi nama';D.rs[i]=v[0];D.rs.sort();if(F.rs===o)F.rs=v[0];upd()})}
+    case 'rDel':{if(!confirm('Hapus '+D.rs[i]+'?'))return;const x=D.rs.splice(i,1)[0];if(F.rs===x)F.rs='';return upd()}
+  }});
+$('vData').addEventListener('input',e=>{const t=e.target;
+  if(t.dataset.sp){D.subj.parts[+t.dataset.i][t.dataset.sp]=t.value;save();$('sEx').textContent=subject(true);renderPrev()}
+  else if(t.id==='isep'){D.subj.isep=t.value;save();$('sEx').textContent=subject(true);renderPrev()}
+  else if(t.id==='mGreet'){D.mail.greet=t.value;save();renderPrev()}
+  else if(t.id==='mIntro'){D.mail.intro=t.value;save();renderPrev()}});
+$('dfmt').onchange=e=>{D.subj.dfmt=e.target.value;save();$('sEx').textContent=subject(true);renderPrev()};
+$('exp').onclick=async()=>toast(await copy(JSON.stringify(D))?'Data tersalin. Simpan di catatan/chat sendiri.':'Gagal menyalin');
+$('imp').onclick=()=>ask('Tempel data',[{label:'Tempel hasil "Salin data"'}],v=>{try{const x=JSON.parse(v[0]);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return'Dibatalkan';D=norm(x);upd()}catch(e){return'Data tidak valid'}});
+
+/* ---------- tabs ---------- */
+const tab=t=>{$('vOrder').classList.toggle('hide',t!=='o');$('vData').classList.toggle('hide',t!=='d');$('tOrder').classList.toggle('on',t==='o');$('tData').classList.toggle('on',t==='d');document.querySelector('.bar').classList.toggle('hide',t!=='o');scrollTo(0,0);if(t==='d')renderData();else renderPrev()};
 $('tOrder').onclick=()=>tab('o');$('tData').onclick=()=>tab('d');
 
 $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-renderAll();
+setPv();renderAll();
 </script>
 </body>
 </html>
