@@ -118,8 +118,8 @@ dialog .row{margin-top:14px;justify-content:flex-end}
     <button class="sec add" data-act="sReset"><i class="fa-solid fa-rotate-left"></i> Kembalikan format standar</button></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-envelope-open-text"></i> Kalimat isi email <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
-    <label class="f">Salam<input id="mGreet"></label>
-    <label class="f">Kalimat pembuka<input id="mIntro"></label></div></details>
+    <label class="f">Salam<textarea id="mGreet" rows="2"></textarea></label>
+    <label class="f">Kalimat pembuka<textarea id="mIntro" rows="3"></textarea></label><div class="mut" style="margin-top:6px">Tekan Enter untuk baris baru.</div></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-user-group"></i> Kontak penerima <i class="fa-solid fa-chevron-down c"></i></summary><div class="in"><div id="dCt"></div>
     <button class="sec add" data-act="cAdd"><i class="fa-solid fa-plus"></i> Tambah kontak</button></div></details>
@@ -198,7 +198,7 @@ function body(){
   const L=[D.mail.greet,'',D.mail.intro,''];
   validItems().forEach(i=>L.push(`${i.item}: ${+i.qty} ${i.unit||'ea'}`));
   const n=$('note').value.trim();if(n)L.push('',n);
-  return L.join('\r\n')}
+  return L.join('\r\n').replace(/\r?\n/g,'\r\n')}
 const addr=c=>(c.email||c.name).replace(/[,;]/g,' ').trim();
 const rcpt=r=>D.contacts.filter(c=>c.role===r).map(addr);
 
