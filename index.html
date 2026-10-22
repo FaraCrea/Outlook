@@ -83,6 +83,7 @@ details.sub[open]>summary::before{transform:rotate(90deg)}
 #sParts .sp,#dCt .ct,#dJenis .ct{transition:transform .15s}
 .sp{border-top:1px solid var(--bd);padding:8px 0}
 .sp:first-of-type{border-top:0}
+.sepi{width:54px!important;flex:none;min-height:36px!important;padding:3px 6px!important;text-align:center;font-weight:600}
 .sp .l2{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;color:var(--mut)}
 .sp .l2 input{width:64px;min-height:32px;padding:3px 8px;text-align:center}
 .ex{background:var(--chip);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:600;overflow-wrap:anywhere;margin-bottom:8px}
@@ -108,7 +109,7 @@ dialog .row{margin-top:14px;justify-content:flex-end}
 
   <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcpt"></div></div>
   <div class="card"><h3>2 · Merk</h3><div class="chips" id="brands"></div></div>
-  <div class="card" id="cJenis"><h3>3 · Jenis</h3><div class="chips" id="jenis"></div></div>
+  <div class="card" id="cJenis"><h3>3 · Jenis order</h3><div class="chips" id="jenis"></div></div>
   <div class="card" id="cRs"><h3>4 · Rumah sakit / instansi</h3><select id="rs"></select><div class="mut" style="margin-top:4px">Belum ada di daftar? Tambah di tab Data.</div></div>
   <div class="card"><h3>5 · Barang &amp; jumlah</h3><div id="items"></div>
     <button class="sec add" id="addItem"><i class="fa-solid fa-plus"></i> Tambah barang</button></div>
@@ -124,9 +125,10 @@ dialog .row{margin-top:14px;justify-content:flex-end}
 <main id="vData" class="hide">
   <details class="card dsec"><summary><i class="fa-solid fa-heading"></i> Format subjek <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <div class="ex" id="sEx"></div>
+    <div class="mut" style="margin-bottom:4px">Geser <i class="fa-solid fa-grip-vertical"></i> untuk urutan. Kolom kecil = <b>separator</b> sebelum bagian itu.</div>
     <div id="sParts"></div>
+    <label class="f">Pemisah antar barang (bila lebih dari 1 barang)<input id="isep" style="width:80px"></label>
     <button class="sec add" data-act="sAddText"><i class="fa-solid fa-plus"></i> Tambah teks tetap</button>
-    <label class="f">Pemisah antar barang<input id="isep" style="width:80px"></label>
     <label class="f">Format tanggal<select id="dfmt"><option value="dMy2">22 OCT 26</option><option value="dMy4">22 OCT 2026</option><option value="slash">22/10/2026</option></select></label>
     <button class="sec add" data-act="sReset"><i class="fa-solid fa-rotate-left"></i> Kembalikan format standar</button></div></details>
 
@@ -218,7 +220,7 @@ const rcpt=r=>D.contacts.filter(c=>c.role===r).map(addr);
 function problems(){const p=[];
   if(!rcpt('to').length)p.push('Pilih minimal 1 penerima (To)');
   else if(!F.brand)p.push('Pilih merk');
-  else if(partOn('jenis')&&!F.jenis)p.push('Pilih jenis');
+  else if(partOn('jenis')&&!F.jenis)p.push('Pilih jenis order');
   else if(partOn('rs')&&!F.rs)p.push('Pilih rumah sakit');
   else if(!validItems().length)p.push('Isi barang dan jumlah');
   return p}
@@ -228,7 +230,7 @@ function renderRcpt(){
   $('rcpt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}${c.email?`<small>${esc(c.email)}</small>`:''}</div>
     <div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${c.role===r?'on':''}" data-r="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`).join('')||'<span class="mut">Belum ada kontak. Tambah di tab Data.</span>'}
 const renderBrands=()=>$('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Data.</span>';
-const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis. Tambah di tab Data.</span>';
+const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis order. Tambah di tab Data.</span>';
 const renderRs=()=>$('rs').innerHTML='<option value="">— pilih —</option>'+D.rs.map(r=>`<option ${F.rs===r?'selected':''}>${esc(r)}</option>`).join('');
 function renderItems(){
   const its=brandObj()?brandObj().items:[];
@@ -288,15 +290,15 @@ $('pvHd').onclick=()=>{pvOpen=!pvOpen;try{localStorage.setItem('oc.pv',pvOpen?'1
 
 /* ---------- data tab ---------- */
 let openB=-1;
-const PL={brand:'Merk',jenis:'Jenis',rs:'Rumah sakit',items:'Barang',date:'Tanggal'};
+const PL={brand:'Merk',jenis:'Jenis order',rs:'Rumah sakit',items:'Barang',date:'Tanggal'};
 function renderData(){
   const P=D.subj.parts;
   $('sEx').textContent=subject(true);
   $('sParts').innerHTML=P.map((p,i)=>`<div class="sp"><div class="row">
     <span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span>${ib('sTog',p.on?'eye':'eye-slash',p.on?'Tampil (ketuk untuk sembunyikan)':'Sembunyi (ketuk untuk tampilkan)',`data-i="${i}"`,p.on?'pri':'')}
     ${p.k==='text'?`<input data-sp="t" data-i="${i}" value="${esc(p.t)}" aria-label="Teks tetap" ${p.on?'':'style="opacity:.5"'}>`:`<div style="flex:1;font-weight:600;${p.on?'':'opacity:.5;text-decoration:line-through'}">${PL[p.k]}</div>`}
-    ${p.k==='text'?ib('sDel','trash','Hapus',`data-i="${i}"`,'del'):''}</div>
-    <div class="l2">Pemisah sebelumnya <input data-sp="pre" data-i="${i}" value="${esc(p.pre)}" aria-label="Pemisah" ${i===0?'disabled':''}></div></div>`).join('');
+    <input class="sepi" data-sp="pre" data-i="${i}" value="${esc(p.pre)}" placeholder="${i===0?'':'sep'}" title="Separator sebelum bagian ini" aria-label="Separator" ${i===0?'disabled':''}>
+    ${p.k==='text'?ib('sDel','trash','Hapus',`data-i="${i}"`,'del'):''}</div></div>`).join('');
   $('isep').value=D.subj.isep;$('dfmt').value=D.subj.dfmt;$('mGreet').value=D.mail.greet;$('mIntro').value=D.mail.intro;
 
   $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span><div class="nm">${esc(c.name)}<small>${c.email?esc(c.email):'tanpa email (ditulis nama)'}</small></div>
