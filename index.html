@@ -52,11 +52,11 @@ button i{pointer-events:none}
 .pr.sj .v{font-weight:600}
 .prev b{display:block;color:var(--mut);font-size:12px;font-weight:600;margin-top:6px}
 .prev b:first-child{margin-top:0}
-.pv{position:sticky;top:46px;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.pv{position:fixed;top:52px;left:0;right:0;margin:0 auto!important;width:calc(100% - 24px);max-width:616px;z-index:7;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .pv .hd{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:28px}
 .pv .hd .sj{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;font-weight:600}
 .pv .hd .ar{color:var(--mut);font-size:12px}
-.pv .bd{margin-top:6px;max-height:34vh;overflow:auto}
+.pv .bd{margin-top:6px;max-height:42vh;overflow:auto;overscroll-behavior:contain}
 .bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:8px 12px calc(8px + env(safe-area-inset-bottom));z-index:6}
 .bar .in{max-width:640px;margin:auto}
 .bar button{width:100%;min-height:46px;font-size:15px;font-weight:600}
@@ -103,6 +103,7 @@ dialog .row{margin-top:14px;justify-content:flex-end}
 
 <!-- ================= ORDER ================= -->
 <main id="vOrder">
+  <div id="pvSp"></div>
   <div class="card pv" id="pv"><div class="hd" id="pvHd"><h3 style="margin:0">Pratinjau</h3><div class="sj" id="pvSj"></div><span class="ar" id="pvAr"><i class="fa-solid fa-chevron-down"></i></span></div>
     <div class="bd" id="pvBd"><div class="prev" id="prev"></div>
     <div class="row" style="margin-top:8px"><button class="sec" id="cpSub" style="flex:1"><i class="fa-regular fa-copy"></i> Salin subjek</button><button class="sec" id="cpBody" style="flex:1"><i class="fa-regular fa-copy"></i> Salin isi</button></div></div></div>
@@ -369,7 +370,9 @@ $('tOrder').onclick=()=>tab('o');$('tData').onclick=()=>tab('d');
 
 $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-setPv();renderAll();
+const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+8)+'px'};
+new ResizeObserver(syncSp).observe($('pv'));
+setPv();renderAll();syncSp();
 </script>
 </body>
 </html>
