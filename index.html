@@ -97,18 +97,24 @@ dialog .row{margin-top:14px;justify-content:flex-end}
 .toast{position:fixed;left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom));background:#222;color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;z-index:9;text-align:center;max-width:616px;margin:auto}
 .fl{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:14px}
 .fl span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hv{background:#fff;color:#000;border-radius:6px;padding:8px;overflow:auto}
+.hv,.hv *{font-size:11px!important;line-height:1.3}
+.hv table{max-width:100%}
+.c2{border:1px solid var(--bd);border-radius:10px;padding:8px;margin-top:8px}
+.itx{margin-top:8px;padding-top:8px;border-top:1px dashed var(--bd)}
+.itx:first-of-type{border-top:0}
 </style>
 </head>
 <body>
-<header><b>Outlook Cepat</b><button id="tOrder" class="on">Order</button><button id="tData">Data</button></header>
+<header><b>Outlook Cepat</b><button id="tOrder" class="on">Order</button><button id="tSph">SPH</button><button id="tData">Data</button></header>
 
 <!-- ================= ORDER ================= -->
-<main id="vOrder">
-  <div id="pvSp"></div>
+<div id="pvSp"></div>
   <div class="card pv" id="pv"><div class="hd" id="pvHd"><h3 style="margin:0">Pratinjau</h3><div class="sj" id="pvSj"></div><span class="ar" id="pvAr"><i class="fa-solid fa-chevron-down"></i></span></div>
     <div class="bd" id="pvBd"><div class="prev" id="prev"></div>
     <div class="row" style="margin-top:8px"><button class="sec" id="cpSub" style="flex:1"><i class="fa-regular fa-copy"></i> Salin subjek</button><button class="sec" id="cpBody" style="flex:1"><i class="fa-regular fa-copy"></i> Salin isi</button></div></div></div>
 
+<main id="vOrder">
   <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcpt"></div></div>
   <div class="card"><h3>2 · Merk</h3><div class="chips" id="brands"></div></div>
   <div class="card" id="cJenis"><h3>3 · Jenis order</h3><div class="chips" id="jenis"></div></div>
@@ -121,6 +127,53 @@ dialog .row{margin-top:14px;justify-content:flex-end}
     <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah gambar / PDF / file<input type="file" id="fileIn" multiple hidden></label>
     <div class="mut" id="fileNote" style="margin-top:6px"></div></div>
   <div class="card"><h3>Catatan (opsional)</h3><textarea id="note" placeholder="Ditambahkan di bawah daftar barang"></textarea></div>
+</main>
+
+<!-- ================= SPH ================= -->
+<main id="vSph" class="hide">
+  <div class="card"><h3>Template instansi</h3>
+    <div class="row"><select id="tplSel" style="flex:1"></select>
+      <button class="ib pri" data-sact="tplSave" title="Simpan sebagai template" aria-label="Simpan sebagai template"><i class="fa-solid fa-floppy-disk"></i></button>
+      <button class="ib del" data-sact="tplDel" title="Hapus template" aria-label="Hapus template"><i class="fa-solid fa-trash"></i></button></div>
+    <div class="mut" style="margin-top:4px">Isi data instansi sekali, simpan, lalu muat lagi kapan saja.</div></div>
+
+  <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcptS"></div></div>
+
+  <div class="card"><h3>2 · Surat</h3>
+    <label class="f" style="margin-top:0">Salam<textarea data-m="greet" rows="1"></textarea></label>
+    <label class="f">Kalimat pembuka<textarea data-m="intro" rows="2"></textarea></label>
+    <label class="f">Penutup<textarea data-m="closing" rows="1"></textarea></label>
+    <label class="f">Tanggal<input type="date" id="sdate"></label>
+    <label class="f">Subjek <span class="mut">(pakai {instansi} {produk} {versi} {tanggal})</span><input data-m="subj"></label></div>
+
+  <div class="card"><h3>3 · Data penawaran</h3>
+    <label class="f" style="margin-top:0">Nama instansi<input data-f="instansi" placeholder="mis. Dinas Kesehatan Kota Yogyakarta"></label>
+    <label class="f">Kepada (UP yang dituju)<input data-f="kepada"></label>
+    <label class="f">Alamat<textarea data-f="alamat" rows="2"></textarea></label>
+    <label class="f">Produk yang ditawarkan (merk dagang)<input data-f="produk"></label><div class="chips" id="chProd" style="margin-top:6px"></div>
+    <label class="f">Versi price list yang ditawarkan<input data-f="versi"></label><div class="chips" id="chVer" style="margin-top:6px"></div>
+    <label class="f">Kategori barang yang ditawarkan<input data-f="kategori" placeholder="mis. Alat"></label>
+    <label class="f">Discount<input data-f="discount" placeholder="boleh kosong"></label></div>
+
+  <div class="card"><h3>4 · Kondisi penawaran</h3>
+    <div class="mut">Butir bebas (tampil sebagai poin).</div>
+    <div id="sKond"></div>
+    <button class="sec add" data-sact="kAdd"><i class="fa-solid fa-plus"></i> Tambah butir</button>
+    <div class="mut" style="margin-top:12px">Poin 1–5 (wajib) dan hardcopy:</div>
+    <label class="f">1. Harga produk<input data-f="p1"></label>
+    <label class="f">2. Franko<input data-f="p2"></label>
+    <label class="f">3. Termin pembayaran DP<input data-f="p3"></label>
+    <label class="f">4. Masa berlaku penawaran<input data-f="p4"></label>
+    <label class="f">5. Stock barang<input data-f="p5"></label>
+    <label class="f">Hardcopy dikirim ke alamat<input data-f="hc"></label></div>
+
+  <div class="card"><h3>5 · Daftar item (kelompok SPH)</h3>
+    <div id="sGroups"></div>
+    <button class="sec add" data-sact="gAdd"><i class="fa-solid fa-plus"></i> Tambah kelompok SPH</button></div>
+
+  <div class="card"><h3>Cara kirim (uji coba)</h3>
+    <div class="chips" id="trials"></div><div class="mut" id="trialTx" style="margin-top:8px"></div>
+    <div class="mut" style="margin-top:6px">Coba Trial 1, 2, 3 bergantian dan lihat mana yang tabelnya utuh di Outlook HP.</div></div>
 </main>
 
 <!-- ================= DATA ================= -->
@@ -175,7 +228,18 @@ const seed=()=>({
   subj:{parts:defParts(),isep:'+',dfmt:'dMy2'},
   mail:{greet:'Dear Ops,',intro:'Please help me to prepare this order below'}
 });
-function norm(x){const s=seed();
+
+let MODE='o';
+const sphSeed=()=>({greet:'Dear Mb Eni,',intro:'Mohon bantunya untuk diproses',closing:'Thanks,',subj:'SPH_{instansi}_{produk} #{tanggal}',trial:1,
+  form:{instansi:'',kepada:'',alamat:'',produk:'',versi:'',kategori:'',discount:'',kondisi:['Harga sudah termasuk PPN 11%'],p1:'sudah termasuk PPN',p2:'-',p3:'-',p4:'60 hari',p5:'inden',hc:''},
+  groups:[{title:'',items:[{code:'',name:'',unit:'1',price:''}],acc:[],notes:[]}],tpls:[]});
+function sphNorm(x){const s=sphSeed();x=x||{};
+  ['greet','intro','closing','subj','trial'].forEach(k=>{if(x[k]===undefined)x[k]=s[k]});
+  x.form=Object.assign({},s.form,x.form||{});if(!Array.isArray(x.form.kondisi))x.form.kondisi=[];
+  x.groups=Array.isArray(x.groups)&&x.groups.length?x.groups:s.groups;
+  x.groups.forEach(g=>{g.items=g.items||[];g.acc=g.acc||[];g.notes=g.notes||[];g.title=g.title||''});
+  x.tpls=x.tpls||[];return x}
+function norm(x){const s=seed();x.sph=sphNorm(x.sph);
   x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.contacts=x.contacts||s.contacts;
   x.subj=x.subj||{};x.subj.parts=x.subj.parts||defParts();x.subj.isep=x.subj.isep??'+';x.subj.dfmt=x.subj.dfmt||'dMy2';
   x.mail=x.mail||s.mail;return x}
@@ -216,7 +280,8 @@ function body(){
   return L.join('\r\n').replace(/\r?\n/g,'\r\n')}
 const addr=c=>(c.email||c.name).replace(/[,;]/g,' ').trim();
 const shown=c=>c.show!==false;
-const rcpt=r=>D.contacts.filter(c=>shown(c)&&c.role===r).map(addr);
+const RK=()=>MODE==='s'?'rs':'role';
+const rcpt=r=>D.contacts.filter(c=>shown(c)&&(c[RK()]||'off')===r).map(addr);
 
 function problems(){const p=[];
   if(!rcpt('to').length)p.push('Pilih minimal 1 penerima (To)');
@@ -246,6 +311,7 @@ function renderFiles(){
   $('fileNote').textContent=FILES.length?'Dengan lampiran, email dibuka lewat menu Bagikan HP. Penerima tidak otomatis terisi: To disalin ke clipboard, tempel di kolom To.':'';
   $('goTx').textContent=FILES.length?'OK → Bagikan ke Outlook (+ lampiran)':'OK → Buka Outlook'}
 function renderPrev(){
+  if(MODE==='s')return renderPrevS();
   $('pvSj').textContent=subject();
   $('cJenis').classList.toggle('hide',!partOn('jenis'));$('cRs').classList.toggle('hide',!partOn('rs'));$('cDate').classList.toggle('hide',!partOn('date'));
   $('dateTxt').textContent=dateStr($('date').value);
@@ -271,6 +337,7 @@ $('cpSub').onclick=async()=>toast(await copy(subject())?'Subjek tersalin':'Gagal
 $('cpBody').onclick=async()=>toast(await copy(body())?'Isi tersalin':'Gagal menyalin');
 
 $('go').onclick=async()=>{
+  if(MODE==='s')return sphSend();
   if(problems().length)return;
   if(FILES.length){
     const data={files:FILES,title:subject(),text:body()};
@@ -365,9 +432,174 @@ $('vData').addEventListener('input',e=>{const t=e.target;
 $('exp').onclick=async()=>toast(await copy(JSON.stringify(D))?'Data tersalin. Simpan di catatan/chat sendiri.':'Gagal menyalin');
 $('imp').onclick=()=>ask('Tempel data',[{label:'Tempel hasil "Salin data"'}],v=>{try{const x=JSON.parse(v[0]);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return'Dibatalkan';D=norm(x);upd()}catch(e){return'Data tidak valid'}});
 
+/* ---------- SPH ---------- */
+const fmtP=v=>{v=String(v||'').trim();return /^\d+$/.test(v)?Number(v).toLocaleString('id-ID'):v};
+const H=s=>esc(s||'').replace(/\n/g,'<br>');
+const sdate=()=>$('sdate').value||todayISO();
+function sphSubject(){const S=D.sph,f=S.form;
+  return S.subj.split('{instansi}').join(f.instansi||'(INSTANSI)').split('{produk}').join(f.produk||'(PRODUK)').split('{versi}').join(f.versi||'(VERSI)').split('{tanggal}').join(dateStr(sdate()))}
+
+function sphHtml(){
+  const S=D.sph,f=S.form,B='border:1px solid #000;padding:3px 6px;vertical-align:top;';
+  const ff='font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000;';
+  const row=(l,v)=>`<tr><td style="${B}width:40%">${l}</td><td style="${B}width:12px;text-align:center">:</td><td style="${B}">${v}</td></tr>`;
+  const ul=a=>{a=a.filter(x=>x&&x.trim());return a.length?`<ul style="margin:0;padding-left:18px">${a.map(x=>`<li>${H(x)}</li>`).join('')}</ul>`:''};
+  const tbl=`<table border="1" cellspacing="0" cellpadding="4" style="border-collapse:collapse;width:100%;max-width:640px;${ff}">`;
+  let h=`<div style="${ff}">`;
+  if(S.greet)h+=`<p style="margin:0 0 10px">${H(S.greet)}</p>`;
+  if(S.intro)h+=`<p style="margin:0 0 10px">${H(S.intro)}</p>`;
+  h+=tbl+row('Nama Instansi',H(f.instansi))+row('Kepada (UP yg dituju)',H(f.kepada))+row('Alamat',H(f.alamat))
+    +row('Produk Yang ditawarkan<br>(sebutkan merk dagang, misalnya Haemonetics/Boston)',H(f.produk))
+    +row('Versi Price List yang ditawarkan',H(f.versi))+row('Kategori barang yang ditawarkan',H(f.kategori))+row('Discount',H(f.discount))
+    +row('<b>Kondisi Penawaran<br>(Point 1-5 wajib ada, namun dapat ditambah/disesuaikan)</b>',ul(f.kondisi))
+    +row('1. Harga produk',H(f.p1))+row('2. Franko',H(f.p2))+row('3. Termin Pembayaran DP',H(f.p3))
+    +row('4. Masa berlaku penawaran',H(f.p4))+row('5. Stock barang',H(f.p5))+row('Hardcopy dikirim ke alamat',H(f.hc))+'</table>';
+  let gn=0;
+  S.groups.forEach(g=>{
+    const its=g.items.filter(i=>i.code||i.name),acc=g.acc.filter(i=>i.code||i.name);
+    if(!g.title&&!its.length&&!acc.length)return;
+    gn++;let n=0;
+    h+=`<p style="margin:14px 0 4px"><b>${gn}. ${H(g.title)}</b></p>`+tbl+'<tr>'
+      +['No','Item Code','Nama Item','Unit','Harga Nett + PPN per unit (Rp)'].map(t=>`<th style="${B}text-align:center">${t}</th>`).join('')+'</tr>';
+    its.forEach(i=>{n++;h+=`<tr><td style="${B}text-align:center">${n}</td><td style="${B}">${H(i.code)}</td><td style="${B}">${H(i.name)}</td><td style="${B}text-align:center">${H(i.unit)}</td><td style="${B}text-align:right">${H(fmtP(i.price))}</td></tr>`});
+    if(acc.length){h+=`<tr><td colspan="5" style="${B}"><b><u>Include Accessories</u></b></td></tr>`;
+      acc.forEach(i=>{n++;h+=`<tr><td style="${B}text-align:center">${n}</td><td style="${B}">${H(i.code)}</td><td style="${B}">${H(i.name)}</td><td style="${B}text-align:center">${H(i.unit)}</td><td style="${B}"></td></tr>`})}
+    h+='</table>';
+    const nt=ul(g.notes);if(nt)h+=`<p style="margin:8px 0 2px"><b>Kondisi Penawaran:</b></p>`+nt;
+  });
+  if(S.closing)h+=`<p style="margin:14px 0 0">${H(S.closing)}</p>`;
+  return h+'</div>'}
+
+function sphText(){
+  const S=D.sph,f=S.form,L=[];
+  if(S.greet)L.push(S.greet,'');if(S.intro)L.push(S.intro,'');
+  L.push('Nama Instansi : '+f.instansi,'Kepada (UP) : '+f.kepada,'Alamat : '+f.alamat,'Produk : '+f.produk,'Versi Price List : '+f.versi,'Kategori barang : '+f.kategori,'Discount : '+f.discount,'');
+  L.push('Kondisi Penawaran:');f.kondisi.filter(x=>x.trim()).forEach(x=>L.push('- '+x));
+  L.push('1. Harga produk : '+f.p1,'2. Franko : '+f.p2,'3. Termin Pembayaran DP : '+f.p3,'4. Masa berlaku penawaran : '+f.p4,'5. Stock barang : '+f.p5,'Hardcopy dikirim ke alamat : '+f.hc);
+  let gn=0;
+  S.groups.forEach(g=>{const its=g.items.filter(i=>i.code||i.name),acc=g.acc.filter(i=>i.code||i.name);if(!g.title&&!its.length&&!acc.length)return;
+    gn++;let n=0;L.push('',gn+'. '+g.title);
+    its.forEach(i=>{n++;L.push(`${n}. ${i.code} | ${i.name} | ${i.unit} | Rp ${fmtP(i.price)}`)});
+    if(acc.length){L.push('Include Accessories');acc.forEach(i=>{n++;L.push(`${n}. ${i.code} | ${i.name} | ${i.unit}`)})}
+    const nt=g.notes.filter(x=>x.trim());if(nt.length){L.push('Kondisi Penawaran:');nt.forEach(x=>L.push('- '+x))}});
+  if(S.closing)L.push('',S.closing);
+  return L.join('\r\n')}
+
+function sphProblems(){const p=[];
+  if(!rcpt('to').length)p.push('Pilih minimal 1 penerima (To)');
+  else if(!D.sph.form.instansi.trim())p.push('Isi nama instansi');
+  return p}
+function renderPrevS(){
+  $('pvSj').textContent=sphSubject();
+  const R=(k,v,c='')=>`<div class="pr ${c}"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`;
+  $('prev').innerHTML=R('To',rcpt('to').join('; ')||'—')+(rcpt('cc').length?R('CC',rcpt('cc').join('; ')):'')+R('Subjek',sphSubject(),'sj')
+    +`<div class="pr"><div class="k">Isi</div><div class="v"><div class="hv">${sphHtml()}</div></div></div>`;
+  const p=sphProblems();$('msg').textContent=p[0]||'';$('go').disabled=!!p.length;$('goTx').textContent='OK → Buat email SPH'}
+
+/* ---------- SPH render ---------- */
+const TRIALS=[[1,'Trial 1','Tabel tersalin otomatis, lalu email baru terbuka. Tekan lama di badan email, pilih Tempel.'],
+ [2,'Trial 2','Membuat file .eml berisi email lengkap (To, CC, subjek, tabel). Buka file itu dengan Outlook.'],
+ [3,'Trial 3','Membuka Outlook lewat tautan web dengan tabel langsung di badan email (bisa di aplikasi atau browser).'],
+ [4,'Teks','Teks biasa tanpa garis tabel, langsung terisi. Cadangan kalau trial lain gagal.']];
+function itemRow(kind,gi,ii,it,price){
+  return `<div class="itx" data-g="${gi}" data-kd="${kind}" data-i="${ii}"><div class="row"><input data-ik="code" value="${esc(it.code)}" placeholder="Item code"><input data-ik="unit" value="${esc(it.unit)}" placeholder="Unit" style="width:62px;flex:none">${price?`<input data-ik="price" inputmode="numeric" value="${esc(it.price)}" placeholder="Harga" style="width:104px;flex:none">`:''}</div>
+  <div class="row" style="margin-top:6px"><input data-ik="name" value="${esc(it.name)}" placeholder="Nama item"><button class="ib del" data-sact="iDel" data-g="${gi}" data-kd="${kind}" data-i="${ii}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div></div>`}
+function bulletRows(arr,attr,extra){
+  return arr.map((x,i)=>`<div class="row" style="margin-top:6px"><input ${attr} data-i="${i}" ${extra} value="${esc(x)}"><button class="ib del" data-sact="bDel" ${extra} data-i="${i}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}
+function renderSph(){
+  const S=D.sph,f=S.form;
+  document.querySelectorAll('#vSph [data-f]').forEach(e=>{e.value=f[e.dataset.f]||''});
+  document.querySelectorAll('#vSph [data-m]').forEach(e=>{e.value=S[e.dataset.m]||''});
+  if(!$('sdate').value)$('sdate').value=todayISO();
+  $('tplSel').innerHTML='<option value="">— muat template —</option>'+S.tpls.map((t,i)=>`<option value="${i}">${esc(t.name)}</option>`).join('');
+  $('chProd').innerHTML=D.brands.map(b=>`<button class="chip" data-pick="produk" data-v="${esc(b.name)}">${esc(b.name)}</button>`).join('');
+  $('chVer').innerHTML=D.jenis.map(j=>`<button class="chip" data-pick="versi" data-v="${esc(j)}">${esc(j)}</button>`).join('');
+  $('sKond').innerHTML=bulletRows(f.kondisi,'data-kb','');
+  $('sGroups').innerHTML=S.groups.map((g,gi)=>`<div class="c2"><div class="row"><input data-gt data-g="${gi}" value="${esc(g.title)}" placeholder="Judul, mis. SPH Hemoflow XS"><button class="ib del" data-sact="gDel" data-g="${gi}" title="Hapus kelompok" aria-label="Hapus kelompok"><i class="fa-solid fa-trash"></i></button></div>
+    ${g.items.map((it,ii)=>itemRow('items',gi,ii,it,true)).join('')}
+    <button class="sec add" data-sact="iAdd" data-g="${gi}" data-kd="items"><i class="fa-solid fa-plus"></i> Tambah item</button>
+    ${g.acc.length?'<div class="l" style="margin-top:10px"><b>Include Accessories</b></div>'+g.acc.map((it,ii)=>itemRow('acc',gi,ii,it,false)).join(''):''}
+    <button class="sec add" data-sact="iAdd" data-g="${gi}" data-kd="acc"><i class="fa-solid fa-plus"></i> Tambah accessories</button>
+    <div class="l" style="margin-top:10px"><b>Kondisi penawaran kelompok ini</b></div>
+    ${bulletRows(g.notes,'data-nt','data-g="'+gi+'"')}
+    <button class="sec add" data-sact="nAdd" data-g="${gi}"><i class="fa-solid fa-plus"></i> Tambah kondisi</button></div>`).join('');
+  $('trials').innerHTML=TRIALS.map(t=>`<button class="chip ${S.trial===t[0]?'on':''}" data-trial="${t[0]}">${t[1]}</button>`).join('');
+  $('trialTx').textContent=TRIALS.find(t=>t[0]===S.trial)[2];
+  $('rcptS').innerHTML=D.contacts.map((c,i)=>shown(c)?`<div class="ct"><div class="nm">${esc(c.name)}${c.email?`<small>${esc(c.email)}</small>`:''}</div><div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${(c.rs||'off')===r?'on':''}" data-rr="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`:'').join('')||'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Data.</span>'}
+
+/* ---------- SPH events ---------- */
+const sv=()=>{save();renderPrev()};
+$('vSph').addEventListener('input',e=>{const t=e.target,S=D.sph;
+  if(t.dataset.f!==undefined)S.form[t.dataset.f]=t.value;
+  else if(t.dataset.m!==undefined)S[t.dataset.m]=t.value;
+  else if(t.dataset.ik){const r=t.closest('.itx');S.groups[+r.dataset.g][r.dataset.kd][+r.dataset.i][t.dataset.ik]=t.value}
+  else if(t.dataset.gt!==undefined)S.groups[+t.dataset.g].title=t.value;
+  else if(t.dataset.kb!==undefined)S.form.kondisi[+t.dataset.i]=t.value;
+  else if(t.dataset.nt!==undefined)S.groups[+t.dataset.g].notes[+t.dataset.i]=t.value;
+  else if(t.id!=='sdate')return;
+  sv()});
+$('vSph').addEventListener('change',e=>{const t=e.target;
+  if(t.id==='tplSel'&&t.value!==''){const tp=D.sph.tpls[+t.value];if(tp){D.sph.form=JSON.parse(JSON.stringify(tp.form));if(tp.subj)D.sph.subj=tp.subj;save();renderSph();renderPrev();toast('Template dimuat')}}});
+$('vSph').addEventListener('click',e=>{
+  const S=D.sph,t=e.target.closest('button');if(!t)return;
+  if(t.dataset.rr){D.contacts[+t.parentNode.dataset.i].rs=t.dataset.rr;save();renderSph();renderPrev();return}
+  if(t.dataset.pick){S.form[t.dataset.pick]=t.dataset.v;save();renderSph();renderPrev();return}
+  if(t.dataset.trial){S.trial=+t.dataset.trial;save();renderSph();return}
+  const a=t.dataset.sact;if(!a)return;const g=+t.dataset.g,i=+t.dataset.i,kd=t.dataset.kd;
+  switch(a){
+    case 'tplSave':return ask('Simpan template',[{label:'Nama template',ph:'mis. Dinkes Kota Yogyakarta',val:S.form.instansi}],v=>{if(!v[0])return'Isi nama';
+      const o={name:v[0],form:JSON.parse(JSON.stringify(S.form)),subj:S.subj};const k=S.tpls.findIndex(x=>x.name===v[0]);if(k>=0)S.tpls[k]=o;else S.tpls.push(o);save();renderSph();toast('Template disimpan')});
+    case 'tplDel':{const k=$('tplSel').value;if(k==='')return toast('Pilih template dulu');if(!confirm('Hapus template '+S.tpls[+k].name+'?'))return;S.tpls.splice(+k,1);save();renderSph();return}
+    case 'kAdd':S.form.kondisi.push('');break;
+    case 'bDel':{if(t.dataset.g===undefined)S.form.kondisi.splice(i,1);else S.groups[g].notes.splice(i,1);break}
+    case 'gAdd':S.groups.push({title:'',items:[{code:'',name:'',unit:'1',price:''}],acc:[],notes:[]});break;
+    case 'gDel':{const G=S.groups[g];if((G.title||G.items.some(x=>x.code||x.name))&&!confirm('Hapus kelompok ini beserta item-nya?'))return;S.groups.splice(g,1);if(!S.groups.length)S.groups=sphSeed().groups;break}
+    case 'iAdd':S.groups[g][kd].push({code:'',name:'',unit:'1',price:''});break;
+    case 'iDel':S.groups[g][kd].splice(i,1);break;
+    case 'nAdd':S.groups[g].notes.push('');break;
+    default:return}
+  save();renderSph();renderPrev()});
+
+/* ---------- SPH kirim ---------- */
+const enc=encodeURIComponent;
+const b64=s=>btoa(unescape(enc(s)));
+const mime=s=>/^[\x20-\x7e]*$/.test(s)?s:'=?UTF-8?B?'+b64(s)+'?=';
+function mailtoUrl(to,cc,sub,bd){
+  const q=[];if(cc.length)q.push('cc='+cc.map(enc).join(','));q.push('subject='+enc(sub));if(bd)q.push('body='+enc(bd));
+  return 'mailto:'+to.map(enc).join(',')+'?'+q.join('&')}
+async function copyRich(html,txt){
+  try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]);return true}
+  catch(e){return false}}
+async function sphSend(){
+  if(sphProblems().length)return;
+  const S=D.sph,sub=sphSubject(),html=sphHtml(),txt=sphText(),to=rcpt('to'),cc=rcpt('cc');
+  if(S.trial===1){
+    const ok=await copyRich(html,txt);
+    toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');
+    location.href=mailtoUrl(to,cc,sub,ok?'(Tempel isi email di sini: tekan lama, pilih Tempel, lalu hapus tulisan ini)':txt);return}
+  if(S.trial===2){
+    const lines=b64(html).match(/.{1,76}/g)||[];
+    const eml=['X-Unsent: 1','To: '+to.join(', ')].concat(cc.length?['Cc: '+cc.join(', ')]:[],['Subject: '+mime(sub),'MIME-Version: 1.0','Content-Type: text/html; charset=UTF-8','Content-Transfer-Encoding: base64',''],lines).join('\r\n');
+    const f=new File([eml],'SPH.eml',{type:'message/rfc822'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]});return}catch(e){if(e&&e.name==='AbortError')return}}
+    const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download='SPH.eml';document.body.appendChild(a);a.click();a.remove();
+    toast('File SPH.eml diunduh. Buka dengan Outlook.');return}
+  if(S.trial===3){
+    location.href='https://outlook.office.com/mail/deeplink/compose?to='+enc(to.join(';'))+(cc.length?'&cc='+enc(cc.join(';')):'')+'&subject='+enc(sub)+'&body='+enc(html);return}
+  location.href=mailtoUrl(to,cc,sub,txt)}
+
+$('cpSub').onclick=async()=>toast(await copy(MODE==='s'?sphSubject():subject())?'Subjek tersalin':'Gagal menyalin');
+$('cpBody').onclick=async()=>{if(MODE==='s')toast(await copyRich(sphHtml(),sphText())?'Tabel tersalin':'Gagal menyalin');else toast(await copy(body())?'Isi tersalin':'Gagal menyalin')};
+
 /* ---------- tabs ---------- */
-const tab=t=>{$('vOrder').classList.toggle('hide',t!=='o');$('vData').classList.toggle('hide',t!=='d');$('tOrder').classList.toggle('on',t==='o');$('tData').classList.toggle('on',t==='d');document.querySelector('.bar').classList.toggle('hide',t!=='o');scrollTo(0,0);if(t==='d')renderData();else renderPrev()};
-$('tOrder').onclick=()=>tab('o');$('tData').onclick=()=>tab('d');
+const tab=t=>{MODE=t;
+  [['vOrder','o'],['vSph','s'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
+  [['tOrder','o'],['tSph','s'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
+  document.querySelector('.bar').classList.toggle('hide',t==='d');$('pv').classList.toggle('hide',t==='d');$('pvSp').classList.toggle('hide',t==='d');
+  scrollTo(0,0);
+  if(t==='d')renderData();else if(t==='s'){renderSph();renderPrev()}else{renderFiles();renderPrev()}
+  if(t!=='d')syncSp()};
+$('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tData').onclick=()=>tab('d');
 
 $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
