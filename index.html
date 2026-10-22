@@ -52,7 +52,7 @@ button i{pointer-events:none}
 .pr.sj .v{font-weight:600}
 .prev b{display:block;color:var(--mut);font-size:12px;font-weight:600;margin-top:6px}
 .prev b:first-child{margin-top:0}
-.pv{position:fixed;top:52px;left:0;right:0;margin:0 auto!important;width:calc(100% - 24px);max-width:616px;z-index:7;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.pv{position:fixed;top:46px;left:0;right:0;width:100%;margin:0!important;border-radius:0;border-width:0 0 1px 0;padding:8px max(12px,calc((100% - 616px)/2));background:var(--card);z-index:7;box-shadow:0 3px 8px rgba(0,0,0,.15)}
 .pv .hd{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:28px}
 .pv .hd .sj{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;font-weight:600}
 .pv .hd .ar{color:var(--mut);font-size:12px}
@@ -215,7 +215,8 @@ function body(){
   const n=$('note').value.trim();if(n)L.push('',n);
   return L.join('\r\n').replace(/\r?\n/g,'\r\n')}
 const addr=c=>(c.email||c.name).replace(/[,;]/g,' ').trim();
-const rcpt=r=>D.contacts.filter(c=>c.role===r).map(addr);
+const shown=c=>c.show!==false;
+const rcpt=r=>D.contacts.filter(c=>shown(c)&&c.role===r).map(addr);
 
 function problems(){const p=[];
   if(!rcpt('to').length)p.push('Pilih minimal 1 penerima (To)');
@@ -227,8 +228,8 @@ function problems(){const p=[];
 
 /* ---------- render order ---------- */
 function renderRcpt(){
-  $('rcpt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}${c.email?`<small>${esc(c.email)}</small>`:''}</div>
-    <div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${c.role===r?'on':''}" data-r="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`).join('')||'<span class="mut">Belum ada kontak. Tambah di tab Data.</span>'}
+  $('rcpt').innerHTML=D.contacts.map((c,i)=>shown(c)?`<div class="ct"><div class="nm">${esc(c.name)}${c.email?`<small>${esc(c.email)}</small>`:''}</div>
+    <div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${c.role===r?'on':''}" data-r="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`:'').join('')||'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Data.</span>'}
 const renderBrands=()=>$('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Data.</span>';
 const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis order. Tambah di tab Data.</span>';
 const renderRs=()=>$('rs').innerHTML='<option value="">— pilih —</option>'+D.rs.map(r=>`<option ${F.rs===r?'selected':''}>${esc(r)}</option>`).join('');
@@ -302,7 +303,7 @@ function renderData(){
     ${p.k==='text'?ib('sDel','trash','Hapus',`data-i="${i}"`,'del'):''}</div></div>`).join('');
   $('isep').value=D.subj.isep;$('mGreet').value=D.mail.greet;$('mIntro').value=D.mail.intro;
 
-  $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span><div class="nm">${esc(c.name)}<small>${c.email?esc(c.email):'tanpa email (ditulis nama)'}</small></div>
+  $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span>${ib('cTog',shown(c)?'eye':'eye-slash',shown(c)?'Tampil di halaman Order (ketuk untuk sembunyikan)':'Disembunyikan (ketuk untuk tampilkan)',`data-i="${i}"`,shown(c)?'pri':'')}<div class="nm" ${shown(c)?'':'style="opacity:.5"'}>${esc(c.name)}<small>${c.email?esc(c.email):'tanpa email (ditulis nama)'}</small></div>
     ${ib('cEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('cDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
 
   $('dBrands').innerHTML=D.brands.map((b,i)=>`<details class="sub" ${openB===i?'open':''}><summary><span class="bn">${esc(b.name)} <span class="mut">(${b.items.length})</span></span>${ib('bEd','pen-to-square','Ubah nama MERK',`data-i="${i}"`,'bx pri')}${ib('bDel','trash-can','Hapus MERK beserta semua barangnya',`data-i="${i}"`,'bx del')}</summary>
@@ -338,6 +339,7 @@ $('vData').addEventListener('click',e=>{
     case 'sTog':P[i].on=!P[i].on;return upd();
     case 'sDel':P.splice(i,1);return upd();
     case 'sAddText':return ask('Teks tetap baru',[{label:'Teks',ph:'mis. URGENT'}],v=>{if(!v[0])return'Isi teksnya';P.push({k:'text',t:v[0],pre:'_',on:true});upd()});
+    case 'cTog':D.contacts[i].show=!shown(D.contacts[i]);return upd();
     case 'cDel':if(!confirm('Hapus '+D.contacts[i].name+'?'))return;D.contacts.splice(i,1);return upd();
     case 'cAdd':return ask('Kontak baru',[{label:'Nama',ph:'mis. TMID Jogja Ops'},{label:'Email (boleh kosong)',type:'email'}],v=>{if(!v[0])return'Isi nama';if(!mailOk(v[1]))return'Format email salah';D.contacts.push({name:v[0],email:v[1],role:'off'});upd()});
     case 'cEd':{const c=D.contacts[i];return ask('Ubah kontak',[{label:'Nama',val:c.name},{label:'Email (boleh kosong)',type:'email',val:c.email}],v=>{if(!v[0])return'Isi nama';if(!mailOk(v[1]))return'Format email salah';c.name=v[0];c.email=v[1];upd()})}
@@ -369,7 +371,7 @@ $('tOrder').onclick=()=>tab('o');$('tData').onclick=()=>tab('d');
 
 $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+8)+'px'};
+const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+6)+'px'};
 new ResizeObserver(syncSp).observe($('pv'));
 setPv();renderAll();syncSp();
 </script>
