@@ -11,45 +11,50 @@
 :root{--bg:#f3f4f6;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--pri:#0f6cbd;--bd:#d9dde3;--ok:#1a7f4b;--err:#c0392b;--chip:#e8f1fb}
 @media (prefers-color-scheme:dark){:root{--bg:#111418;--card:#1b2027;--tx:#e8eaed;--mut:#9aa3ad;--bd:#2f3640;--chip:#1c2f45;--pri:#4aa3f0}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px system-ui,sans-serif;padding-bottom:96px}
-header{background:#0f6cbd;color:#fff;padding:0 16px;position:sticky;top:0;z-index:5;display:flex;align-items:center;height:52px}
-header b{flex:1;font-size:18px}
-header button{background:transparent;color:#fff;border:0;font:inherit;padding:8px 10px;opacity:.7}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;padding-bottom:80px}
+header{background:#0f6cbd;color:#fff;padding:0 16px;position:sticky;top:0;z-index:5;display:flex;align-items:center;height:46px}
+header b{flex:1;font-size:16px;font-weight:600}
+header button{background:transparent;color:#fff;border:0;font:inherit;font-size:14px;padding:6px 10px;min-height:0;opacity:.7;border-radius:0}
 header button.on{opacity:1;border-bottom:2px solid #fff}
-main{padding:12px 16px;max-width:640px;margin:auto}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
-h3{margin:0 0 8px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
-input,select,textarea{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
-textarea{min-height:70px}
-button{font:inherit;white-space:nowrap;border:0;border-radius:10px;min-height:46px;padding:10px 16px;background:var(--pri);color:#fff}
+main{padding:10px 12px;max-width:640px;margin:auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+h3{margin:0 0 6px;font-size:11.5px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{width:100%;min-height:40px;padding:7px 10px;border:1px solid var(--bd);border-radius:8px;font-size:15px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:56px}
+button{font:inherit;font-size:14px;white-space:nowrap;border:0;border-radius:8px;min-height:40px;padding:7px 14px;background:var(--pri);color:#fff}
 button.sec{background:transparent;color:var(--pri);border:1px solid var(--pri)}
 button.x{background:transparent;color:var(--err);min-height:40px;padding:6px 10px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{background:var(--chip);color:var(--tx);border:1px solid transparent;border-radius:999px;padding:9px 16px;min-height:40px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--chip);color:var(--tx);border:1px solid transparent;border-radius:999px;padding:5px 13px;min-height:34px;font-size:14px}
 .chip.on{background:var(--pri);color:#fff}
 .row{display:flex;gap:8px;align-items:center}
 .row>*{min-width:0}
-.item{border-top:1px dashed var(--bd);padding-top:10px;margin-top:10px}
+.item{border-top:1px dashed var(--bd);padding-top:8px;margin-top:8px}
 .item:first-of-type{border-top:0;padding-top:0;margin-top:0}
 .seg{display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden;flex:none}
-.seg button{border-radius:0;background:transparent;color:var(--mut);min-height:38px;padding:6px 12px}
+.seg button{border-radius:0;background:transparent;color:var(--mut);min-height:32px;padding:4px 10px;font-size:13px}
 .seg button.on{background:var(--pri);color:#fff}
-.ct{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bd)}
+.ct{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--bd)}
 .ct:first-of-type{border-top:0}
-.ct .nm{flex:1;line-height:1.25;overflow-wrap:anywhere}
-.ct small{display:block;color:var(--mut)}
+.ct .nm{flex:1;line-height:1.25;overflow-wrap:anywhere;font-size:14px}
+.ct small{display:block;color:var(--mut);font-size:12px}
 .warn{color:var(--err)}
-.prev{background:var(--bg);border-radius:10px;padding:10px;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.prev{background:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
 .prev b{display:block;color:var(--mut);font-size:12px;font-weight:600;margin-top:6px}
 .prev b:first-child{margin-top:0}
-.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:6}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:8px 12px calc(8px + env(safe-area-inset-bottom));z-index:6}
 .bar .in{max-width:640px;margin:auto}
-.bar button{width:100%;min-height:52px;font-weight:600}
+.bar button{width:100%;min-height:46px;font-size:15px;font-weight:600}
 .bar button:disabled{background:var(--bd);color:var(--mut)}
-.msg{font-size:13px;margin-bottom:6px;min-height:0}
+.msg{font-size:12px;margin-bottom:4px;min-height:0}
 .hide{display:none}
 .mut{color:var(--mut);font-size:13px}
-details summary{padding:10px 0;font-weight:600}
+details summary{padding:8px 0;font-weight:600;font-size:14px}
+.pv{position:sticky;top:46px;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.pv .hd{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:28px}
+.pv .hd .sj{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;font-weight:600}
+.pv .hd .ar{color:var(--mut);font-size:12px}
+.pv .bd{margin-top:6px;max-height:34vh;overflow:auto}
 </style>
 </head>
 <body>
@@ -57,10 +62,13 @@ details summary{padding:10px 0;font-weight:600}
 
 <!-- ============ ORDER ============ -->
 <main id="vOrder">
+  <div class="card pv" id="pv"><div class="hd" id="pvHd"><h3 style="margin:0">Pratinjau</h3><div class="sj" id="pvSj"></div><span class="ar" id="pvAr">▾</span></div>
+    <div class="bd" id="pvBd"><div class="prev" id="prev"></div>
+    <div class="row" style="margin-top:8px"><button class="sec" id="cpSub" style="flex:1">Salin subjek</button><button class="sec" id="cpBody" style="flex:1">Salin isi</button></div></div></div>
   <div class="card"><h3>1 · Merk</h3><div class="chips" id="brands"></div></div>
   <div class="card"><h3>2 · Jenis</h3><div class="chips" id="jenis"></div></div>
   <div class="card"><h3>3 · Rumah sakit / instansi</h3>
-    <div class="row"><select id="rs"></select><button class="sec" id="addRs">+ Baru</button></div></div>
+    <select id="rs"></select><div class="mut" style="margin-top:4px">Belum ada di daftar? Tambah di tab Data.</div></div>
   <div class="card"><h3>4 · Barang &amp; jumlah</h3>
     <div id="items"></div>
     <button class="sec" id="addItem" style="margin-top:12px;width:100%">+ Tambah barang</button></div>
@@ -68,8 +76,6 @@ details summary{padding:10px 0;font-weight:600}
     <div class="row"><input type="date" id="date" style="flex:1"><div id="dateTxt" style="font-weight:600;min-width:96px;text-align:right"></div></div></div>
   <div class="card"><h3>6 · Penerima</h3><div class="mut" style="margin-bottom:4px">Pilih To / CC. Pilihan diingat untuk order berikutnya.</div><div id="rcpt"></div></div>
   <div class="card"><h3>Catatan (opsional)</h3><textarea id="note" placeholder="Ditambahkan di bawah daftar barang"></textarea></div>
-  <div class="card"><h3>Pratinjau</h3><div class="prev" id="prev"></div>
-    <div class="row" style="margin-top:10px"><button class="sec" id="cpSub" style="flex:1">Salin subjek</button><button class="sec" id="cpBody" style="flex:1">Salin isi</button></div></div>
 </main>
 
 <!-- ============ DATA ============ -->
@@ -132,8 +138,9 @@ function problems(){const p=[];
   if(!F.jenis)p.push('Pilih jenis');
   if(!F.rs)p.push('Pilih rumah sakit');
   if(!validItems().length)p.push('Isi barang dan jumlah');
-  const rc=D.contacts.filter(c=>c.role==='to'&&c.email);
-  if(!rc.length)p.push('Pilih minimal 1 penerima (To) yang sudah ada emailnya');
+  const to=D.contacts.filter(c=>c.role==='to');
+  if(!to.length)p.push('Pilih minimal 1 penerima (To)');
+  else if(!to.some(c=>c.email))p.push('Penerima To belum punya email: ketuk "Isi email"');
   return p}
 const noMail=()=>D.contacts.filter(c=>c.role!=='off'&&!c.email);
 
@@ -147,19 +154,21 @@ function renderRs(){
 function renderItems(){
   const its=brandObj()?brandObj().items:[];
   $('items').innerHTML=F.items.map((r,n)=>`<div class="item" data-n="${n}">
-    <div class="row"><select data-k="item" style="flex:1"><option value="">— pilih barang —</option>${its.map(x=>`<option ${r.item===x?'selected':''}>${esc(x)}</option>`).join('')}<option value="__new">+ Barang baru…</option></select>
+    <div class="row"><select data-k="item" style="flex:1"><option value="">— pilih barang —</option>${its.map(x=>`<option ${r.item===x?'selected':''}>${esc(x)}</option>`).join('')}</select>
       ${F.items.length>1?'<button class="x" data-del>Hapus</button>':''}</div>
     <div class="row" style="margin-top:8px"><input data-k="qty" type="number" inputmode="numeric" min="1" placeholder="Jumlah" value="${r.qty}" style="flex:1">
       <input data-k="unit" value="${esc(r.unit)}" style="width:90px" aria-label="Satuan"></div></div>`).join('')}
 function renderRcpt(){
-  $('rcpt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}<small class="${c.email?'':'warn'}">${c.email?esc(c.email):'email belum diisi (tab Data)'}</small></div>
+  $('rcpt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}<small class="${c.email?'':'warn'}">${c.email?esc(c.email):'email belum diisi'}</small></div>
+    ${c.email?'':`<button class="sec" data-em="${i}" style="min-height:32px;padding:3px 10px;font-size:13px">Isi email</button>`}
     <div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${c.role===r?'on':''}" data-r="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`).join('')||'<span class="mut">Belum ada kontak. Tambah di tab Data.</span>'}
 function renderPrev(){
+  $('pvSj').textContent=subject();
   $('dateTxt').textContent=dateStr($('date').value);
   const to=D.contacts.filter(c=>c.role==='to').map(c=>c.name).join('; ')||'—',cc=D.contacts.filter(c=>c.role==='cc').map(c=>c.name).join('; ')||'—';
   $('prev').innerHTML=`<b>To</b>${esc(to)}<b>CC</b>${esc(cc)}<b>Subjek</b>${esc(subject())}<b>Isi</b>${esc(body().replace(/\r\n/g,'\n'))}`;
   const p=problems(),nm=noMail();
-  $('msg').textContent=p.length?p[0]:(nm.length?`Tanpa email, dilewati: ${nm.map(c=>c.name).join(', ')}`:'');
+  $('msg').textContent=p.length?p[0]:(nm.length?`${nm.length} kontak terpilih belum punya email dan dilewati`:'');
   $('go').disabled=!!p.length}
 const renderAll=()=>{renderBrands();renderJenis();renderRs();renderItems();renderRcpt();renderPrev()};
 
@@ -167,21 +176,18 @@ const renderAll=()=>{renderBrands();renderJenis();renderRs();renderItems();rende
 $('brands').onclick=e=>{const b=e.target.dataset.b;if(!b)return;if(F.brand!==b){F.brand=b;F.items=[{item:'',qty:'',unit:'ea'}]}renderBrands();renderItems();renderPrev()};
 $('jenis').onclick=e=>{const j=e.target.dataset.j;if(!j)return;F.jenis=j;renderJenis();renderPrev()};
 $('rs').onchange=e=>{F.rs=e.target.value;renderPrev()};
-$('addRs').onclick=()=>{const n=(prompt('Nama RS / instansi baru:')||'').trim().toUpperCase();if(!n)return;if(!D.rs.includes(n))D.rs.push(n);D.rs.sort();F.rs=n;save();renderRs();renderPrev()};
 $('addItem').onclick=()=>{F.items.push({item:'',qty:'',unit:'ea'});renderItems()};
 $('items').addEventListener('change',e=>{const box=e.target.closest('.item');if(!box)return;const r=F.items[+box.dataset.n];
   if(e.target.dataset.k==='item'){
-    if(e.target.value==='__new'){
-      const n=(prompt('Kode / nama barang baru untuk '+F.brand+':')||'').trim().toUpperCase();
-      if(n){const b=brandObj();if(!b.items.includes(n))b.items.push(n);r.item=n;save()}
-      renderItems()}
-    else r.item=e.target.value}
+    r.item=e.target.value}
   renderPrev()});
 $('items').addEventListener('input',e=>{const box=e.target.closest('.item');if(!box)return;const r=F.items[+box.dataset.n],k=e.target.dataset.k;
   if(k==='qty'||k==='unit'){r[k]=e.target.value;renderPrev()}});
 $('items').addEventListener('click',e=>{if(!e.target.matches('[data-del]'))return;F.items.splice(+e.target.closest('.item').dataset.n,1);renderItems();renderPrev()});
 $('date').oninput=renderPrev;$('note').oninput=renderPrev;
-$('rcpt').addEventListener('click',e=>{const r=e.target.dataset.r;if(!r)return;D.contacts[+e.target.parentNode.dataset.i].role=r;save();renderRcpt();renderPrev()});
+$('rcpt').addEventListener('click',e=>{const em=e.target.dataset.em;
+  if(em!==undefined){const c=D.contacts[+em],v=(prompt('Email untuk '+c.name+':','')||'').trim();if(!v)return;if(!/^\S+@\S+\.\S+$/.test(v))return alert('Format email salah.');c.email=v;save();renderRcpt();renderPrev();return}
+  const r=e.target.dataset.r;if(!r)return;D.contacts[+e.target.parentNode.dataset.i].role=r;save();renderRcpt();renderPrev()});
 const copy=async t=>{try{await navigator.clipboard.writeText(t);return true}catch(e){return false}};
 $('cpSub').onclick=async()=>alert(await copy(subject())?'Subjek tersalin.':'Gagal menyalin.');
 $('cpBody').onclick=async()=>alert(await copy(body())?'Isi tersalin.':'Gagal menyalin.');
@@ -221,6 +227,12 @@ $('ncAdd').onclick=()=>{const n=$('ncName').value.trim(),m=$('ncMail').value.tri
 $('exp').onclick=async()=>alert(await copy(JSON.stringify(D))?'Data tersalin. Simpan di catatan/chat sendiri.':'Gagal menyalin.');
 $('imp').onclick=()=>{const t=prompt('Tempel data hasil "Salin data":');if(!t)return;
   try{const x=JSON.parse(t);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return;D=x;save();renderData();renderAll()}catch(e){alert('Data tidak valid.')}};
+
+// ---------- preview collapse
+let pvOpen=false;try{pvOpen=localStorage.getItem('oc.pv')==='1'}catch(e){}
+const setPv=()=>{$('pvBd').classList.toggle('hide',!pvOpen);$('pvAr').textContent=pvOpen?'▴':'▾';$('pvSj').classList.toggle('hide',pvOpen)};
+$('pvHd').onclick=()=>{pvOpen=!pvOpen;try{localStorage.setItem('oc.pv',pvOpen?'1':'0')}catch(e){}setPv()};
+setPv();
 
 // ---------- tabs
 const tab=t=>{$('vOrder').classList.toggle('hide',t!=='o');$('vData').classList.toggle('hide',t!=='d');$('tOrder').classList.toggle('on',t==='o');$('tData').classList.toggle('on',t==='d');document.querySelector('.bar').classList.toggle('hide',t!=='o');scrollTo(0,0);if(t==='d')renderData()};
