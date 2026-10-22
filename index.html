@@ -65,6 +65,9 @@ details.dsec>summary .c{margin-left:auto;color:var(--mut);transition:transform .
 details.dsec[open]>summary .c{transform:rotate(180deg)}
 details.dsec>.in{padding:0 12px 12px}
 details.sub>summary{padding:8px 0;font-weight:600;font-size:14px;cursor:pointer}
+.grip{flex:none;width:30px;min-height:40px;display:flex;align-items:center;justify-content:center;color:var(--mut);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.drag{position:relative;z-index:3;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.25);border-radius:8px;transition:none!important}
+#sParts .sp,#dCt .ct,#dJenis .ct{transition:transform .15s}
 .sp{border-top:1px solid var(--bd);padding:8px 0}
 .sp:first-of-type{border-top:0}
 .sp .l2{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;color:var(--mut)}
@@ -277,41 +280,52 @@ function renderData(){
   const P=D.subj.parts;
   $('sEx').textContent=subject(true);
   $('sParts').innerHTML=P.map((p,i)=>`<div class="sp"><div class="row">
-    ${ib('sTog',p.on?'eye':'eye-slash',p.on?'Tampil (ketuk untuk sembunyikan)':'Sembunyi (ketuk untuk tampilkan)',`data-i="${i}"`,p.on?'pri':'')}
+    <span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span>${ib('sTog',p.on?'eye':'eye-slash',p.on?'Tampil (ketuk untuk sembunyikan)':'Sembunyi (ketuk untuk tampilkan)',`data-i="${i}"`,p.on?'pri':'')}
     ${p.k==='text'?`<input data-sp="t" data-i="${i}" value="${esc(p.t)}" aria-label="Teks tetap" ${p.on?'':'style="opacity:.5"'}>`:`<div style="flex:1;font-weight:600;${p.on?'':'opacity:.5;text-decoration:line-through'}">${PL[p.k]}</div>`}
-    ${ib('sUp','arrow-up','Naikkan',`data-i="${i}" ${i===0?'disabled':''}`)}${ib('sDn','arrow-down','Turunkan',`data-i="${i}" ${i===P.length-1?'disabled':''}`)}
     ${p.k==='text'?ib('sDel','trash','Hapus',`data-i="${i}"`,'del'):''}</div>
     <div class="l2">Pemisah sebelumnya <input data-sp="pre" data-i="${i}" value="${esc(p.pre)}" aria-label="Pemisah" ${i===0?'disabled':''}></div></div>`).join('');
   $('isep').value=D.subj.isep;$('dfmt').value=D.subj.dfmt;$('mGreet').value=D.mail.greet;$('mIntro').value=D.mail.intro;
 
-  $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><div class="nm">${esc(c.name)}<small>${c.email?esc(c.email):'tanpa email (ditulis nama)'}</small></div>
-    ${ib('cUp','arrow-up','Naikkan',`data-i="${i}" ${i===0?'disabled':''}`)}${ib('cDn','arrow-down','Turunkan',`data-i="${i}" ${i===D.contacts.length-1?'disabled':''}`)}${ib('cEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('cDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
+  $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span><div class="nm">${esc(c.name)}<small>${c.email?esc(c.email):'tanpa email (ditulis nama)'}</small></div>
+    ${ib('cEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('cDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
 
   $('dBrands').innerHTML=D.brands.map((b,i)=>`<details class="sub" ${openB===i?'open':''}><summary>${esc(b.name)} <span class="mut">(${b.items.length} barang)</span></summary>
     <div class="row" style="justify-content:flex-end">${ib('bEd','pen','Ubah nama merk',`data-i="${i}"`,'pri')}${ib('bDel','trash','Hapus merk',`data-i="${i}"`,'del')}</div>
     ${b.items.map((x,j)=>`<div class="ct"><div class="nm">${esc(x)}</div>${ib('iEd','pen','Ubah',`data-i="${i}" data-j="${j}"`,'pri')}${ib('iDel','trash','Hapus',`data-i="${i}" data-j="${j}"`,'del')}</div>`).join('')}
     <button class="sec add" data-act="iAdd" data-i="${i}"><i class="fa-solid fa-plus"></i> Tambah barang</button></details>`).join('');
 
-  $('dJenis').innerHTML=D.jenis.map((x,i)=>`<div class="ct"><div class="nm">${esc(x)}</div>${ib('jUp','arrow-up','Naikkan',`data-i="${i}" ${i===0?'disabled':''}`)}${ib('jDn','arrow-down','Turunkan',`data-i="${i}" ${i===D.jenis.length-1?'disabled':''}`)}${ib('jEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('jDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
+  $('dJenis').innerHTML=D.jenis.map((x,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span><div class="nm">${esc(x)}</div>${ib('jEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('jDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
   $('dRs').innerHTML=D.rs.map((x,i)=>`<div class="ct"><div class="nm">${esc(x)}</div>${ib('rEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('rDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('')}
 const upd=()=>{save();renderData();renderAll()};
+function sortable(box,sel,arr){
+  box.addEventListener('pointerdown',e=>{
+    const h=e.target.closest('.grip');if(!h)return;
+    const rows=[...box.querySelectorAll(sel)],row=h.closest(sel),from=rows.indexOf(row);
+    if(from<0)return;e.preventDefault();try{h.setPointerCapture(e.pointerId)}catch(_){}
+    const rc=rows.map(x=>x.getBoundingClientRect()),H=rc[from].height,y0=e.clientY;let to=from;row.classList.add('drag');
+    const mv=ev=>{const dy=ev.clientY-y0;row.style.transform=`translateY(${dy}px)`;
+      const cy=rc[from].top+H/2+dy;to=from;
+      if(cy<rc[0].top)to=0;else if(cy>rc[rc.length-1].bottom)to=rc.length-1;
+      else for(let k=0;k<rc.length;k++)if(cy>=rc[k].top&&cy<=rc[k].bottom){to=k;break}
+      rows.forEach((x,k)=>{if(x===row)return;x.style.transform=(from<to&&k>from&&k<=to)?`translateY(${-H}px)`:(from>to&&k<from&&k>=to)?`translateY(${H}px)`:''})};
+    const up=()=>{h.removeEventListener('pointermove',mv);h.removeEventListener('pointerup',up);h.removeEventListener('pointercancel',up);
+      rows.forEach(x=>{x.style.transform='';x.classList.remove('drag')});
+      if(to!==from){const a=arr();const [m]=a.splice(from,1);a.splice(to,0,m);upd()}};
+    h.addEventListener('pointermove',mv);h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up)})}
+sortable($('sParts'),'.sp',()=>D.subj.parts);
+sortable($('dCt'),'.ct',()=>D.contacts);
+sortable($('dJenis'),'.ct',()=>D.jenis);
 $('vData').addEventListener('click',e=>{
   const bt=e.target.closest('[data-act]');if(!bt||bt.disabled)return;
   const a=bt.dataset.act,i=+bt.dataset.i,j=+bt.dataset.j,P=D.subj.parts;
   switch(a){
     case 'sTog':P[i].on=!P[i].on;return upd();
-    case 'sUp':move(P,i,-1);return upd();
-    case 'sDn':move(P,i,1);return upd();
     case 'sDel':P.splice(i,1);return upd();
     case 'sAddText':return ask('Teks tetap baru',[{label:'Teks',ph:'mis. URGENT'}],v=>{if(!v[0])return'Isi teksnya';P.push({k:'text',t:v[0],pre:'_',on:true});upd()});
     case 'sReset':if(!confirm('Kembalikan format subjek ke standar?'))return;D.subj.parts=defParts();D.subj.isep='+';D.subj.dfmt='dMy2';return upd();
-    case 'cUp':move(D.contacts,i,-1);return upd();
-    case 'cDn':move(D.contacts,i,1);return upd();
     case 'cDel':if(!confirm('Hapus '+D.contacts[i].name+'?'))return;D.contacts.splice(i,1);return upd();
     case 'cAdd':return ask('Kontak baru',[{label:'Nama',ph:'mis. TMID Jogja Ops'},{label:'Email (boleh kosong)',type:'email'}],v=>{if(!v[0])return'Isi nama';if(!mailOk(v[1]))return'Format email salah';D.contacts.push({name:v[0],email:v[1],role:'off'});upd()});
     case 'cEd':{const c=D.contacts[i];return ask('Ubah kontak',[{label:'Nama',val:c.name},{label:'Email (boleh kosong)',type:'email',val:c.email}],v=>{if(!v[0])return'Isi nama';if(!mailOk(v[1]))return'Format email salah';c.name=v[0];c.email=v[1];upd()})}
-    case 'jUp':move(D.jenis,i,-1);return upd();
-    case 'jDn':move(D.jenis,i,1);return upd();
     case 'jDel':{if(!confirm('Hapus jenis '+D.jenis[i]+'?'))return;const x=D.jenis.splice(i,1)[0];if(F.jenis===x)F.jenis=null;return upd()}
     case 'jAdd':return ask('Jenis baru',[{label:'Nama jenis',ph:'mis. TENDER',up:true}],v=>{if(!v[0])return'Isi nama';if(D.jenis.includes(v[0]))return'Sudah ada';D.jenis.push(v[0]);upd()});
     case 'jEd':{const o=D.jenis[i];return ask('Ubah jenis',[{label:'Nama jenis',val:o,up:true}],v=>{if(!v[0])return'Isi nama';D.jenis[i]=v[0];if(F.jenis===o)F.jenis=v[0];upd()})}
