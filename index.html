@@ -83,6 +83,7 @@ details.sub[open]>summary::before{transform:rotate(90deg)}
 #sParts .sp,#dCt .ct,#dJenis .ct{transition:transform .15s}
 .sp{border-top:1px solid var(--bd);padding:8px 0}
 .sp:first-of-type{border-top:0}
+.dfs{width:116px!important;flex:none;min-height:36px!important;padding:3px 6px!important;font-size:13px!important}
 .sepi{width:54px!important;flex:none;min-height:36px!important;padding:3px 6px!important;text-align:center;font-weight:600}
 .sp .l2{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;color:var(--mut)}
 .sp .l2 input{width:64px;min-height:32px;padding:3px 8px;text-align:center}
@@ -129,9 +130,7 @@ dialog .row{margin-top:14px;justify-content:flex-end}
     <div class="mut" style="margin-bottom:4px">Geser <i class="fa-solid fa-grip-vertical"></i> untuk urutan. Kolom kecil = <b>separator</b> sebelum bagian itu.</div>
     <div id="sParts"></div>
     <label class="f">Pemisah antar barang (bila lebih dari 1 barang)<input id="isep" style="width:80px"></label>
-    <button class="sec add" data-act="sAddText"><i class="fa-solid fa-plus"></i> Tambah teks tetap</button>
-    <label class="f">Format tanggal<select id="dfmt"><option value="dMy2">22 OCT 26</option><option value="dMy4">22 OCT 2026</option><option value="slash">22/10/2026</option></select></label>
-    <button class="sec add" data-act="sReset"><i class="fa-solid fa-rotate-left"></i> Kembalikan format standar</button></div></details>
+    <button class="sec add" data-act="sAddText"><i class="fa-solid fa-plus"></i> Tambah teks tetap</button></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-envelope-open-text"></i> Kalimat isi email <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <label class="f">Salam<textarea id="mGreet" rows="2"></textarea></label>
@@ -297,10 +296,11 @@ function renderData(){
   $('sEx').textContent=subject(true);
   $('sParts').innerHTML=P.map((p,i)=>`<div class="sp"><div class="row">
     <span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span>${ib('sTog',p.on?'eye':'eye-slash',p.on?'Tampil (ketuk untuk sembunyikan)':'Sembunyi (ketuk untuk tampilkan)',`data-i="${i}"`,p.on?'pri':'')}
-    ${p.k==='text'?`<input data-sp="t" data-i="${i}" value="${esc(p.t)}" aria-label="Teks tetap" ${p.on?'':'style="opacity:.5"'}>`:`<div style="flex:1;font-weight:600;${p.on?'':'opacity:.5;text-decoration:line-through'}">${PL[p.k]}</div>`}
+    ${p.k==='text'?`<input data-sp="t" data-i="${i}" value="${esc(p.t)}" aria-label="Teks tetap" ${p.on?'':'style="opacity:.5"'}>`:`<div style="flex:1;font-weight:600;min-width:0;${p.on?'':'opacity:.5;text-decoration:line-through'}">${PL[p.k]}</div>`}
+    ${p.k==='date'?`<select class="dfs" data-dfmt aria-label="Format tanggal"><option value="dMy2" ${D.subj.dfmt==='dMy2'?'selected':''}>22 OCT 26</option><option value="dMy4" ${D.subj.dfmt==='dMy4'?'selected':''}>22 OCT 2026</option><option value="slash" ${D.subj.dfmt==='slash'?'selected':''}>22/10/2026</option></select>`:''}
     <input class="sepi" data-sp="pre" data-i="${i}" value="${esc(p.pre)}" placeholder="${i===0?'':'sep'}" title="Separator sebelum bagian ini" aria-label="Separator" ${i===0?'disabled':''}>
     ${p.k==='text'?ib('sDel','trash','Hapus',`data-i="${i}"`,'del'):''}</div></div>`).join('');
-  $('isep').value=D.subj.isep;$('dfmt').value=D.subj.dfmt;$('mGreet').value=D.mail.greet;$('mIntro').value=D.mail.intro;
+  $('isep').value=D.subj.isep;$('mGreet').value=D.mail.greet;$('mIntro').value=D.mail.intro;
 
   $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span><div class="nm">${esc(c.name)}<small>${c.email?esc(c.email):'tanpa email (ditulis nama)'}</small></div>
     ${ib('cEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('cDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
@@ -338,7 +338,6 @@ $('vData').addEventListener('click',e=>{
     case 'sTog':P[i].on=!P[i].on;return upd();
     case 'sDel':P.splice(i,1);return upd();
     case 'sAddText':return ask('Teks tetap baru',[{label:'Teks',ph:'mis. URGENT'}],v=>{if(!v[0])return'Isi teksnya';P.push({k:'text',t:v[0],pre:'_',on:true});upd()});
-    case 'sReset':if(!confirm('Kembalikan format subjek ke standar?'))return;D.subj.parts=defParts();D.subj.isep='+';D.subj.dfmt='dMy2';return upd();
     case 'cDel':if(!confirm('Hapus '+D.contacts[i].name+'?'))return;D.contacts.splice(i,1);return upd();
     case 'cAdd':return ask('Kontak baru',[{label:'Nama',ph:'mis. TMID Jogja Ops'},{label:'Email (boleh kosong)',type:'email'}],v=>{if(!v[0])return'Isi nama';if(!mailOk(v[1]))return'Format email salah';D.contacts.push({name:v[0],email:v[1],role:'off'});upd()});
     case 'cEd':{const c=D.contacts[i];return ask('Ubah kontak',[{label:'Nama',val:c.name},{label:'Email (boleh kosong)',type:'email',val:c.email}],v=>{if(!v[0])return'Isi nama';if(!mailOk(v[1]))return'Format email salah';c.name=v[0];c.email=v[1];upd()})}
@@ -355,12 +354,12 @@ $('vData').addEventListener('click',e=>{
     case 'rEd':{const o=D.rs[i];return ask('Ubah RS / instansi',[{label:'Nama',val:o,up:true}],v=>{if(!v[0])return'Isi nama';D.rs[i]=v[0];D.rs.sort();if(F.rs===o)F.rs=v[0];upd()})}
     case 'rDel':{if(!confirm('Hapus '+D.rs[i]+'?'))return;const x=D.rs.splice(i,1)[0];if(F.rs===x)F.rs='';return upd()}
   }});
+$('vData').addEventListener('change',e=>{if(e.target.dataset.dfmt===undefined)return;D.subj.dfmt=e.target.value;save();$('sEx').textContent=subject(true);renderPrev()});
 $('vData').addEventListener('input',e=>{const t=e.target;
   if(t.dataset.sp){D.subj.parts[+t.dataset.i][t.dataset.sp]=t.value;save();$('sEx').textContent=subject(true);renderPrev()}
   else if(t.id==='isep'){D.subj.isep=t.value;save();$('sEx').textContent=subject(true);renderPrev()}
   else if(t.id==='mGreet'){D.mail.greet=t.value;save();renderPrev()}
   else if(t.id==='mIntro'){D.mail.intro=t.value;save();renderPrev()}});
-$('dfmt').onchange=e=>{D.subj.dfmt=e.target.value;save();$('sEx').textContent=subject(true);renderPrev()};
 $('exp').onclick=async()=>toast(await copy(JSON.stringify(D))?'Data tersalin. Simpan di catatan/chat sendiri.':'Gagal menyalin');
 $('imp').onclick=()=>ask('Tempel data',[{label:'Tempel hasil "Salin data"'}],v=>{try{const x=JSON.parse(v[0]);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return'Dibatalkan';D=norm(x);upd()}catch(e){return'Data tidak valid'}});
 
