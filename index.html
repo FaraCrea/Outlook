@@ -1656,7 +1656,6 @@ function parseItemLines(txt,brand){
     let code='',name=l;
     const m=/^(.*?)\s*\(([^()]+)\)\s*$/.exec(l);
     if(m){name=m[1].trim();code=m[2].trim()}
-    else{const t=l.split(/\s+/),last=t[t.length-1];if(t.length>1&&/\d/.test(last)&&last.length>=3){code=last;name=t.slice(0,-1).join(' ')}}
     if(brand){const esc2=brand.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');name=name.replace(new RegExp('^'+esc2+'\\s+','i'),'')}
     code=code.toUpperCase();
     const key=code||('#'+l);
@@ -1669,13 +1668,13 @@ function importItems(bi){
   $('dBody').innerHTML='<div class="mut" style="margin-top:8px">Tempel daftar produk, satu per baris. Kode diambil dari tanda kurung di ujung kanan, misalnya <b>Nama Produk (KODE)</b>.</div><textarea id="impTx" rows="8" style="margin-top:8px"></textarea>';
   $('impTx').value=impText;
   $('dOk').style.display='';$('dOk').textContent='Tinjau';$('dNo').textContent='Batal';$('dNo').onclick=()=>$('dlg').close();
-  $('dOk').onclick=()=>{impText=$('impTx').value;const list=parseItemLines(impText,b.name);if(!list.length){$('dErr').textContent='Tidak ada baris yang bisa dibaca.';return}previewImport(bi,list)};
+  $('dOk').onclick=()=>{impText=$('impTx').value;const all=parseItemLines(impText,b.name),list=all.filter(x=>x.code);if(!list.length){$('dErr').textContent='Tidak ada baris yang punya kode di dalam tanda kurung.';return}previewImport(bi,list,all.length-list.length)};
   if(!$('dlg').open)$('dlg').showModal();
   setTimeout(()=>{const t=$('impTx');if(t)t.focus()},60)}
-function previewImport(bi,list){
+function previewImport(bi,list,skipped){
   const b=D.brands[bi];
   $('dTitle').textContent='Tinjau '+list.length+' Item';$('dErr').textContent='';
-  $('dBody').innerHTML='<div class="mut" style="margin-top:8px">Periksa kode dan nama. Baris tanpa kode (kolom merah) tidak ikut diimpor, kecuali kodenya Anda isi di sini.</div><div id="impL">'
+  $('dBody').innerHTML='<div class="mut" style="margin-top:8px">Periksa kode dan nama, lalu tekan Impor.'+(skipped?' <b>'+skipped+' baris tanpa kode (tidak ada tanda kurung) dilewati.</b>':'')+'</div><div id="impL">'
     +list.map((x,i)=>`<div class="itx"><div class="row"><input data-ic value="${esc(x.code)}" placeholder="Kode" style="flex:.8${x.code?'':';border-color:var(--err)'}"><input data-in value="${esc(x.name)}" placeholder="Nama Item" style="flex:1.6"></div></div>`).join('')+'</div>';
   $('dOk').textContent='Impor';$('dNo').textContent='Kembali';$('dNo').onclick=()=>importItems(bi);
   $('dOk').onclick=()=>{
