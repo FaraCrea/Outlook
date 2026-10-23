@@ -142,6 +142,13 @@ dialog{max-height:82vh;overflow:auto}
 .isub input{width:18px;min-height:18px;height:18px;padding:0}
 .itot{font-weight:600;color:var(--tx)}
 .c2{padding:6px 4px}
+.fr{display:grid;grid-template-columns:42% minmax(0,1fr);gap:8px;align-items:center;margin-top:8px}
+.fr label{font-size:13px;color:var(--mut);line-height:1.25}
+.fw{position:relative;display:block;flex:1;min-width:0}
+.fw>input,.fw>textarea{padding-right:32px}
+.fw .xc{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:24px;height:24px;min-height:0;padding:0;border-radius:50%;background:var(--bd);color:var(--tx);font-size:11px;display:none;align-items:center;justify-content:center}
+.fw>textarea~.xc{top:14px;transform:none}
+.fw.has .xc{display:flex}
 </style>
 </head>
 <body>
@@ -196,12 +203,12 @@ dialog{max-height:82vh;overflow:auto}
   <div class="card"><h3>4 · Kondisi penawaran</h3>
     <div id="sKond"></div>
     <button class="sec add" data-sact="kAdd"><i class="fa-solid fa-plus"></i> Tambah Butir Kondisi</button>
-    <label class="f">1. Harga Produk<input data-f="p1"></label>
-    <label class="f">2. Franko<input data-f="p2"></label>
-    <label class="f">3. Termin Pembayaran DP<input data-f="p3"></label>
-    <label class="f">4. Masa Berlaku Penawaran<input data-f="p4"></label>
-    <label class="f">5. Stock Barang<input data-f="p5"></label>
-    <label class="f">Hardcopy Dikirim ke Alamat<input data-f="hc"></label></div>
+    <div class="fr"><label for="f_p1">1. Harga Produk</label><input id="f_p1" data-f="p1"></div>
+    <div class="fr"><label for="f_p2">2. Franko</label><input id="f_p2" data-f="p2"></div>
+    <div class="fr"><label for="f_p3">3. Termin Pembayaran DP</label><input id="f_p3" data-f="p3"></div>
+    <div class="fr"><label for="f_p4">4. Masa Berlaku Penawaran</label><input id="f_p4" data-f="p4"></div>
+    <div class="fr"><label for="f_p5">5. Stock Barang</label><input id="f_p5" data-f="p5"></div>
+    <div class="fr"><label for="f_hc">Hardcopy Dikirim ke Alamat</label><input id="f_hc" data-f="hc"></div></div>
 
   <div class="card" style="padding:10px 6px"><h3 style="padding-left:6px">5 · Daftar Item (Kelompok SPH)</h3>
     <div id="sGroups"></div>
@@ -209,7 +216,7 @@ dialog{max-height:82vh;overflow:auto}
 
   <div class="card"><h3>Cara kirim</h3>
     <div class="chips" id="trials"></div><div class="mut" id="trialTx" style="margin-top:8px"></div>
-    <div class="mut" style="margin-top:6px">Coba bergantian dan pilih yang tabelnya utuh di Outlook HP. Pilihan diingat.</div></div>
+    </div>
   <div class="row" style="margin-top:4px"><button class="sec" id="resetSph" style="flex:1"><i class="fa-solid fa-rotate-left"></i> Reset Semua Kolom</button><button id="btnSave" data-sact="sSave" style="flex:1"></button></div>
 </main>
 
@@ -843,6 +850,24 @@ $('vSph').addEventListener('click',e=>{
   const b=e.target.closest('[data-combo]');if(!b)return;const k=b.dataset.combo;
   pickList(k==='produk'?'Pilih Produk / Merk':'Pilih Versi Price List',k==='produk'?D.brands.map(x=>x.name):D.jenis,v=>{D.sph.form[k]=v;save();renderSph();renderPrev()})});
 
+/* ---------- tombol hapus isi (x) ---------- */
+function addClear(){
+  document.querySelectorAll('input:not([type]),input[type=text],input[type=email],textarea').forEach(el=>{
+    if(el.dataset.xc||el.closest('.irow')||el.closest('.fw')||el.classList.contains('sepi')||el.style.width)return;
+    const w=document.createElement('span');w.className='fw';
+    el.parentNode.insertBefore(w,el);w.appendChild(el);
+    const b=document.createElement('button');b.type='button';b.className='xc';b.setAttribute('aria-label','Hapus isi kolom');b.setAttribute('tabindex','-1');
+    b.innerHTML='<i class="fa-solid fa-xmark"></i>';w.appendChild(b);
+    b.addEventListener('pointerdown',e=>e.preventDefault());
+    b.addEventListener('click',()=>{el.value='';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.focus();w.classList.remove('has')});
+    el.dataset.xc='1'})}
+function syncClear(){document.querySelectorAll('.fw').forEach(w=>{const el=w.querySelector('input,textarea');if(el)w.classList.toggle('has',!!el.value)})}
+let clrT=0;
+function refreshClear(){cancelAnimationFrame(clrT);clrT=requestAnimationFrame(()=>{addClear();syncClear()})}
+document.addEventListener('input',e=>{const w=e.target.closest&&e.target.closest('.fw');if(w)w.classList.toggle('has',!!e.target.value)});
+new MutationObserver(refreshClear).observe(document.body,{childList:true,subtree:true});
+refreshClear();
+
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
   [['vOrder','o'],['vSph','s'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
@@ -850,7 +875,8 @@ const tab=t=>{MODE=t;
   document.querySelector('.bar').classList.toggle('hide',t==='d');$('pv').classList.toggle('hide',t==='d');$('pvSp').classList.toggle('hide',t==='d');
   scrollTo(0,0);
   if(t==='d')renderData();else if(t==='s'){renderSph();renderPrev()}else{renderFiles();renderPrev()}
-  if(t!=='d'){syncSp();growAll()}};
+  if(t!=='d'){syncSp();growAll()}
+  refreshClear()};
 $('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tData').onclick=()=>tab('d');
 
 $('date').value=todayISO();
