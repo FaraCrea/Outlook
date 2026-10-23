@@ -123,7 +123,7 @@ body.typing .bar{display:none}
 body.typing .pv .bd{max-height:16vh}
 .reset{width:100%;margin-top:4px}
 .pv::after{content:'';position:absolute;left:0;right:0;top:100%;height:10px;background:var(--bg);border-bottom:1px solid var(--bd)}
-main{scroll-padding-top:90px}
+main{scroll-padding-top:150px}
 .sv{padding:2px 0}
 .svb{flex:1;min-width:0;text-align:left;white-space:normal;background:transparent;color:var(--tx);padding:6px 4px;min-height:44px;font-size:14px}
 .svb small{display:block;color:var(--mut);font-size:12px;margin-top:1px}
@@ -339,16 +339,81 @@ header button{min-width:0}
 html[lang=en] .pr .k{width:86px}
 .pr .k{overflow-wrap:normal;white-space:nowrap}
 #bkSave,#bkLoad{margin-top:0;min-height:42px}
+
+/* header v3: brand row + segmented tab bar */
+:root{--hh:106px}
+header{display:block!important;height:var(--hh)!important;padding:0!important;background:var(--card);border-bottom:1px solid var(--bd);box-shadow:0 2px 12px rgba(16,24,40,.06)}
+header .hb{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 16px;max-width:640px;margin:0 auto}
+header .brand{display:flex;align-items:center;gap:12px;padding:0;flex:none}
+header .brand img{width:32px;height:32px;border-radius:9px;box-shadow:0 1px 4px rgba(21,101,240,.3)}
+header .brand b{display:block;font-size:19px;font-weight:800;letter-spacing:-.3px;margin:0;color:var(--tx)}
+header .ver{font-size:11px;font-weight:700;color:var(--mut);background:var(--fill);padding:4px 10px;border-radius:99px;letter-spacing:.02em}
+header .tb{display:flex;gap:3px;width:calc(100% - 24px);max-width:616px;height:46px;margin:0 auto;padding:3px;background:var(--fill);border-radius:15px}
+header .tb button{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;border:0!important;border-radius:12px;background:transparent;color:var(--mut);font-size:10.5px;font-weight:650;opacity:1;transition:background .15s,color .15s}
+header .tb button i{font-size:16px}
+header .tb button.on{background:var(--card);color:var(--pri);box-shadow:0 1px 5px rgba(16,24,40,.14)}
+header .tb button.hide{display:none}
+#dTitle{overflow-wrap:anywhere}
+/* file browser */
+.fchips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+.fchips::-webkit-scrollbar{display:none}
+.fchip{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 13px;border-radius:99px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:13.5px;font-weight:600;white-space:nowrap}
+.fchip span{max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.fchip small{color:var(--mut);font-weight:600}
+.fchip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.fchip.on small{color:#ffffffcc}
+.fchip i{font-size:12.5px;color:#d9a21b}
+.fchip.on i{color:#fff}
+.fchip.add{padding:0;width:36px;justify-content:center;color:var(--mut)}
+.fchip.add i{color:var(--mut)}
+.fbtool{position:sticky;top:var(--hh);z-index:5;background:var(--bg);margin:0 -14px;padding:8px 14px 2px}
+.fbs{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.fbq{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:42px;padding:0 6px 0 12px;border-radius:12px;background:var(--card);border:1px solid var(--bd)}
+.fbq>i{color:var(--mut);font-size:14px}
+.fbq input{flex:1;min-width:0;border:0!important;background:transparent!important;box-shadow:none!important;height:100%;padding:0;font-size:15px;margin:0}
+#fbSort{flex:none;width:auto;min-width:0;height:42px;padding:0 8px;font-size:14px;margin:0}
+.fbs .ib{flex:none;width:42px;height:42px;border-radius:12px;background:var(--card);border:1px solid var(--bd);color:var(--tx);display:inline-flex;align-items:center;justify-content:center;margin:0}
+.fbq .ib{width:32px;height:32px;border:0;background:transparent}
+.fbpath{display:flex;align-items:center;gap:8px;padding:6px 2px;font-size:13px;font-weight:600;color:var(--mut);overflow-x:auto;white-space:nowrap}
+.fbpath .ib{flex:none}
+.fbpath .sep{font-size:9px;margin:0 3px}
+.fbsum{font-size:12.5px;padding:6px 4px}
+.fbl{padding:4px 0;overflow:hidden}
+.fbr{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--bd);cursor:pointer;min-height:60px}
+.fbr:first-child{border-top:0}
+.fbr:active{background:var(--fill)}
+.fbr .fi{flex:none;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.fbr .fm{flex:1;min-width:0}
+.fbr .fm b{display:block;font-size:14.5px;font-weight:600;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fbr .fm small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.fbr .c{flex:none;color:var(--mut);font-size:13px}
+.fbmsg{padding:26px 16px;text-align:center;color:var(--mut);font-size:14px}
+.fbmsg.err{color:var(--err)}
+.fdcur{display:flex;align-items:center;gap:12px}
+.fdcur>i{font-size:20px;color:#d9a21b}
+.fdcur small{display:block}
+.fsl{display:flex;flex-direction:column;gap:8px}
+.fsb{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:0 14px;border-radius:12px;background:var(--fill);color:var(--tx);border:0;font-size:15px;font-weight:600;text-align:left}
+.fsb i{width:22px;text-align:center;color:var(--pri);font-size:17px}
+.fsb:active{filter:brightness(.95)}
+.fman{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.fmr{display:flex;align-items:center;gap:8px;min-height:44px}
+.fmn{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+.fmn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14.5px}
+.fmr .sec{flex:none;min-height:34px;padding:0 10px;font-size:12.5px}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><img src="icon.svg" alt=""><b>Fastlook</b></div>
-  <button id="tOrder" class="on"><i class="fa-solid fa-envelope-open-text"></i><span>Order</span></button>
-  <button id="tSph"><i class="fa-solid fa-file-invoice-dollar"></i><span>SPH</span></button>
-  <button id="tSpon"><i class="fa-solid fa-handshake"></i><span>Sponsor</span></button>
-  <button id="tPO" class="hide"><i class="fa-solid fa-chart-pie"></i><span>PO</span></button>
-  <button id="tData"><i class="fa-solid fa-gear"></i><span>Setting</span></button>
+  <div class="hb"><div class="brand"><img src="icon.svg" alt=""><b>Fastlook</b></div><span class="ver" id="hVer"></span></div>
+  <nav class="tb" aria-label="Menu">
+    <button id="tOrder" class="on"><i class="fa-solid fa-envelope-open-text"></i><span>Order</span></button>
+    <button id="tSph"><i class="fa-solid fa-file-invoice-dollar"></i><span>SPH</span></button>
+    <button id="tSpon"><i class="fa-solid fa-handshake"></i><span>Sponsor</span></button>
+    <button id="tPO" class="hide"><i class="fa-solid fa-chart-pie"></i><span>PO</span></button>
+    <button id="tFile" class="hide"><i class="fa-solid fa-folder-open"></i><span>File</span></button>
+    <button id="tData"><i class="fa-solid fa-gear"></i><span>Setting</span></button>
+  </nav>
 </header>
 
 <!-- ================= ORDER ================= -->
@@ -510,6 +575,21 @@ html[lang=en] .pr .k{width:86px}
 </main>
 
 <!-- ================= DATA ================= -->
+<main id="vFile" class="hide">
+  <div class="card hide" id="fbNo"><h3><i class="fa-solid fa-folder-open"></i> File</h3><div class="mut">Menu File membaca folder di HP dan hanya tersedia di aplikasi Android (APK) Fastlook.</div></div>
+  <div id="fbMain">
+    <div class="fchips" id="fbFolders"></div>
+    <div class="card hide" id="fbEmpty"><h3><i class="fa-solid fa-folder-plus"></i> Belum ada folder</h3><div class="mut">Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, atau dikirim lewat WhatsApp dan Email.</div><button class="add" id="fbAdd"><i class="fa-solid fa-folder-plus"></i> Pilih Folder</button></div>
+    <div id="fbTool" class="fbtool hide">
+      <div class="fbs"><div class="fbq"><i class="fa-solid fa-magnifying-glass"></i><input id="fbQ" placeholder="Cari nama file" autocomplete="off" aria-label="Cari file"><button class="ib hide" id="fbQx" aria-label="Hapus pencarian"><i class="fa-solid fa-xmark"></i></button></div>
+        <select id="fbSort" aria-label="Urutkan"><option value="name">Nama</option><option value="type">Tipe</option><option value="date">Tanggal</option><option value="size">Ukuran</option></select>
+        <button class="ib" id="fbDir" aria-label="Arah urutan"></button><button class="ib" id="fbRef" title="Muat ulang" aria-label="Muat ulang"><i class="fa-solid fa-rotate"></i></button></div>
+      <div class="fchips" id="fbChips"></div>
+    </div>
+    <div id="fbListW" class="hide"><div id="fbPath" class="fbpath hide"></div><div class="fbsum mut" id="fbSum"></div><div class="card fbl" id="fbList"></div></div>
+  </div>
+</main>
+
 <main id="vData" class="hide">
   <details class="card dsec"><summary><i class="fa-solid fa-language"></i> Bahasa <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <select id="langSel" aria-label="Language"><option value="id">Bahasa Indonesia</option><option value="en">English</option></select></div></details>
@@ -551,6 +631,11 @@ html[lang=en] .pr .k{width:86px}
     <div class="mut" style="margin-top:8px"><b>ON:</b> halaman PO muncul dan setiap order yang dibuat (tombol OK di tab Order) otomatis tercatat.<br><b>OFF:</b> halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.</div>
     <div class="mut" id="poCount" style="margin-top:8px"></div>
     <button class="sec add" id="poClear" style="color:var(--err);border-color:var(--err)"><i class="fa-solid fa-trash"></i> Hapus Semua Riwayat PO</button></div></details>
+
+  <details class="card dsec"><summary><i class="fa-solid fa-folder-tree"></i> Folder Lampiran <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
+    <div class="mut">Saat menambah lampiran, pemilih file langsung terbuka di folder default ini. Folder lain yang sering dipakai diatur di menu File.</div>
+    <div id="fdNow" style="margin-top:10px"></div>
+    <div class="row" style="margin-top:10px"><button class="add" id="fdPick" style="flex:1;margin-top:0"><i class="fa-solid fa-folder-open"></i> Pilih Folder Default</button><button class="sec add hide" id="fdClr" style="flex:none;width:auto;margin-top:0;padding:0 16px">Hapus Default</button></div></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-floppy-disk"></i> Cadangan Data <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <div class="mut">Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.</div>
@@ -880,6 +965,178 @@ $('bkIn').onchange=async e=>{
     if(pack.tpl&&pack.tpl.b64){try{const buf=b64ToAb(pack.tpl.b64);let m=null;try{m=await xlsxModel(buf,pack.tpl.sheet)}catch(er){}
       await idbSet('tpl',{name:pack.tpl.name,buf,model:m,sheet:(m&&m.sheet)||pack.tpl.sheet})}catch(er){}}
     toast('Data dipulihkan');setTimeout(()=>location.reload(),600)})};
+/* ---------- folders & file browser (APK only) ---------- */
+const FT={
+  pdf:{l:'PDF',i:'fa-file-pdf',c:'#d03b3b',x:['pdf']},
+  xls:{l:'Excel',i:'fa-file-excel',c:'#1d8a4b',x:['xls','xlsx','xlsm','csv']},
+  doc:{l:'Word',i:'fa-file-word',c:'#2b6fd6',x:['doc','docx','rtf','txt']},
+  img:{l:'Gambar',i:'fa-file-image',c:'#8a5cd6',x:['jpg','jpeg','png','gif','webp','heic','bmp']},
+  eml:{l:'Email',i:'fa-envelope',c:'#d9822b',x:['eml','msg']},
+  oth:{l:'Lainnya',i:'fa-file',c:'#6a7585',x:[]}};
+const MIMEX={pdf:'application/pdf',xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',csv:'text/csv',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',txt:'text/plain',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',gif:'image/gif',webp:'image/webp',eml:'message/rfc822',zip:'application/zip'};
+const fext=n=>{const i=n.lastIndexOf('.');return i<0?'':n.slice(i+1).toLowerCase()};
+const ftype=n=>{const e=fext(n);for(const k in FT)if(FT[k].x.includes(e))return k;return 'oth'};
+const fmime=it=>it.mime&&it.mime!=='application/octet-stream'?it.mime:(MIMEX[fext(it.name)]||'*/*');
+const fsize=n=>n>=1048576?(n/1048576).toFixed(1).replace('.',',')+' MB':n>=1024?Math.round(n/1024)+' KB':n+' B';
+const fdate=t=>t?new Date(t).toLocaleDateString(LANG==='en'?'en-GB':'id-ID',{day:'numeric',month:'short',year:'numeric'}):'';
+const FB={fi:0,stack:[],items:[],q:'',sort:'name',dir:1,flt:'all',lim:200,loading:false,err:'',ctx:'o'};
+D.folders=Array.isArray(D.folders)?D.folders.filter(f=>f&&f.tree):[];
+const fdCur=()=>D.folders[FB.fi]||null;
+const fdDef=()=>D.folders.find(f=>f.def)||null;
+const nativeErr=e=>String(e&&e.message||e||'');
+const isCancel=e=>/cancel/i.test(nativeErr(e));
+
+async function fdAdd(makeDef){
+  if(!NATIVE)return toast('Fitur folder hanya ada di aplikasi Android');
+  let r;try{r=await NATIVE.pickFolder()}catch(e){if(!isCancel(e))toast('Gagal memilih folder: '+nativeErr(e));return null}
+  let i=D.folders.findIndex(f=>f.tree===r.tree);
+  if(i<0){D.folders.push({tree:r.tree,name:r.name,def:false});i=D.folders.length-1}
+  if(makeDef||!fdDef()){D.folders.forEach(f=>{f.def=false});D.folders[i].def=true}
+  save();FB.fi=i;FB.stack=[];renderFdSet();if(MODE==='f')fbLoad();
+  return D.folders[i]}
+
+function renderFdSet(){
+  const d=fdDef();
+  $('fdNow').innerHTML=!NATIVE?'<span class="mut">Fitur ini hanya ada di aplikasi Android (APK).</span>'
+    :d?`<div class="fdcur"><i class="fa-solid fa-folder-open"></i><div><b>${esc(d.name)}</b><small class="mut">Folder default lampiran</small></div></div>`
+    :'<span class="mut">Belum ada folder default. Pemilih file akan terbuka di lokasi terakhir.</span>';
+  $('fdPick').disabled=!NATIVE;$('fdClr').classList.toggle('hide',!d)}
+$('fdPick').onclick=()=>fdAdd(true);
+$('fdClr').onclick=()=>{D.folders.forEach(f=>{f.def=false});save();renderFdSet();if(MODE==='f')fbRender();toast('Folder default dihapus')};
+
+function fbSorted(){
+  const q=FB.q.trim().toLowerCase(),flt=FB.flt,dir=FB.dir,key=FB.sort;
+  const nameCmp=(a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:'base'});
+  let dirs=flt!=='all'?[]:FB.items.filter(x=>x.dir&&(!q||x.name.toLowerCase().includes(q))).sort(nameCmp);
+  let files=FB.items.filter(x=>!x.dir&&(!q||x.name.toLowerCase().includes(q))&&(flt==='all'||ftype(x.name)===flt));
+  files.sort((a,b)=>{let c=0;
+    if(key==='name')c=nameCmp(a,b);
+    else if(key==='type')c=FT[ftype(a.name)].l.localeCompare(FT[ftype(b.name)].l)||nameCmp(a,b);
+    else if(key==='date')c=(a.mod||0)-(b.mod||0);
+    else if(key==='size')c=(a.size||0)-(b.size||0);
+    return c*dir});
+  return {dirs,files}}
+
+function fbRender(){
+  const has=!!NATIVE;
+  $('fbNo').classList.toggle('hide',has);$('fbMain').classList.toggle('hide',!has);
+  if(!has)return;
+  const fl=D.folders;
+  $('fbEmpty').classList.toggle('hide',fl.length>0);$('fbTool').classList.toggle('hide',!fl.length);$('fbListW').classList.toggle('hide',!fl.length);
+  $('fbFolders').innerHTML=fl.length?fl.map((f,i)=>`<button class="fchip${i===FB.fi?' on':''}" data-fi="${i}">${f.def?'<i class="fa-solid fa-star"></i>':'<i class="fa-solid fa-folder"></i>'}<span>${esc(f.name)}</span></button>`).join('')
+    +'<button class="fchip add" data-fa="add" aria-label="Tambah folder"><i class="fa-solid fa-plus"></i></button>'
+    +'<button class="fchip add" data-fa="manage" aria-label="Kelola folder"><i class="fa-solid fa-ellipsis"></i></button>':'';
+  if(!fl.length)return;
+  const cur=fdCur()||fl[0];
+  const path=[cur.name].concat(FB.stack.map(s=>s.name));
+  $('fbPath').innerHTML=FB.stack.length?`<button class="ib" data-fa="up" title="Naik satu folder" aria-label="Naik satu folder"><i class="fa-solid fa-arrow-left"></i></button><span>${path.map(esc).join(' <i class="fa-solid fa-chevron-right sep"></i> ')}</span>`:'';
+  $('fbPath').classList.toggle('hide',!FB.stack.length);
+  const cnt={all:0};Object.keys(FT).forEach(k=>cnt[k]=0);
+  FB.items.forEach(x=>{if(!x.dir){cnt.all++;cnt[ftype(x.name)]++}});
+  $('fbChips').innerHTML=[['all','Semua']].concat(Object.keys(FT).filter(k=>cnt[k]||FB.flt===k).map(k=>[k,FT[k].l])).map(([k,l])=>`<button class="fchip${FB.flt===k?' on':''}" data-ff="${k}">${esc(l)} <small>${cnt[k]}</small></button>`).join('');
+  $('fbSort').value=FB.sort;$('fbDir').innerHTML=`<i class="fa-solid fa-arrow-${FB.dir>0?'down-a-z':'up-z-a'}"></i>`;
+  $('fbDir').title=FB.dir>0?'Urut naik':'Urut turun';
+  $('fbQx').classList.toggle('hide',!FB.q);
+  const L=$('fbList');
+  if(FB.loading){L.innerHTML='<div class="fbmsg"><i class="fa-solid fa-spinner fa-spin"></i> Membaca folder…</div>';$('fbSum').textContent='';return}
+  if(FB.err){L.innerHTML=`<div class="fbmsg err"><i class="fa-solid fa-triangle-exclamation"></i> ${esc(FB.err)}<div class="row" style="margin-top:10px"><button class="sec" data-fa="retry" style="flex:1">Coba lagi</button><button class="sec" data-fa="repick" style="flex:1">Pilih ulang folder</button></div></div>`;$('fbSum').textContent='';return}
+  const {dirs,files}=fbSorted();
+  const all=dirs.concat(files),show=all.slice(0,FB.lim);
+  $('fbSum').textContent=`${files.length} file${dirs.length?' · '+dirs.length+' folder':''}${(FB.q||FB.flt!=='all')?' (hasil saring)':''}`;
+  if(!all.length){L.innerHTML=`<div class="fbmsg">${FB.items.length?'Tidak ada file yang cocok.':'Folder ini kosong.'}</div>`;return}
+  L.innerHTML=show.map(x=>{const i=FB.items.indexOf(x);
+    if(x.dir)return `<div class="fbr" data-fr="${i}" role="button" tabindex="0"><span class="fi" style="color:#d9a21b;background:#d9a21b1f"><i class="fa-solid fa-folder"></i></span><div class="fm"><b>${esc(x.name)}</b><small>Folder</small></div><i class="fa-solid fa-chevron-right c"></i></div>`;
+    const t=FT[ftype(x.name)];
+    return `<div class="fbr" data-fr="${i}" role="button" tabindex="0"><span class="fi" style="color:${t.c};background:${t.c}1f"><i class="fa-solid ${t.i}"></i></span><div class="fm"><b>${esc(x.name)}</b><small>${esc(t.l)} · ${fsize(x.size||0)}${x.mod?' · '+fdate(x.mod):''}</small></div><i class="fa-solid fa-ellipsis-vertical c"></i></div>`}).join('')
+    +(all.length>show.length?`<button class="sec add" data-fa="more">Tampilkan lebih banyak (${all.length-show.length})</button>`:'')}
+
+async function fbLoad(){
+  const f=fdCur();if(!f||!NATIVE){fbRender();return}
+  FB.loading=true;FB.err='';FB.lim=200;fbRender();
+  try{const r=await NATIVE.listFolder({tree:f.tree,docId:FB.stack.length?FB.stack[FB.stack.length-1].id:''});FB.items=r.items||[]}
+  catch(e){FB.items=[];FB.err=nativeErr(e)||'Folder tidak bisa dibaca'}
+  FB.loading=false;fbRender()}
+
+function renderFileTab(){
+  if(FB.fi>=D.folders.length)FB.fi=0;
+  if(!FB.init){FB.init=true;const d=D.folders.findIndex(f=>f.def);if(d>=0)FB.fi=d}
+  fbRender();if(NATIVE&&fdCur())fbLoad()}
+
+$('fbFolders').onclick=async e=>{
+  const c=e.target.closest('button');if(!c)return;
+  if(c.dataset.fi!==undefined){FB.fi=+c.dataset.fi;FB.stack=[];FB.q='';$('fbQ').value='';FB.flt='all';fbLoad();return}
+  if(c.dataset.fa==='add'){await fdAdd(false);return}
+  if(c.dataset.fa==='manage')fbManage()};
+$('fbPath').onclick=e=>{if(e.target.closest('[data-fa="up"]')){FB.stack.pop();fbLoad()}};
+$('fbChips').onclick=e=>{const c=e.target.closest('[data-ff]');if(!c)return;FB.flt=c.dataset.ff;FB.lim=200;fbRender()};
+$('fbQ').oninput=e=>{FB.q=e.target.value;FB.lim=200;fbRender()};
+$('fbQx').onclick=()=>{FB.q='';$('fbQ').value='';fbRender();$('fbQ').focus()};
+$('fbSort').onchange=e=>{FB.sort=e.target.value;FB.dir=FB.sort==='date'||FB.sort==='size'?-1:1;fbRender()};
+$('fbDir').onclick=()=>{FB.dir=-FB.dir;fbRender()};
+$('fbRef').onclick=()=>fbLoad();
+$('fbAdd').onclick=()=>fdAdd(true);
+$('fbList').onclick=async e=>{
+  const a=e.target.closest('[data-fa]');
+  if(a){const k=a.dataset.fa;
+    if(k==='more'){FB.lim+=200;fbRender()}else if(k==='retry')fbLoad();else if(k==='repick'){const old=fdCur(),n=await fdAdd(!!(old&&old.def));if(n&&old&&old.tree!==n.tree){D.folders=D.folders.filter(f=>f.tree!==old.tree);FB.fi=D.folders.findIndex(f=>f.tree===n.tree);save();fbLoad()}}
+    return}
+  const r=e.target.closest('[data-fr]');if(!r)return;
+  const it=FB.items[+r.dataset.fr];if(!it)return;
+  if(it.dir){FB.stack.push({id:it.id,name:it.name});FB.q='';$('fbQ').value='';fbLoad();return}
+  fbSheet(it)};
+$('fbList').onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset.fr!==undefined){e.preventDefault();e.target.click()}};
+
+function fbManage(){
+  $('dTitle').textContent='Kelola Folder';$('dTitle').dataset.k='';$('dErr').textContent='';
+  const draw=()=>{$('dBody').innerHTML='<div class="fman">'+(D.folders.length?D.folders.map((f,i)=>`<div class="fmr"><div class="fmn"><i class="fa-solid ${f.def?'fa-star':'fa-folder'}" style="color:${f.def?'#d9a21b':'var(--mut)'}"></i><b>${esc(f.name)}</b></div>${f.def?'<span class="mut">Default</span>':`<button class="sec" data-md="${i}">Jadikan default</button>`}<button class="ib del" data-mx="${i}" aria-label="Hapus folder" title="Hapus folder dari daftar"><i class="fa-solid fa-trash"></i></button></div>`).join(''):'<div class="mut">Belum ada folder.</div>')+'</div><div class="mut" style="margin-top:8px">Menghapus hanya melepas folder dari daftar, isi file tidak dihapus.</div>'};
+  draw();
+  $('dBody').onclick=ev=>{
+    const m=ev.target.closest('[data-md]'),x=ev.target.closest('[data-mx]');
+    if(m){D.folders.forEach(f=>{f.def=false});D.folders[+m.dataset.md].def=true;save();draw();renderFdSet();fbRender()}
+    else if(x){const i=+x.dataset.mx,was=D.folders[i].def;D.folders.splice(i,1);if(was&&D.folders.length)D.folders[0].def=true;
+      if(FB.fi>=i)FB.fi=Math.max(0,FB.fi-1);FB.stack=[];save();draw();renderFdSet();fbLoad()}};
+  $('dOk').style.display='none';$('dNo').textContent='Tutup';$('dNo').onclick=()=>$('dlg').close();
+  $('dlg').showModal()}
+
+function fbSheet(it){
+  const t=FT[ftype(it.name)],ctx={o:'Order',s:'SPH',p:'Sponsor'}[FB.ctx];
+  $('dTitle').textContent=it.name;$('dTitle').dataset.k='';$('dErr').textContent='';
+  const b=(a,ic,tx)=>`<button class="fsb" data-fs="${a}"><i class="${ic}"></i><span>${tx}</span></button>`;
+  $('dBody').innerHTML=`<div class="mut" style="margin:2px 0 10px">${esc(t.l)} · ${fsize(it.size||0)}${it.mod?' · '+fdate(it.mod):''}</div><div class="fsl">`
+    +b('open','fa-solid fa-up-right-from-square','Buka')
+    +b('wa','fa-brands fa-whatsapp','Kirim via WhatsApp')
+    +b('mail','fa-solid fa-envelope','Kirim via Email (Outlook)')
+    +b('any','fa-solid fa-share-nodes','Bagikan ke aplikasi lain')
+    +(ctx?b('att','fa-solid fa-paperclip','Lampirkan ke '+ctx):'')+'</div>';
+  $('dBody').onclick=async ev=>{
+    const c=ev.target.closest('[data-fs]');if(!c)return;
+    const a=c.dataset.fs,arg={uri:it.uri,name:it.name,mime:fmime(it)};
+    try{
+      if(a==='att'){
+        toast('Membaca file…');
+        const x=await NATIVE.readUri({uri:it.uri}),f=new File([b64ToAb(x.b64)],it.name,{type:arg.mime==='*/*'?'':arg.mime});
+        if(FB.ctx==='s'){FILES2.push(f);renderFilesS()}else if(FB.ctx==='p'){FILES3.push(f);renderFilesP()}else{FILES.push(f);renderFiles()}
+        $('dlg').close();toast('Dilampirkan ke '+ctx+': '+it.name);return}
+      if(a==='open')await NATIVE.openUri(arg);
+      else await NATIVE.shareUri(Object.assign({target:a==='wa'?'whatsapp':a==='mail'?'email':'any'},arg));
+      $('dlg').close()}
+    catch(e){$('dErr').textContent=nativeErr(e)}};
+  $('dOk').style.display='none';$('dNo').textContent='Tutup';$('dNo').onclick=()=>$('dlg').close();
+  $('dlg').showModal()}
+
+/* attachment buttons: open the system picker straight in the default folder */
+async function nativePick(inp){
+  const d=fdDef();let r;
+  try{r=await NATIVE.pickFiles({tree:d?d.tree:''})}catch(e){if(!isCancel(e))toast('Gagal membuka pemilih file: '+nativeErr(e));return}
+  if(!r.files||!r.files.length)return;
+  toast('Membaca file…');
+  try{
+    const out=[];for(const f of r.files){const x=await NATIVE.readUri({uri:f.uri});out.push(new File([b64ToAb(x.b64)],f.name,{type:f.mime==='application/octet-stream'?(MIMEX[fext(f.name)]||''):f.mime}))}
+    const dt=new DataTransfer();out.forEach(f=>dt.items.add(f));inp.files=dt.files;inp.dispatchEvent(new Event('change'))}
+  catch(e){toast(nativeErr(e))}}
+['fileIn','fileInS','fileInP'].forEach(id=>$(id).addEventListener('click',e=>{if(!NATIVE)return;e.preventDefault();nativePick($(id))}));
+renderFdSet();
+
 $('imp').onclick=()=>ask('Tempel Data',[{label:'Tempel hasil "Salin data"'}],v=>{try{const x=JSON.parse(v[0]);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return'Dibatalkan';D=norm(x);upd()}catch(e){return'Data tidak valid'}});
 
 /* ---------- SPH ---------- */
@@ -1214,7 +1471,7 @@ function jumpMissing(){
   const t=missing[missIdx%missing.length];missIdx=(missIdx+1)%missing.length;renderMsg();
   const el=document.querySelector(t.el);if(!el)return;
   const card=el.closest('.card')||el;
-  const y=card.getBoundingClientRect().top+scrollY-($('pv').offsetHeight+58);
+  const y=card.getBoundingClientRect().top+scrollY-($('pv').offsetHeight+document.querySelector('header').offsetHeight);
   scrollTo({top:Math.max(0,y),behavior:'smooth'});
   card.classList.remove('hl');void card.offsetWidth;card.classList.add('hl');setTimeout(()=>card.classList.remove('hl'),2200);
   if(el.matches('input,textarea,select'))setTimeout(()=>el.focus({preventScroll:true}),450)}
@@ -2021,7 +2278,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v52';
+const APPV='v53';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   toast('Memperbarui…');
@@ -2074,7 +2331,7 @@ const EN={
 'Format Subjek':'Subject Format','Kalimat Isi Email':'Email Texts','Kontak Penerima':'Recipient Contacts','Merk & Barang':'Brands & Items','Kategori Barang':'Item Categories','Cadangan Data':'Data Backup','Hapus Semua Data':'Delete All Data',
 'Bahasa':'Language','Tentang':'About','Dibuat oleh':'Made by','For personal purpose only.':'For personal purpose only.','Versi':'Version','Perbarui Aplikasi Sekarang':'Update App Now','Data Anda tidak dihapus.':'Your data is not deleted.',
 'Aktifkan integrasi Data PO':'Enable PO Data integration','Hapus Semua Riwayat PO':'Delete All PO History','halaman PO muncul dan setiap order yang dibuat (tombol OK di tab Order) otomatis tercatat.':'the PO page appears and every order you create (OK button in the Order tab) is recorded automatically.',
-'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.':'Data is stored on this phone only. A backup is a single file (including the Excel template) saved to the Download folder, which you can then share right away, e.g. to WhatsApp.','Simpan Cadangan':'Save Backup','Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. Recipients and subject are filled in. Tap Share to open Outlook.','Pulihkan dari File':'Restore from File','Cara lain tanpa file:':'Other way, no file:','File cadangan tidak valid':'Invalid backup file','Pulihkan Cadangan':'Restore Backup','Pulihkan':'Restore','Data dipulihkan':'Data restored','Gagal menyimpan data':'Failed to save data','Salin Data':'Copy Data','Tempel Data':'Paste Data',
+'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.':'Data is stored on this phone only. A backup is a single file (including the Excel template) saved to the Download folder, which you can then share right away, e.g. to WhatsApp.','Simpan Cadangan':'Save Backup','File':'Files','Folder Lampiran':'Attachment Folder','Saat menambah lampiran, pemilih file langsung terbuka di folder default ini. Folder lain yang sering dipakai diatur di menu File.':'When you add an attachment, the file picker opens directly in this default folder. Other frequently used folders are managed in the Files menu.','Pilih Folder Default':'Choose Default Folder','Hapus Default':'Clear Default','Fitur ini hanya ada di aplikasi Android (APK).':'This feature is only available in the Android app (APK).','Belum ada folder default. Pemilih file akan terbuka di lokasi terakhir.':'No default folder yet. The file picker opens at its last location.','Folder default lampiran':'Default attachment folder','Menu File membaca folder di HP dan hanya tersedia di aplikasi Android (APK) Fastlook.':'The Files menu reads folders on this phone and is only available in the Fastlook Android app (APK).','Belum ada folder':'No folders yet','Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, atau dikirim lewat WhatsApp dan Email.':'Add the folders you use often, e.g. Download or an SPH folder. Their files can be searched, sorted, filtered, opened, or sent via WhatsApp and Email.','Pilih Folder':'Choose Folder','Cari nama file':'Search file name','Cari file':'Search files','Hapus pencarian':'Clear search','Urutkan':'Sort','Nama':'Name','Tipe':'Type','Tanggal':'Date','Ukuran':'Size','Muat ulang':'Reload','Urut naik':'Ascending','Urut turun':'Descending','Arah urutan':'Sort direction','Naik satu folder':'Up one folder','Gambar':'Images','Lainnya':'Other','Folder':'Folder','Membaca folder…':'Reading folder…','Coba lagi':'Try again','Pilih ulang folder':'Choose folder again','Folder ini kosong.':'This folder is empty.','Tidak ada file yang cocok.':'No matching files.','Kelola Folder':'Manage Folders','Kelola folder':'Manage folders','Tambah folder':'Add folder','Jadikan default':'Make default','Default':'Default','Belum ada folder.':'No folders yet.','Menghapus hanya melepas folder dari daftar, isi file tidak dihapus.':'Removing only detaches the folder from the list; the files are not deleted.','Hapus folder':'Remove folder','Hapus folder dari daftar':'Remove folder from list','Buka':'Open','Kirim via WhatsApp':'Send via WhatsApp','Kirim via Email (Outlook)':'Send via Email (Outlook)','Bagikan ke aplikasi lain':'Share to another app','Membaca file…':'Reading file…','Folder default dihapus':'Default folder cleared','Fitur folder hanya ada di aplikasi Android':'Folder features are only available in the Android app','Tampilan menu':'Menu','Menu':'Menu','Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. Recipients and subject are filled in. Tap Share to open Outlook.','Pulihkan dari File':'Restore from File','Cara lain tanpa file:':'Other way, no file:','File cadangan tidak valid':'Invalid backup file','Pulihkan Cadangan':'Restore Backup','Pulihkan':'Restore','Data dipulihkan':'Data restored','Gagal menyimpan data':'Failed to save data','Salin Data':'Copy Data','Tempel Data':'Paste Data',
 'Menghapus semua data di HP ini secara permanen.':'Permanently deletes all data on this phone.','Tambah Teks Tetap':'Add Fixed Text','Pemisah Antar Barang':'Item Separator','Email Order':'Order Email','Email SPH':'SPH Email',
 'Tambah Kontak':'Add Contact','Tambah Merk':'Add Brand','Tambah Jenis':'Add Type','Tambah Kategori':'Add Category','Tambah RS':'Add Hospital','Tempel Daftar Barang':'Paste Item List','Ubah':'Edit','Hapus barang':'Delete item',
 'tanpa email (ditulis nama)':'no email (name is used)','Tampil di halaman Order (ketuk untuk sembunyikan)':'Shown on the Order page (tap to hide)','Disembunyikan (ketuk untuk tampilkan)':'Hidden (tap to show)',
@@ -2120,6 +2377,8 @@ const EN={
 'Pemisah antar barang':'Item separator','Sheet':'Sheet','Isi manual':'Enter manually','Penerima To belum punya email':'The To recipient has no email',
 };
 const ENP=[
+[/^Lampirkan ke (.+)$/,'Attach to $1'],[/^Dilampirkan ke (.+?): (.+)$/,'Attached to $1: $2'],[/^Tampilkan lebih banyak \((\d+)\)$/,'Show more ($1)'],
+[/^(\d+) file$/,'$1 files'],[/^(\d+) file · (\d+) folder$/,'$1 files · $2 folders'],[/^(\d+) file( · \d+ folder)? \(hasil saring\)$/,'$1 files$2 (filtered)'],
 [/^Cadangan tersimpan di folder Download: (.+)\. Ketuk Bagikan, lalu pilih WhatsApp \(atau aplikasi lain\) untuk menyimpannya di tempat aman\.$/,'Backup saved to the Download folder: $1. Tap Share, then choose WhatsApp (or another app) to keep it somewhere safe.'],
 [/^Cadangan tersimpan di folder Download: (.+)$/,'Backup saved to the Download folder: $1'],
 [/^Semua data di HP ini diganti dengan isi file "(.+)" \(dibuat (.+)\)\. Tidak bisa dibatalkan\.$/,'All data on this phone will be replaced with the contents of "$1" (created $2). This cannot be undone.'],[/^Semua data di HP ini diganti dengan isi file "(.+)"\. Tidak bisa dibatalkan\.$/,'All data on this phone will be replaced with the contents of "$1". This cannot be undone.'],
@@ -2189,21 +2448,21 @@ $('langSel').value=LANG;
 $('langSel').onchange=e=>{D.lang=e.target.value==='en'?'en':'id';save();location.reload()};
 
 /* ---------- tabs ---------- */
-const tab=t=>{MODE=t;
-  [['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
-  [['tOrder','o'],['tSph','s'],['tSpon','p'],['tPO','q'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
-  const nb=t==='d'||t==='q';document.querySelector('.bar').classList.toggle('hide',nb);$('pv').classList.toggle('hide',nb);$('pvSp').classList.toggle('hide',nb);
+const tab=t=>{if(t==='f'&&'osp'.includes(MODE))FB.ctx=MODE;MODE=t;
+  [['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vFile','f'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
+  [['tOrder','o'],['tSph','s'],['tSpon','p'],['tPO','q'],['tFile','f'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
+  const nb=t==='d'||t==='q'||t==='f';document.querySelector('.bar').classList.toggle('hide',nb);$('pv').classList.toggle('hide',nb);$('pvSp').classList.toggle('hide',nb);
   scrollTo(0,0);
-  if(t==='d')renderData();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
-  if(t!=='d'&&t!=='q'){syncSp();growAll()}
+  if(t==='d')renderData();else if(t==='f')renderFileTab();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
+  if(t!=='d'&&t!=='q'&&t!=='f'){syncSp();growAll()}
   refreshClear()};
-$('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tSpon').onclick=()=>tab('p');$('tPO').onclick=()=>{if(MODE==='q'&&PQ.screen!=='home'){poBack();return}tab('q')};$('tData').onclick=()=>tab('d');
+$('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tSpon').onclick=()=>tab('p');$('tPO').onclick=()=>{if(MODE==='q'&&PQ.screen!=='home'){poBack();return}tab('q')};$('tData').onclick=()=>tab('d');$('tFile').onclick=()=>tab('f');$('tFile').classList.toggle('hide',!NATIVE);
 
 $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+10)+'px'};
 new ResizeObserver(syncSp).observe($('pv'));
-loadDraft();setPv();renderAll();syncSp();restoreTab();applyPOVisibility();trNode(document.body);
+loadDraft();setPv();renderAll();syncSp();restoreTab();applyPOVisibility();$('hVer').textContent=APPV;trNode(document.body);
 </script>
 </body>
 </html>
