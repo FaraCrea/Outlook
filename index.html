@@ -52,7 +52,7 @@ button i{pointer-events:none}
 .prev{background:var(--bg);border:1px solid var(--bd);border-radius:8px;font-size:13px;overflow:hidden}
 .pr{display:flex;gap:10px;padding:7px 10px;border-top:1px solid var(--bd)}
 .pr:first-child{border-top:0}
-.pr .k{flex:none;width:50px;color:var(--mut);font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding-top:1px}
+.pr .k{flex:none;width:68px;color:var(--mut);font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding-top:1px}
 .pr .v{flex:1;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap}
 .pr.sj .v{font-weight:600}
 .prev b{display:block;color:var(--mut);font-size:12px;font-weight:600;margin-top:6px}
@@ -336,6 +336,9 @@ header button{min-width:0}
 .about{display:flex;align-items:center;gap:14px}
 .about img{width:56px;height:56px;border-radius:14px}
 .about b{font-size:18px}
+html[lang=en] .pr .k{width:86px}
+.pr .k{overflow-wrap:normal;white-space:nowrap}
+#bkSave,#bkLoad{margin-top:0;min-height:42px}
 </style>
 </head>
 <body>
@@ -550,8 +553,11 @@ header button{min-width:0}
     <button class="sec add" id="poClear" style="color:var(--err);border-color:var(--err)"><i class="fa-solid fa-trash"></i> Hapus Semua Riwayat PO</button></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-floppy-disk"></i> Cadangan Data <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
-    <div class="mut">Data tersimpan di HP ini saja.</div>
-    <div class="row" style="margin-top:8px"><button class="sec" id="exp" style="flex:1">Salin Data</button><button class="sec" id="imp" style="flex:1">Tempel Data</button></div></div></details>
+    <div class="mut">Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.</div>
+    <div class="row" style="margin-top:8px"><button class="add" id="bkSave" style="flex:1"><i class="fa-solid fa-download"></i> Simpan Cadangan</button><button class="sec add" id="bkLoad" style="flex:1"><i class="fa-solid fa-upload"></i> Pulihkan dari File</button></div>
+    <input type="file" id="bkIn" accept=".json,.txt,application/json,text/plain" class="hide">
+    <div class="mut" style="margin-top:10px">Cara lain tanpa file:</div>
+    <div class="row" style="margin-top:6px"><button class="sec" id="exp" style="flex:1">Salin Data</button><button class="sec" id="imp" style="flex:1">Tempel Data</button></div></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-circle-info"></i> Tentang <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <div class="about"><img src="icon-192.png" alt=""><div><b>Fastlook</b><div class="mut">Versi <span id="appV"></span></div></div></div>
@@ -573,6 +579,18 @@ header button{min-width:0}
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* ---------- native (APK) bridge ---------- */
+const NATIVE=(()=>{try{const c=window.Capacitor;return c&&c.isNativePlatform&&c.isNativePlatform()&&c.Plugins&&c.Plugins.FLNative||null}catch(e){return null}})();
+if(NATIVE){
+  const b64f=f=>new Promise(res=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.readAsDataURL(f)});
+  navigator.canShare=d=>!!(d&&((d.files&&d.files.length)||d.text||d.title));
+  navigator.share=async d=>{const files=[];for(const f of d.files||[])files.push({name:f.name,mime:f.type||'application/octet-stream',b64:await b64f(f)});
+    await NATIVE.share({files,title:d.title||'',text:d.text||'',to:d.to||[],cc:d.cc||[]})};
+  const ac=HTMLAnchorElement.prototype.click;
+  HTMLAnchorElement.prototype.click=function(){
+    if(this.download&&/^blob:/.test(this.href)){const n=this.download,h=this.href;
+      fetch(h).then(r=>r.blob()).then(async b=>{await NATIVE.saveFile({name:n,mime:b.type||'application/octet-stream',b64:await b64f(b)})}).catch(e=>toast('Gagal menyimpan: '+(e&&e.message||e)));return}
+    return ac.call(this)}}
 const KEY='outlookcepat.order.v1';
 const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
@@ -738,10 +756,10 @@ $('go').onclick=async()=>{
   if(problems().length)return jumpMissing();
   poRecord();
   if(FILES.length){
-    const data={files:FILES,title:subject(),text:body()};
+    const data={files:FILES,title:subject(),text:body(),to:rcpt('to'),cc:rcpt('cc')};
     if(navigator.canShare&&navigator.canShare(data)){
-      await copy(rcpt('to').join('; '));
-      shareDialog(data,'Lampiran siap. Daftar penerima (To) sudah disalin: tempel di kolom To. Ketuk Bagikan, lalu pilih Outlook.');
+      if(NATIVE)shareDialog(data,'Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.');
+      else{await copy(rcpt('to').join('; '));shareDialog(data,'Lampiran siap. Daftar penerima (To) sudah disalin: tempel di kolom To. Ketuk Bagikan, lalu pilih Outlook.')}
       return}
     if(!confirm('HP/browser ini tidak bisa membagikan lampiran. Buka email tanpa lampiran?'))return}
   const m=r=>rcpt(r).map(encodeURIComponent).join(',');
@@ -839,6 +857,29 @@ $('vData').addEventListener('input',e=>{const t=e.target;
   else if(t.id==='sIntro'){D.sph.intro=t.value;save()}
   else if(t.id==='sClose'){D.sph.closing=t.value;save()}});
 $('exp').onclick=async()=>toast(await copy(JSON.stringify(D))?'Data tersalin. Simpan di catatan/chat sendiri.':'Gagal menyalin');
+const abToB64=ab=>{const u=new Uint8Array(ab);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
+const b64ToAb=b=>{const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u.buffer};
+$('bkSave').onclick=async()=>{
+  const pad=n=>String(n).padStart(2,'0'),t=new Date(),stamp=t.getFullYear()+pad(t.getMonth()+1)+pad(t.getDate())+'-'+pad(t.getHours())+pad(t.getMinutes());
+  const pack={app:'Fastlook',v:1,at:t.toISOString(),data:D};
+  try{if(TPL&&TPL.buf)pack.tpl={name:TPL.name,sheet:TPL.sheet,b64:abToB64(TPL.buf)}}catch(e){}
+  const name='Fastlook-backup-'+stamp+'.json',txt=JSON.stringify(pack);
+  let file=new File([txt],name,{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;document.body.appendChild(a);a.click();a.remove();
+  let sh={files:[file],title:'Cadangan Fastlook'};
+  if(!(navigator.canShare&&navigator.canShare(sh))){file=new File([txt],name+'.txt',{type:'text/plain'});sh={files:[file],title:'Cadangan Fastlook'}}
+  if(navigator.canShare&&navigator.canShare(sh))shareDialog(sh,'Cadangan tersimpan di folder Download: '+name+'. Ketuk Bagikan, lalu pilih WhatsApp (atau aplikasi lain) untuk menyimpannya di tempat aman.');
+  else toast('Cadangan tersimpan di folder Download: '+name)};
+$('bkLoad').onclick=()=>$('bkIn').click();
+$('bkIn').onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  let pack;try{pack=JSON.parse(await f.text());if(!(pack&&pack.app==='Fastlook'&&pack.data)){if(pack&&pack.brands&&pack.rs)pack={data:pack};else throw 0}if(!pack.data.brands||!pack.data.rs||!pack.data.contacts)throw 0}catch(err){return toast('File cadangan tidak valid')}
+  confirmBox('Pulihkan Cadangan','Semua data di HP ini diganti dengan isi file "'+f.name+'"'+(pack.at?' (dibuat '+new Date(pack.at).toLocaleString('id-ID')+')':'')+'. Tidak bisa dibatalkan.','Pulihkan',async()=>{
+    window.__wipe=true;
+    try{localStorage.setItem(KEY,JSON.stringify(norm(pack.data)));localStorage.removeItem('outlookcepat.draft.v1')}catch(err){window.__wipe=false;return toast('Gagal menyimpan data')}
+    if(pack.tpl&&pack.tpl.b64){try{const buf=b64ToAb(pack.tpl.b64);let m=null;try{m=await xlsxModel(buf,pack.tpl.sheet)}catch(er){}
+      await idbSet('tpl',{name:pack.tpl.name,buf,model:m,sheet:(m&&m.sheet)||pack.tpl.sheet})}catch(er){}}
+    toast('Data dipulihkan');setTimeout(()=>location.reload(),600)})};
 $('imp').onclick=()=>ask('Tempel Data',[{label:'Tempel hasil "Salin data"'}],v=>{try{const x=JSON.parse(v[0]);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return'Dibatalkan';D=norm(x);upd()}catch(e){return'Data tidak valid'}});
 
 /* ---------- SPH ---------- */
@@ -1284,8 +1325,8 @@ async function sphSend0(){
     toast('Tersimpan di folder Download: '+fn);return}
   if(files.length){
     let data;
-    if(S.trial===4)data={files,title:sub,text:txt};
-    else{const ok=await copyRich(html,txt);toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');data={files,title:sub,text:sub}}
+    if(S.trial===4)data={files,title:sub,text:txt,to,cc};
+    else{const ok=await copyRich(html,txt);toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');data={files,title:sub,text:sub,to,cc}}
     if(navigator.canShare&&navigator.canShare(data)){shareDialog(data,'Lampiran siap. Ketuk Bagikan, lalu pilih Outlook.');return}
     if(!confirm('HP/browser ini tidak bisa membagikan lampiran. Lanjut tanpa lampiran?'))return}
   if(S.trial===1){
@@ -1656,7 +1697,7 @@ $('tplIn').onchange=async e=>{
     const buf=await f.arrayBuffer(),m=await xlsxModel(buf,D.spon.sheet);
     TPL={name:f.name,buf,model:m,sheet:m.sheet};D.spon.sheet=m.sheet;await idbSet('tpl',TPL);save();renderSpon();renderPrev();toast('Template disimpan di HP ini')}
   catch(err){toast('File tidak bisa dipakai: '+err.message)}};
-(async()=>{try{const t=await idbGet('tpl');if(t){TPL=t;if(MODE==='p')renderSpon()}}catch(e){}})();
+(async()=>{try{const t=await idbGet('tpl');if(t){if(!t.model&&typeof JSZip!=='undefined'){try{t.model=await xlsxModel(t.buf,t.sheet);t.sheet=t.model.sheet}catch(e){}}TPL=t;if(MODE==='p')renderSpon()}}catch(e){}})();
 
 async function sponSend(){
   const p=sponProblems();if(p.length)return jumpMissing();
@@ -1671,7 +1712,7 @@ async function sponSend(){
   if(S.trial===3){dl(xf);toast('Tersimpan di folder Download: '+xf.name);return}
   const files=[xf].concat(FILES3);
   if(S.trial===2){
-    const data2={files,title:sub,text:sponText()};
+    const data2={files,title:sub,text:sponText(),to:rcpt('to'),cc:rcpt('cc')};
     if(navigator.canShare&&navigator.canShare(data2)){shareDialog(data2,'Excel siap: '+xf.name+'. Ketuk Bagikan, lalu pilih Outlook.');return}
     dl(xf);toast('HP ini tidak bisa membagikan file. Excel diunduh ke folder Download.');return}
   const eml=await buildEml(rcpt('to'),rcpt('cc'),sub,sponHtml(),files);
@@ -1980,7 +2021,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v51';
+const APPV='v52';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   toast('Memperbarui…');
@@ -1988,7 +2029,7 @@ $('appUpd').onclick=async()=>{
   try{const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}catch(e){}
   location.replace(location.pathname+'?r='+Date.now())};
 /* ---------- bahasa / language ---------- */
-const LANG=D.lang==='en'?'en':'id';
+const LANG=D.lang==='en'?'en':'id';document.documentElement.lang=LANG;
 const EN={
 'Setting':'Settings','Pratinjau':'Preview','Penerima':'Recipients','Merk':'Brand','Kode':'Code','Deskripsi':'Description','Semua':'All','Jenis Order':'Order Type','Rumah Sakit':'Hospital','Tanggal':'Date',
 'Isi Email':'Email Content','Salam':'Greeting','Isi':'Content','Penutup':'Closing','Lampiran':'Attachments','Catatan':'Notes','Subjek':'Subject','Surat':'Letter',
@@ -2033,7 +2074,7 @@ const EN={
 'Format Subjek':'Subject Format','Kalimat Isi Email':'Email Texts','Kontak Penerima':'Recipient Contacts','Merk & Barang':'Brands & Items','Kategori Barang':'Item Categories','Cadangan Data':'Data Backup','Hapus Semua Data':'Delete All Data',
 'Bahasa':'Language','Tentang':'About','Dibuat oleh':'Made by','For personal purpose only.':'For personal purpose only.','Versi':'Version','Perbarui Aplikasi Sekarang':'Update App Now','Data Anda tidak dihapus.':'Your data is not deleted.',
 'Aktifkan integrasi Data PO':'Enable PO Data integration','Hapus Semua Riwayat PO':'Delete All PO History','halaman PO muncul dan setiap order yang dibuat (tombol OK di tab Order) otomatis tercatat.':'the PO page appears and every order you create (OK button in the Order tab) is recorded automatically.',
-'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Salin Data':'Copy Data','Tempel Data':'Paste Data',
+'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.':'Data is stored on this phone only. A backup is a single file (including the Excel template) saved to the Download folder, which you can then share right away, e.g. to WhatsApp.','Simpan Cadangan':'Save Backup','Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. Recipients and subject are filled in. Tap Share to open Outlook.','Pulihkan dari File':'Restore from File','Cara lain tanpa file:':'Other way, no file:','File cadangan tidak valid':'Invalid backup file','Pulihkan Cadangan':'Restore Backup','Pulihkan':'Restore','Data dipulihkan':'Data restored','Gagal menyimpan data':'Failed to save data','Salin Data':'Copy Data','Tempel Data':'Paste Data',
 'Menghapus semua data di HP ini secara permanen.':'Permanently deletes all data on this phone.','Tambah Teks Tetap':'Add Fixed Text','Pemisah Antar Barang':'Item Separator','Email Order':'Order Email','Email SPH':'SPH Email',
 'Tambah Kontak':'Add Contact','Tambah Merk':'Add Brand','Tambah Jenis':'Add Type','Tambah Kategori':'Add Category','Tambah RS':'Add Hospital','Tempel Daftar Barang':'Paste Item List','Ubah':'Edit','Hapus barang':'Delete item',
 'tanpa email (ditulis nama)':'no email (name is used)','Tampil di halaman Order (ketuk untuk sembunyikan)':'Shown on the Order page (tap to hide)','Disembunyikan (ketuk untuk tampilkan)':'Hidden (tap to show)',
@@ -2079,6 +2120,9 @@ const EN={
 'Pemisah antar barang':'Item separator','Sheet':'Sheet','Isi manual':'Enter manually','Penerima To belum punya email':'The To recipient has no email',
 };
 const ENP=[
+[/^Cadangan tersimpan di folder Download: (.+)\. Ketuk Bagikan, lalu pilih WhatsApp \(atau aplikasi lain\) untuk menyimpannya di tempat aman\.$/,'Backup saved to the Download folder: $1. Tap Share, then choose WhatsApp (or another app) to keep it somewhere safe.'],
+[/^Cadangan tersimpan di folder Download: (.+)$/,'Backup saved to the Download folder: $1'],
+[/^Semua data di HP ini diganti dengan isi file "(.+)" \(dibuat (.+)\)\. Tidak bisa dibatalkan\.$/,'All data on this phone will be replaced with the contents of "$1" (created $2). This cannot be undone.'],[/^Semua data di HP ini diganti dengan isi file "(.+)"\. Tidak bisa dibatalkan\.$/,'All data on this phone will be replaced with the contents of "$1". This cannot be undone.'],
 [/^\((\d+) belum lengkap\)$/,'($1 incomplete)'],
 [/^(\d+) produk$/,'$1 products'],[/^(\d+) RS$/,'$1 hospitals'],
 [/^(\d+) RS · terakhir (.+)$/,'$1 hospitals · last $2'],[/^(\d+) PO · terakhir (.+)$/,'$1 POs · last $2'],[/^(\d+) PO · pertama (.+) · terakhir (.+)$/,'$1 POs · first $2 · last $3'],
