@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0f6cbd">
 <title>Outlook Cepat</title>
 <link rel="manifest" href="manifest.webmanifest">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="icon" href="icon.svg">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
@@ -15,7 +16,7 @@
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;padding-bottom:84px}
 header{background:#0f6cbd;color:#fff;padding:0 12px 0 16px;position:sticky;top:0;z-index:5;display:flex;align-items:center;height:46px}
 header b{flex:1;font-size:16px;font-weight:600}
-header button{background:transparent;color:#fff;border:0;font:inherit;font-size:14px;padding:6px 10px;min-height:0;opacity:.7;border-radius:0}
+header button{background:transparent;color:#fff;border:0;font:inherit;font-size:14px;padding:6px 7px;min-height:0;opacity:.7;border-radius:0}
 header button.on{opacity:1;border-bottom:2px solid #fff}
 main{padding:10px 12px;max-width:640px;margin:auto}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
@@ -164,7 +165,7 @@ select{font-size:14px!important;min-height:40px;padding:6px 8px}
 </style>
 </head>
 <body>
-<header><b>Outlook Cepat</b><button id="tOrder" class="on">Order</button><button id="tSph">SPH</button><button id="tData">Data</button></header>
+<header><b>Outlook Cepat</b><button id="tOrder" class="on">Order</button><button id="tSph">SPH</button><button id="tSpon">Sponsor</button><button id="tData">Data</button></header>
 
 <!-- ================= ORDER ================= -->
 <div id="pvSp"></div>
@@ -240,6 +241,46 @@ select{font-size:14px!important;min-height:40px;padding:6px 8px}
     <div class="chips" id="trials"></div><div class="mut" id="trialTx" style="margin-top:8px"></div>
     </div>
   <div class="row" style="margin-top:4px"><button class="sec" id="resetSph" style="flex:1"><i class="fa-solid fa-rotate-left"></i> Reset Semua Kolom</button><button id="btnSave" data-sact="sSave" style="flex:1"></button></div>
+</main>
+
+<!-- ================= SPONSORSHIP ================= -->
+<main id="vSpon" class="hide">
+  <div class="card" id="tplCard"><h3>Template Excel</h3><div id="tplInfo"></div>
+    <div class="fr hide" id="tplSheetRow"><label>Sheet</label><select id="tplSheet"></select></div>
+    <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-file-excel"></i> <span id="tplBtnTx">Pilih File Template (.xlsx)</span><input type="file" id="tplIn" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></label></div>
+
+  <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcptP"></div></div>
+
+  <div class="card"><h3>2 · Event</h3>
+    <div class="fr" style="margin-top:0"><label for="sp_name">Event Name</label><input id="sp_name" data-s="name" autocomplete="off"></div>
+    <div class="fr"><label for="sp_date">Event Date</label><input id="sp_date" type="date" data-s="date"></div>
+    <div class="fr"><label for="sp_loc">Event Location</label><input id="sp_loc" data-s="location" autocomplete="off"></div>
+    <div class="fr top"><label>Manufacturer</label><div class="sel"><select id="sponMan" aria-label="Manufacturer"></select><div id="sponManBox" class="hide"><input data-s="manufacturer" autocomplete="off" aria-label="Manufacturer isi manual"></div></div></div>
+    <div class="fr top"><label for="sp_obj">Objective of Event</label><textarea id="sp_obj" data-s="objective" rows="2"></textarea></div></div>
+
+  <div class="card"><h3>3 · Target Group</h3>
+    <div class="chips"><button class="chip" data-tg="doctors">Doctors</button><button class="chip" data-tg="nurses">Nurses</button><button class="chip" data-tg="others">Others</button></div>
+    <div class="fr" style="margin-top:10px"><label for="sp_part">No. of Participants</label><input id="sp_part" data-s="participants" inputmode="numeric" autocomplete="off"></div></div>
+
+  <div class="card"><h3>4 · Cost of Event</h3><div id="costStd"></div><div id="costCus"></div>
+    <button class="sec add" id="costAdd"><i class="fa-solid fa-plus"></i> Tambah Biaya Lain</button>
+    <div class="row" style="margin-top:10px;justify-content:flex-end"><b id="costTot"></b></div></div>
+
+  <div class="card"><h3>5 · Tanggal di Bawah Tanda Tangan</h3>
+    <div class="fr" style="margin-top:0"><label for="sponSign">Tanggal</label><input id="sponSign" type="date"></div>
+    <div class="mut" style="margin-top:6px">Tanda tangan ikut dari template.</div></div>
+
+  <div class="card"><h3>Email</h3>
+    <label class="f" style="margin-top:0">Subjek <span class="mut">({event} {manufacturer} {tanggal})</span><input data-sm="subj" autocomplete="off"></label>
+    <label class="f">Salam<textarea data-sm="greet" rows="1"></textarea></label>
+    <label class="f">Isi<textarea data-sm="intro" rows="2"></textarea></label>
+    <label class="f">Penutup<textarea data-sm="closing" rows="1"></textarea></label></div>
+
+  <div class="card"><h3>Lampiran Tambahan (Opsional)</h3><div id="filesP"></div>
+    <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah Gambar / PDF / File<input type="file" id="fileInP" multiple hidden></label></div>
+
+  <div class="card"><h3>Cara Kirim</h3><div class="chips" id="sponTrials"></div><div class="mut" id="sponTrialTx" style="margin-top:8px"></div></div>
+  <button class="sec reset" id="resetSpon"><i class="fa-solid fa-rotate-left"></i> Reset Semua Kolom</button>
 </main>
 
 <!-- ================= DATA ================= -->
@@ -318,7 +359,12 @@ function sphNorm(x){const s=sphSeed();x=x||{};
   if(!x.v){const f=x.form;if(f.p1==='sudah termasuk PPN')f.p1='Sudah termasuk PPN';if(f.p2==='-')f.p2='';if(f.p3==='-')f.p3='';if(f.p4==='60 hari')f.p4='';if(f.p5==='inden')f.p5='';
     if(f.kondisi.length===1&&f.kondisi[0]==='Harga sudah termasuk PPN 11%')f.kondisi=[];x.v=2}
   return x}
-function norm(x){const s=seed();x.sph=sphNorm(x.sph);
+const sponSeed=()=>({sheet:'',trial:1,subj:'SPONSORSHIP_{event}_{manufacturer} #{tanggal}',greet:'Dear Mb Eni,',intro:'Mohon bantuannya untuk diproses. Form sponsorship terlampir.',closing:'Thanks,',
+  form:{name:'',date:'',location:'',manufacturer:'',objective:'',doctors:false,nurses:false,others:false,participants:'',std:{},custom:[],signDate:''}});
+function sponNorm(x){const s=sponSeed();x=x||{};
+  ['sheet','trial','subj','greet','intro','closing'].forEach(k=>{if(x[k]===undefined)x[k]=s[k]});
+  x.form=Object.assign({},s.form,x.form||{});x.form.std=x.form.std||{};x.form.custom=Array.isArray(x.form.custom)?x.form.custom:[];return x}
+function norm(x){const s=seed();x.sph=sphNorm(x.sph);x.spon=sponNorm(x.spon);
   x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.brands.forEach(b=>{b.items=(b.items||[]).map(it=>typeof it==='string'?{code:it,name:''}:it)});x.kats=x.kats||s.kats;x.contacts=x.contacts||s.contacts;
   x.subj=x.subj||{};x.subj.parts=x.subj.parts||defParts();x.subj.isep=x.subj.isep??'+';x.subj.dfmt=x.subj.dfmt||'dMy2';
   x.mail=x.mail||s.mail;if(x.mail.closing===undefined)x.mail.closing='';if(!x.mail.itemMode)x.mail.itemMode='kode';return x}
@@ -367,7 +413,7 @@ function body(){
   return L.join('\r\n').replace(/\r?\n/g,'\r\n')}
 const addr=c=>(c.email||c.name).replace(/[,;]/g,' ').trim();
 const shown=c=>c.show!==false;
-const RK=()=>MODE==='s'?'rs':'role';
+const RK=()=>MODE==='s'?'rs':(MODE==='p'?'sp':'role');
 const rcpt=r=>D.contacts.filter(c=>shown(c)&&(c[RK()]||'off')===r).map(addr);
 
 function problems(){const p=[];
@@ -402,6 +448,7 @@ function renderFiles(){
 function renderPrev(){
   saveDraft();
   if(MODE==='s')return renderPrevS();
+  if(MODE==='p')return renderPrevP();
   $('pvSj').textContent=subject();
   $('cJenis').classList.toggle('hide',!partOn('jenis'));$('cRs').classList.toggle('hide',!partOn('rs'));$('cDate').classList.toggle('hide',!partOn('date'));
   $('dateTxt').textContent=dateStr($('date').value);
@@ -424,9 +471,9 @@ $('items').addEventListener('click',e=>{if(!e.target.matches('[data-del]'))retur
 $('date').oninput=renderPrev;$('note').oninput=renderPrev;
 const CYC={off:'to',to:'cc',cc:'off'};
 document.addEventListener('click',e=>{const t=e.target.closest('.rt');if(!t)return;
-  const key=t.closest('#rcptS')?'rs':'role',c=D.contacts[+t.dataset.i];
+  const key=t.closest('#rcptS')?'rs':(t.closest('#rcptP')?'sp':'role'),c=D.contacts[+t.dataset.i];
   c[key]=CYC[c[key]||'off'];save();
-  if(key==='rs')$('rcptS').innerHTML=rcptGrid('rs');else renderRcpt();
+  if(key==='rs')$('rcptS').innerHTML=rcptGrid('rs');else if(key==='sp')$('rcptP').innerHTML=rcptGrid('sp');else renderRcpt();
   renderPrev()});
 $('fileIn').onchange=e=>{FILES.push(...e.target.files);e.target.value='';renderFiles();renderPrev()};
 $('files').addEventListener('click',e=>{const i=e.target.dataset.fd;if(i===undefined)return;FILES.splice(+i,1);renderFiles();renderPrev()});
@@ -434,6 +481,7 @@ const copy=async t=>{try{await navigator.clipboard.writeText(t);return true}catc
 
 $('go').onclick=async()=>{
   if(MODE==='s')return sphSend();
+  if(MODE==='p')return sponSend();
   if(problems().length)return jumpMissing();
   if(FILES.length){
     const data={files:FILES,title:subject(),text:body()};
@@ -1026,16 +1074,288 @@ addEventListener('pagehide',()=>{saveDraft();save()});
 
 $('vOrder').addEventListener('input',e=>{const k=e.target.dataset.o;if(!k)return;D.mail[k]=e.target.value;save();renderPrev()});
 $('itemMode').addEventListener('click',e=>{const b=e.target.closest('[data-im]');if(!b)return;D.mail.itemMode=b.dataset.im;save();renderOrderMail();renderPrev()});
+/* ---------- Excel (xlsx): baca template, isi sel, buang sheet lain ---------- */
+const XNS='http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+const xParse=s=>new DOMParser().parseFromString(s,'application/xml');
+const xStr=d=>new XMLSerializer().serializeToString(d);
+const xAll=(n,t)=>Array.from(n.getElementsByTagName(t));
+const xNorm=s=>String(s||'').replace(/\s+/g,' ').trim().toLowerCase();
+const xColNum=c=>c.split('').reduce((a,ch)=>a*26+ch.charCodeAt(0)-64,0);
+const xRefOf=r=>{const m=/^([A-Z]+)(\d+)$/.exec(r);return m?{col:m[1],row:+m[2]}:null};
+const xDirOf=p=>p.slice(0,p.lastIndexOf('/')+1);
+function xResolve(base,target){
+  if(target.startsWith('/'))return target.slice(1);
+  const parts=(xDirOf(base)+target).split('/'),out=[];
+  parts.forEach(p=>{if(p==='..')out.pop();else if(p&&p!=='.')out.push(p)});
+  return out.join('/')}
+const xRelsPath=p=>xDirOf(p)+'_rels/'+p.slice(p.lastIndexOf('/')+1)+'.rels';
+async function xRead(zip,p){const f=zip.file(p);return f?await f.async('string'):null}
+
+async function xSheetList(zip){
+  const wb=xParse(await xRead(zip,'xl/workbook.xml')),rels=xParse(await xRead(zip,'xl/_rels/workbook.xml.rels'));
+  const rmap={};xAll(rels,'Relationship').forEach(r=>{rmap[r.getAttribute('Id')]=r.getAttribute('Target')});
+  return xAll(wb,'sheet').map(s=>{const rid=s.getAttribute('r:id');
+    return {name:s.getAttribute('name'),state:s.getAttribute('state')||'visible',rid,path:xResolve('xl/workbook.xml',rmap[rid])}})}
+
+async function xLoadSheet(zip,sheetName){
+  const list=await xSheetList(zip),sh=list.find(s=>s.name===sheetName);
+  if(!sh)throw new Error('Sheet "'+sheetName+'" tidak ada di template');
+  const ssRaw=await xRead(zip,'xl/sharedStrings.xml');
+  const sst=ssRaw?xAll(xParse(ssRaw),'si').map(si=>xAll(si,'t').map(t=>t.textContent).join('')):[];
+  const doc=xParse(await xRead(zip,sh.path)),sd=doc.getElementsByTagName('sheetData')[0];
+  const rows={};xAll(sd,'row').forEach(r=>{rows[+r.getAttribute('r')]=r});
+  const cell=ref=>{const p=xRefOf(ref),r=rows[p.row];if(!r)return null;return xAll(r,'c').find(c=>c.getAttribute('r')===ref)||null};
+  const text=ref=>{const c=cell(ref);if(!c)return'';const t=c.getAttribute('t'),v=c.getElementsByTagName('v')[0];
+    if(t==='s'&&v)return sst[+v.textContent]||'';
+    if(t==='inlineStr')return xAll(c,'t').map(x=>x.textContent).join('');
+    return v?v.textContent:''};
+  const rowNums=()=>Object.keys(rows).map(Number).sort((a,b)=>a-b);
+  const findRow=(col,pred,from)=>{for(const r of rowNums()){if(from&&r<from)continue;if(pred(xNorm(text(col+r))))return r}return 0};
+  const ensure=ref=>{
+    const p=xRefOf(ref);let row=rows[p.row];
+    if(!row){row=doc.createElementNS(XNS,'row');row.setAttribute('r',String(p.row));
+      const after=rowNums().filter(n=>n>p.row)[0];
+      if(after)sd.insertBefore(row,rows[after]);else sd.appendChild(row);rows[p.row]=row}
+    let c=cell(ref);
+    if(!c){c=doc.createElementNS(XNS,'c');c.setAttribute('r',ref);
+      const next=xAll(row,'c').find(x=>xColNum(xRefOf(x.getAttribute('r')).col)>xColNum(p.col));
+      if(next)row.insertBefore(c,next);else row.appendChild(c)}
+    return c};
+  const clear=c=>{while(c.firstChild)c.removeChild(c.firstChild);c.removeAttribute('t')};
+  const setStr=(ref,s)=>{const c=ensure(ref);clear(c);
+    if(s===''||s==null)return;
+    c.setAttribute('t','inlineStr');const is=doc.createElementNS(XNS,'is'),t=doc.createElementNS(XNS,'t');
+    t.setAttribute('xml:space','preserve');t.appendChild(doc.createTextNode(String(s)));is.appendChild(t);c.appendChild(is)};
+  const setNum=(ref,n,formula)=>{const c=ensure(ref);clear(c);
+    if(formula){const f=doc.createElementNS(XNS,'f');f.appendChild(doc.createTextNode(formula));c.appendChild(f)}
+    const v=doc.createElementNS(XNS,'v');v.appendChild(doc.createTextNode(String(n)));c.appendChild(v)};
+  return {list,sh,doc,rows,cell,text,findRow,setStr,setNum,rowNums,sst}}
+
+function xLocate(S){
+  const A=(t)=>S.findRow('A',x=>x===t),Astart=(t)=>S.findRow('A',x=>x.startsWith(t));
+  const L={name:A('event name'),date:A('event date'),loc:A('event location'),man:A('manufacturer'),obj:Astart('objective of event'),
+    types:S.findRow('C',x=>x==='types'),part:Astart('no. of participants'),costStart:A('cost of event'),total:S.findRow('C',x=>x==='total cost'),
+    sign:A('signatory')};
+  L.signDate=L.sign?S.findRow('A',x=>x==='date',L.sign):0;
+  const need={name:'Event Name',date:'Event Date',loc:'Event location',man:'Manufacturer',obj:'Objective of event',types:'Types',part:'No. of Participants',costStart:'Cost of event',total:'Total cost',sign:'Signatory',signDate:'Date'};
+  Object.keys(need).forEach(k=>{if(!L[k])throw new Error('Template tidak dikenali: baris "'+need[k]+'" tidak ditemukan di sheet '+S.sh.name)});
+  L.std=[];L.custom=[];
+  for(let r=L.costStart;r<L.total;r++){const lb=S.text('C'+r).trim();if(lb)L.std.push({row:r,label:lb});else L.custom.push(r)}
+  return L}
+
+async function xlsxModel(buf,sheetName){
+  const zip=await JSZip.loadAsync(buf,{createFolders:false}),list=await xSheetList(zip);
+  const visible=list.filter(s=>s.state==='visible').map(s=>s.name);
+  const use=sheetName&&visible.includes(sheetName)?sheetName:visible[0];
+  const S=await xLoadSheet(zip,use),L=xLocate(S);
+  return {sheets:visible,sheet:use,std:L.std,customRows:L.custom.length}}
+
+const xSerial=iso=>{if(!iso)return 0;const [y,m,d]=iso.split('-').map(Number);return Math.round(Date.UTC(y,m-1,d)/86400000)+25569};
+
+async function xlsxBuild(buf,sheetName,data){
+  const zip=await JSZip.loadAsync(buf,{createFolders:false}),S=await xLoadSheet(zip,sheetName),L=xLocate(S);
+  // --- isi sel
+  S.setStr('C'+L.name,data.name||'');
+  if(data.date)S.setNum('C'+L.date,xSerial(data.date));else S.setStr('C'+L.date,'');
+  S.setStr('C'+L.loc,data.location||'');
+  S.setStr('C'+L.man,data.manufacturer||'');
+  S.setStr('C'+L.obj,data.objective||'');
+  [['D','doctors'],['E','nurses'],['F','others']].forEach(([c,k])=>S.setStr(c+L.types,data.target&&data.target[k]?'x':''));
+  if(data.participants!==''&&data.participants!=null&&!isNaN(Number(data.participants)))S.setNum('C'+L.part,Number(data.participants));else S.setStr('C'+L.part,data.participants||'');
+  let sum=0;
+  L.std.forEach(r=>{const a=Number(data.std&&data.std[r.row]);
+    if(a>0){S.setNum('D'+r.row,a);sum+=a}else S.setStr('D'+r.row,'')});
+  const cus=(data.custom||[]).filter(c=>c.label||Number(c.price)>0);
+  if(cus.length>L.custom.length)throw new Error('Baris biaya lain di template hanya '+L.custom.length+', sedangkan diisi '+cus.length);
+  L.custom.forEach((r,i)=>{const c=cus[i];
+    if(!c){S.setStr('C'+r,'');S.setStr('D'+r,'');return}
+    S.setStr('C'+r,c.label||'');
+    const q=Number(c.qty)||1,p=Number(c.price)||0,v=q*p;
+    if(p>0){if(q>1)S.setNum('D'+r,v,p+'*'+q);else S.setNum('D'+r,v);sum+=v}else S.setStr('D'+r,'')});
+  S.setNum('D'+L.total,sum,'SUM(D'+L.costStart+':D'+(L.total-1)+')');
+  if(data.signDate)S.setNum('C'+L.signDate,xSerial(data.signDate));
+  zip.file(S.sh.path,xStr(S.doc),{createFolders:false});
+  // --- buang sheet lain
+  const others=S.list.filter(s=>s.path!==S.sh.path);
+  const rootRels=xParse(await xRead(zip,'xl/_rels/workbook.xml.rels')),keepRid=S.sh.rid;
+  const collect=async(sheetPath)=>{
+    const out=new Set(),walk=async part=>{
+      const rp=xRelsPath(part),raw=await xRead(zip,rp);if(raw===null)return;out.add(rp);
+      for(const r of xAll(xParse(raw),'Relationship')){
+        if(r.getAttribute('TargetMode')==='External')continue;
+        const t=xResolve(part,r.getAttribute('Target'));if(out.has(t))continue;out.add(t);
+        if(/\.(xml|vml)$/.test(t)&&t.indexOf('/drawings/')>=0)await walk(t)}};
+    out.add(sheetPath);await walk(sheetPath);return out};
+  const keepSet=await collect(S.sh.path);
+  const dropSet=new Set();
+  for(const o of others){(await collect(o.path)).forEach(p=>dropSet.add(p))}
+  const del=Array.from(dropSet).filter(p=>!keepSet.has(p));
+  del.forEach(p=>zip.remove(p));
+  // calcChain
+  let calc=false;if(zip.file('xl/calcChain.xml')){zip.remove('xl/calcChain.xml');del.push('xl/calcChain.xml');calc=true}
+  // workbook rels
+  xAll(rootRels,'Relationship').forEach(r=>{
+    const id=r.getAttribute('Id'),ty=r.getAttribute('Type');
+    if((others.some(o=>o.rid===id))||/calcChain$/.test(ty))r.parentNode.removeChild(r)});
+  zip.file('xl/_rels/workbook.xml.rels',xStr(rootRels),{createFolders:false});
+  // workbook.xml
+  const wb=xParse(await xRead(zip,'xl/workbook.xml'));
+  xAll(wb,'sheet').forEach(s=>{if(s.getAttribute('r:id')!==keepRid)s.parentNode.removeChild(s);else s.removeAttribute('state')});
+  const bv=wb.getElementsByTagName('workbookView')[0];if(bv){bv.setAttribute('activeTab','0');bv.setAttribute('firstSheet','0')}
+  const cp=wb.getElementsByTagName('calcPr')[0];if(cp)cp.setAttribute('fullCalcOnLoad','1');
+  zip.file('xl/workbook.xml',xStr(wb),{createFolders:false});
+  // content types
+  const ct=xParse(await xRead(zip,'[Content_Types].xml'));
+  xAll(ct,'Override').forEach(o=>{if(del.indexOf(o.getAttribute('PartName').slice(1))>=0)o.parentNode.removeChild(o)});
+  zip.file('[Content_Types].xml',xStr(ct),{createFolders:false});
+  // docProps/app.xml
+  if(zip.file('docProps/app.xml')){
+    let app=await xRead(zip,'docProps/app.xml');
+    app=app.replace(/<HeadingPairs>[\s\S]*?<\/TitlesOfParts>/,'<HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Worksheets</vt:lpstr></vt:variant><vt:variant><vt:i4>1</vt:i4></vt:variant></vt:vector></HeadingPairs><TitlesOfParts><vt:vector size="1" baseType="lpstr"><vt:lpstr>'+S.sh.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</vt:lpstr></vt:vector></TitlesOfParts>');
+    zip.file('docProps/app.xml',app,{createFolders:false})}
+  return zip.generateAsync({type:'uint8array',compression:'DEFLATE',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+
+/* ---------- Sponsorship ---------- */
+const MIME_X='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+
+/* template di IndexedDB (tidak di GitHub: berisi tanda tangan) */
+let _idb=null;
+const idbOpen=()=>new Promise((ok,no)=>{if(_idb)return ok(_idb);const r=indexedDB.open('outlookcepat2',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{_idb=r.result;ok(_idb)};r.onerror=()=>no(r.error)});
+const idbGet=async k=>{const db=await idbOpen();return new Promise((ok,no)=>{const q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})};
+const idbSet=async(k,v)=>{const db=await idbOpen();return new Promise((ok,no)=>{const q=db.transaction('kv','readwrite').objectStore('kv').put(v,k);q.onsuccess=()=>ok();q.onerror=()=>no(q.error)})};
+let TPL=null,FILES3=[],sponManual=false;
+const SPONTR=[[1,'File Email (.eml)','Satu file email lengkap: penerima, subjek, isi, dan Excel terlampir. Tersimpan di folder Download, buka dengan Outlook.'],
+ [2,'Bagikan ke Outlook','Excel dibagikan lewat menu Bagikan HP, lalu pilih Outlook. Penerima tidak terisi otomatis.'],
+ [3,'Unduh Excel Saja','Hanya menyimpan file Excel yang sudah terisi ke folder Download.']];
+const sponCusMax=()=>TPL&&TPL.model?TPL.model.customRows:0;
+const sponCostTotal=()=>{const f=D.spon.form;let t=0;
+  (TPL&&TPL.model?TPL.model.std:[]).forEach(r=>{t+=Number(f.std[r.label])||0});
+  f.custom.forEach(c=>{t+=(Number(c.qty)||1)*(Number(c.price)||0)});return t};
+function sponSubject(){const f=D.spon.form;
+  return D.spon.subj.split('{event}').join(f.name||'(EVENT)').split('{manufacturer}').join(f.manufacturer||'(MANUFACTURER)').split('{tanggal}').join(dateStr(f.signDate||todayISO()))}
+const sponFileName=()=>('Form Sponsorship - '+(D.spon.form.name||'Event')).replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,110)+'.xlsx';
+function sponText(){const S=D.spon,L=[];if(S.greet)L.push(S.greet,'');if(S.intro)L.push(S.intro,'');if(S.closing)L.push(S.closing);return L.join('\r\n')}
+function sponHtml(){const S=D.spon,p=t=>`<p style="margin:0;font-family:Calibri,Arial,sans-serif;font-size:11pt">${H(t)}</p>`,gap='<p style="margin:0">&nbsp;</p>';
+  return [S.greet&&p(S.greet),S.intro&&p(S.intro),S.closing&&p(S.closing)].filter(Boolean).join(gap)}
+function sponProblems(){const p=[],S=D.spon;
+  if(!TPL)p.push({m:'Pilih file template Excel',el:'#tplCard'});
+  if(S.trial<3&&!rcpt('to').length)p.push({m:'Pilih minimal 1 penerima (To)',el:'#rcptP'});
+  if(!S.form.name.trim())p.push({m:'Isi Event Name',el:'[data-s="name"]'});
+  return p}
+function renderPrevP(){
+  const S=D.spon;$('pvSj').textContent=sponSubject();
+  const R=(k,v,c='')=>`<div class="pr ${c}"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`;
+  $('prev').innerHTML=R('To',rcpt('to').join('; ')||'—')+(rcpt('cc').length?R('CC',rcpt('cc').join('; ')):'')+R('Subjek',sponSubject(),'sj')+R('Isi',sponText().replace(/\r\n/g,'\n'))
+    +R('Lampiran',[sponFileName()].concat(FILES3.map(f=>f.name)).join(', '));
+  setMissing(sponProblems());$('goTx').textContent='OK → Buat Email Sponsorship'}
+
+function renderSpon(){
+  const S=D.spon,f=S.form;
+  document.querySelectorAll('#vSpon [data-s]').forEach(e=>{const k=e.dataset.s;e.value=f[k]==null?'':f[k]});
+  document.querySelectorAll('#vSpon [data-sm]').forEach(e=>{e.value=S[e.dataset.sm]||''});
+  if(!f.signDate)f.signDate=todayISO();$('sponSign').value=f.signDate;
+  // template
+  if(TPL){
+    $('tplInfo').innerHTML=`<div class="ct"><div class="nm"><b>${esc(TPL.name)}</b><small>Tersimpan di HP ini · ${TPL.model.sheets.length} sheet</small></div></div>`;
+    $('tplSheetRow').classList.toggle('hide',TPL.model.sheets.length<2);
+    $('tplSheet').innerHTML=TPL.model.sheets.map(n=>`<option ${n===S.sheet?'selected':''}>${esc(n)}</option>`).join('')}
+  else{$('tplInfo').innerHTML='<div class="mut">Belum ada template. Pilih file Form Sponsorship (.xlsx) sekali saja; file disimpan di HP ini.</div>';$('tplSheetRow').classList.add('hide')}
+  $('tplBtnTx').textContent=TPL?'Ganti File Template':'Pilih File Template (.xlsx)';
+  // manufacturer select
+  const opts=D.brands.map(b=>b.name),sel=$('sponMan'),v=f.manufacturer||'';
+  const manual=sponManual||(v&&!opts.includes(v));
+  sel.innerHTML='<option value="">— Pilih —</option>'+opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')+'<option value="__m">Isi manual…</option>';
+  sel.value=manual?'__m':(opts.includes(v)?v:'');$('sponManBox').classList.toggle('hide',!manual);
+  // target
+  document.querySelectorAll('#vSpon [data-tg]').forEach(b=>b.classList.toggle('on',!!f[b.dataset.tg]));
+  // cost
+  const std=TPL&&TPL.model?TPL.model.std:[];
+  $('costStd').innerHTML=std.map(r=>`<div class="fr" style="margin-top:6px"><label>${esc(r.label)}</label><input data-cs="${esc(r.label)}" inputmode="numeric" value="${esc(f.std[r.label]||'')}"></div>`).join('')||'<div class="mut">Pilih template dulu.</div>';
+  $('costCus').innerHTML=f.custom.map((c,i)=>`<div class="itx" data-ci="${i}"><div class="row"><input data-cc="label" value="${esc(c.label||'')}" aria-label="Nama biaya"><button class="ib del" data-sact2="cDel" data-i="${i}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="row" style="margin-top:6px"><input data-cc="qty" inputmode="numeric" value="${esc(c.qty||'')}" aria-label="Qty" placeholder="Qty" style="flex:.5"><input data-cc="price" inputmode="numeric" value="${esc(c.price||'')}" aria-label="Harga satuan" placeholder="Harga satuan"><span class="itot" style="min-width:90px;text-align:right">${(Number(c.qty)||1)*(Number(c.price)||0)>0?'= '+((Number(c.qty)||1)*(Number(c.price)||0)).toLocaleString('id-ID'):''}</span></div></div>`).join('');
+  const max=sponCusMax();
+  $('costAdd').classList.toggle('hide',!TPL||f.custom.length>=max);
+  $('costTot').textContent='Total: '+sponCostTotal().toLocaleString('id-ID');
+  $('sponTrials').innerHTML=SPONTR.map(t=>`<button class="chip ${S.trial===t[0]?'on':''}" data-st="${t[0]}">${t[1]}</button>`).join('');
+  $('sponTrialTx').textContent=SPONTR.find(t=>t[0]===S.trial)[2];
+  $('rcptP').innerHTML=rcptGrid('sp');
+  renderFilesP();growAll()}
+function renderFilesP(){
+  $('filesP').innerHTML=FILES3.map((f,i)=>`<div class="fl"><i class="fa-solid ${f.type.startsWith('image/')?'fa-image':f.type==='application/pdf'?'fa-file-pdf':'fa-file'}" style="color:var(--mut)"></i><span>${esc(f.name)}</span><small class="mut">${f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'}</small>
+    <button class="ib del" data-fd="${i}" title="Hapus lampiran" aria-label="Hapus lampiran"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}
+
+/* events */
+const sv3=()=>{save();renderPrev()};
+$('vSpon').addEventListener('input',e=>{const t=e.target,S=D.spon,f=S.form;
+  if(t.dataset.s!==undefined)f[t.dataset.s]=t.value;
+  else if(t.dataset.sm!==undefined)S[t.dataset.sm]=t.value;
+  else if(t.dataset.cs!==undefined){f.std[t.dataset.cs]=t.value;$('costTot').textContent='Total: '+sponCostTotal().toLocaleString('id-ID')}
+  else if(t.dataset.cc){const r=t.closest('[data-ci]'),c=f.custom[+r.dataset.ci];c[t.dataset.cc]=t.value;
+    const v=(Number(c.qty)||1)*(Number(c.price)||0);r.querySelector('.itot').textContent=v>0?'= '+v.toLocaleString('id-ID'):'';$('costTot').textContent='Total: '+sponCostTotal().toLocaleString('id-ID')}
+  else if(t.id==='sponSign')f.signDate=t.value;
+  else return;
+  sv3()});
+$('vSpon').addEventListener('change',e=>{const t=e.target,S=D.spon,f=S.form;
+  if(t.id==='sponMan'){if(t.value==='__m'){sponManual=true;renderSpon();setTimeout(()=>{const i=document.querySelector('[data-s="manufacturer"]');if(i)i.focus()},50)}
+    else{sponManual=false;f.manufacturer=t.value;save();renderSpon();renderPrev()}}
+  else if(t.id==='tplSheet'){S.sheet=t.value;save();loadTplModel(t.value)}});
+$('vSpon').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const S=D.spon,f=S.form;
+  if(b.dataset.tg){f[b.dataset.tg]=!f[b.dataset.tg];save();renderSpon();renderPrev()}
+  else if(b.dataset.st){S.trial=+b.dataset.st;save();renderSpon();renderPrev()}
+  else if(b.dataset.sact2==='cDel'){f.custom.splice(+b.dataset.i,1);save();renderSpon();renderPrev()}
+  else if(b.id==='costAdd'){f.custom.push({label:'',qty:'1',price:''});save();renderSpon();renderPrev()}});
+$('fileInP').onchange=e=>{FILES3.push(...e.target.files);e.target.value='';renderFilesP();renderPrev()};
+$('filesP').addEventListener('click',e=>{const b=e.target.closest('[data-fd]');if(!b)return;FILES3.splice(+b.dataset.fd,1);renderFilesP();renderPrev()});
+
+async function loadTplModel(sheet){
+  if(!TPL)return;
+  try{const m=await xlsxModel(TPL.buf,sheet);TPL.model=m;D.spon.sheet=m.sheet;TPL.sheet=m.sheet;await idbSet('tpl',TPL);save();renderSpon();renderPrev()}
+  catch(err){toast('Template: '+err.message)}}
+$('tplIn').onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  if(typeof JSZip==='undefined')return toast('Pustaka Excel belum termuat. Sambungkan internet sekali, lalu coba lagi.');
+  try{
+    const buf=await f.arrayBuffer(),m=await xlsxModel(buf,D.spon.sheet);
+    TPL={name:f.name,buf,model:m,sheet:m.sheet};D.spon.sheet=m.sheet;await idbSet('tpl',TPL);save();renderSpon();renderPrev();toast('Template disimpan di HP ini')}
+  catch(err){toast('File tidak bisa dipakai: '+err.message)}};
+(async()=>{try{const t=await idbGet('tpl');if(t){TPL=t;if(MODE==='p')renderSpon()}}catch(e){}})();
+
+async function sponSend(){
+  const p=sponProblems();if(p.length)return jumpMissing();
+  const S=D.spon,f=S.form;
+  if(typeof JSZip==='undefined')return toast('Pustaka Excel belum termuat. Sambungkan internet sekali, lalu coba lagi.');
+  toast('Menyiapkan Excel…');
+  const std={};(TPL.model.std||[]).forEach(r=>{std[r.row]=Number(f.std[r.label])||0});
+  const data={name:f.name,date:f.date,location:f.location,manufacturer:f.manufacturer,objective:f.objective,target:{doctors:f.doctors,nurses:f.nurses,others:f.others},participants:f.participants,std,custom:f.custom,signDate:f.signDate};
+  let bytes;try{bytes=await xlsxBuild(TPL.buf,S.sheet,data)}catch(err){alert('Gagal membuat Excel: '+err.message);return}
+  const xf=new File([bytes],sponFileName(),{type:MIME_X}),sub=sponSubject();
+  const dl=file=>{const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;document.body.appendChild(a);a.click();a.remove()};
+  if(S.trial===3){dl(xf);toast('Tersimpan di folder Download: '+xf.name);return}
+  const files=[xf].concat(FILES3);
+  if(S.trial===2){
+    const data2={files,title:sub,text:sponText()};
+    if(navigator.canShare&&navigator.canShare(data2)){try{await navigator.share(data2)}catch(e){}return}
+    dl(xf);toast('HP ini tidak bisa membagikan file. Excel diunduh ke folder Download.');return}
+  const eml=await buildEml(rcpt('to'),rcpt('cc'),sub,sponHtml(),files);
+  const fn=sub.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,110)+'.eml';
+  dl(new File([eml],fn,{type:'message/rfc822'}));toast('Tersimpan di folder Download: '+fn)}
+
+$('resetSpon').onclick=()=>confirmBox('Reset Semua Kolom Sponsorship','Semua kolom sponsorship dikosongkan, termasuk pilihan penerima. File template tetap tersimpan.','Reset',()=>{
+  const z=sponSeed(),S=D.spon;S.form=z.form;['subj','greet','intro','closing'].forEach(k=>{S[k]=z[k]});sponManual=false;FILES3=[];
+  D.contacts.forEach(c=>{c.sp='off'});save();renderSpon();renderPrev();scrollTo(0,0);toast('Semua kolom sponsorship direset')});
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
-  [['vOrder','o'],['vSph','s'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
-  [['tOrder','o'],['tSph','s'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
+  [['vOrder','o'],['vSph','s'],['vSpon','p'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
+  [['tOrder','o'],['tSph','s'],['tSpon','p'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
   document.querySelector('.bar').classList.toggle('hide',t==='d');$('pv').classList.toggle('hide',t==='d');$('pvSp').classList.toggle('hide',t==='d');
   scrollTo(0,0);
-  if(t==='d')renderData();else if(t==='s'){renderSph();renderPrev()}else{renderFiles();renderPrev()}
+  if(t==='d')renderData();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
   if(t!=='d'){syncSp();growAll()}
   refreshClear()};
-$('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tData').onclick=()=>tab('d');
+$('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tSpon').onclick=()=>tab('p');$('tData').onclick=()=>tab('d');
 
 $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
