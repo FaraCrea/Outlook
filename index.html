@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#161b23" media="(prefers-color-scheme: dark)">
-<title>Outlook Cepat</title>
+<title>Fastlook</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<link rel="icon" href="icon.svg">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--pri:#0f6cbd;--bd:#d9dde3;--err:#c0392b;--chip:#e8f1fb}
@@ -325,15 +326,26 @@ label.sec{border:0!important;background:var(--chip)!important;color:var(--pri)!i
 #tplDel{background:rgba(208,59,59,.12)!important;color:var(--err)!important;border:0!important}
 #poClear{background:rgba(208,59,59,.12)!important;color:var(--err)!important;border:0!important}
 #wipeAll{border-radius:12px}
+
+.brand{display:flex;align-items:center;gap:7px;padding:0 6px 0 14px;flex:none}
+.brand img{width:28px;height:28px;border-radius:8px}
+.brand b{font-size:16px;font-weight:750;letter-spacing:-.2px;color:var(--tx)}
+header{padding:0!important}
+header button{min-width:0}
+@media (max-width:360px){.brand b{display:none}.brand{padding-left:10px}}
+.about{display:flex;align-items:center;gap:14px}
+.about img{width:56px;height:56px;border-radius:14px}
+.about b{font-size:18px}
 </style>
 </head>
 <body>
 <header>
+  <div class="brand"><img src="icon.svg" alt=""><b>Fastlook</b></div>
   <button id="tOrder" class="on"><i class="fa-solid fa-envelope-open-text"></i><span>Order</span></button>
   <button id="tSph"><i class="fa-solid fa-file-invoice-dollar"></i><span>SPH</span></button>
   <button id="tSpon"><i class="fa-solid fa-handshake"></i><span>Sponsor</span></button>
   <button id="tPO" class="hide"><i class="fa-solid fa-chart-pie"></i><span>PO</span></button>
-  <button id="tData"><i class="fa-solid fa-sliders"></i><span>Data</span></button>
+  <button id="tData"><i class="fa-solid fa-gear"></i><span>Setting</span></button>
 </header>
 
 <!-- ================= ORDER ================= -->
@@ -496,6 +508,9 @@ label.sec{border:0!important;background:var(--chip)!important;color:var(--pri)!i
 
 <!-- ================= DATA ================= -->
 <main id="vData" class="hide">
+  <details class="card dsec"><summary><i class="fa-solid fa-language"></i> Bahasa <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
+    <select id="langSel" aria-label="Language"><option value="id">Bahasa Indonesia</option><option value="en">English</option></select></div></details>
+
   <details class="card dsec"><summary><i class="fa-solid fa-heading"></i> Format Subjek <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <div class="ex" id="sEx"></div>
     <div class="mut" style="margin-bottom:4px">Geser <i class="fa-solid fa-grip-vertical"></i> untuk urutan. Kolom kecil = <b>separator</b> sebelum bagian itu.</div>
@@ -538,10 +553,11 @@ label.sec{border:0!important;background:var(--chip)!important;color:var(--pri)!i
     <div class="mut">Data tersimpan di HP ini saja.</div>
     <div class="row" style="margin-top:8px"><button class="sec" id="exp" style="flex:1">Salin Data</button><button class="sec" id="imp" style="flex:1">Tempel Data</button></div></div></details>
 
-  <details class="card dsec"><summary><i class="fa-solid fa-circle-info"></i> Versi Aplikasi <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
-    <div class="mut">Versi terpasang: <b id="appV"></b></div>
-    <button class="sec add" id="appUpd"><i class="fa-solid fa-rotate"></i> Perbarui Aplikasi Sekarang</button>
-    <div class="mut" style="margin-top:6px">Data Anda tidak dihapus.</div></div></details>
+  <details class="card dsec"><summary><i class="fa-solid fa-circle-info"></i> Tentang <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
+    <div class="about"><img src="icon-192.png" alt=""><div><b>Fastlook</b><div class="mut">Versi <span id="appV"></span></div></div></div>
+    <div class="mut" style="margin-top:12px">Dibuat oleh <b>TMS-127</b></div>
+    <div class="mut">For personal purpose only.</div>
+    <button class="sec add" id="appUpd"><i class="fa-solid fa-rotate"></i> Perbarui Aplikasi Sekarang</button></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-triangle-exclamation" style="color:var(--err)"></i> Hapus Semua Data <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <div class="mut">Menghapus semua data di HP ini secara permanen.</div>
@@ -658,10 +674,10 @@ function problems(){const p=[];
 function rcptGrid(key){
   const items=D.contacts.map((c,i)=>{if(!shown(c))return'';const st=c[key]||'off';
     return `<button class="rt s-${st}" data-i="${i}" aria-pressed="${st!=='off'}" aria-label="${esc(c.name)}: ${st==='off'?'tidak dipilih':st.toUpperCase()}"><span class="b">${st==='off'?'–':st.toUpperCase()}</span><span class="n">${esc(c.name)}</span></button>`}).join('');
-  return items?`<div class="mut" style="margin-bottom:6px">Ketuk nama: <b>TO</b> → <b>CC</b> → kosong</div><div class="rg">${items}</div>`:'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Data.</span>'}
+  return items?`<div class="mut" style="margin-bottom:6px">Ketuk nama: <b>TO</b> → <b>CC</b> → kosong</div><div class="rg">${items}</div>`:'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Setting.</span>'}
 function renderRcpt(){$('rcpt').innerHTML=rcptGrid('role')}
-const renderBrands=()=>$('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Data.</span>';
-const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis order. Tambah di tab Data.</span>';
+const renderBrands=()=>$('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Setting.</span>';
+const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis order. Tambah di tab Setting.</span>';
 const renderRs=()=>$('rs').innerHTML='<option value="">— pilih —</option>'+D.rs.map(r=>`<option ${F.rs===r?'selected':''}>${esc(r)}</option>`).join('');
 function renderItems(){
   const its=brandObj()?brandObj().items:[];
@@ -1225,7 +1241,7 @@ function pickItem(cb,list0){
   $('dBody').innerHTML='<div class="row" style="margin-top:8px"><input id="pkq" placeholder="Cari kode atau nama" autocomplete="off"></div><div id="pkl"></div>';
   const draw=q=>{q=q.trim().toLowerCase();
     const f=list.filter(c=>!q||c.code.toLowerCase().includes(q)||String(c.name||'').toLowerCase().includes(q));
-    $('pkl').innerHTML=f.length?f.map(c=>`<button class="sec pkrow" data-ci="${list.indexOf(c)}"><b>${esc(c.code)}</b>${c.name?`<span>${esc(c.name)}</span>`:''}</button>`).join(''):'<div class="mut" style="margin-top:10px">Tidak ada item. Tambah di tab Data, bagian Merk dan Barang.</div>'};
+    $('pkl').innerHTML=f.length?f.map(c=>`<button class="sec pkrow" data-ci="${list.indexOf(c)}"><b>${esc(c.code)}</b>${c.name?`<span>${esc(c.name)}</span>`:''}</button>`).join(''):'<div class="mut" style="margin-top:10px">Tidak ada item. Tambah di tab Setting, bagian Merk dan Barang.</div>'};
   draw('');$('pkq').oninput=e=>draw(e.target.value);
   $('dBody').onclick=e=>{const b=e.target.closest('[data-ci]');if(!b)return;cb(list[+b.dataset.ci]);$('dlg').close()};
   $('dlg').showModal()}
@@ -1910,7 +1926,7 @@ $('vPO').addEventListener('change',e=>{
 $('vPO').addEventListener('click',e=>{
   const d=PQ.draft;
   const pk=e.target.closest('[data-npick]');
-  if(pk&&d){const i=+pk.dataset.npick,cat=allCatalog();if(!cat.length)return toast('Belum ada barang di tab Data');
+  if(pk&&d){const i=+pk.dataset.npick,cat=allCatalog();if(!cat.length)return toast('Belum ada barang di tab Setting');
     pickItem(c=>{d.items[i].code=c.code;renderNewPO()},cat);return}
   const rm=e.target.closest('[data-nrm]');if(rm&&d){d.items.splice(+rm.dataset.nrm,1);renderNewPO();return}
   if(e.target.closest('#poNAdd')&&d){d.items.push({code:'',qty:''});renderNewPO();return}
@@ -1964,13 +1980,170 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v50';
+const APPV='v51';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   toast('Memperbarui…');
   try{const rg=await navigator.serviceWorker.getRegistrations();await Promise.all(rg.map(g=>g.unregister()))}catch(e){}
   try{const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}catch(e){}
   location.replace(location.pathname+'?r='+Date.now())};
+/* ---------- bahasa / language ---------- */
+const LANG=D.lang==='en'?'en':'id';
+const EN={
+'Setting':'Settings','Pratinjau':'Preview','Penerima':'Recipients','Merk':'Brand','Kode':'Code','Deskripsi':'Description','Semua':'All','Jenis Order':'Order Type','Rumah Sakit':'Hospital','Tanggal':'Date',
+'Isi Email':'Email Content','Salam':'Greeting','Isi':'Content','Penutup':'Closing','Lampiran':'Attachments','Catatan':'Notes','Subjek':'Subject','Surat':'Letter',
+'Barang & Jumlah':'Items & Quantity','Tampil di email':'Show in email','Tambah Gambar / PDF / File':'Add Image / PDF / File','Kosongkan Form Order':'Clear Order Form',
+'Ketuk nama:':'Tap a name:','→ kosong':'→ none','Pilih merk dulu':'Select a brand first','Pilih barang':'Select item','Jumlah':'Qty','Tambah Barang':'Add Item','Satuan':'Unit',
+'OK → Buka Outlook':'OK → Open Outlook','OK → Buat email SPH':'OK → Create SPH email','OK → Buat Email Sponsorship':'OK → Create Sponsorship Email','OK → Bagikan ke Outlook (+ lampiran)':'OK → Share to Outlook (+ attachment)',
+'— pilih —':'— select —','— Pilih —':'— Select —','Isi manual…':'Enter manually…','Pilih jenis order':'Select order type','Pilih merk':'Select brand','Pilih rumah sakit':'Select hospital',
+'Pilih minimal 1 penerima (To)':'Select at least 1 recipient (To)','Isi barang dan jumlah':'Fill in items and quantity','Ketuk untuk lihat':'Tap to view',
+'Hapus baris':'Delete row','Hapus lampiran':'Delete attachment','Hapus isi kolom':'Clear field','Pilih barang dari daftar':'Pick from list','Pilih dari daftar':'Pick from list',
+/* SPH */
+'SPH tersimpan':'Saved SPH','Daftar':'List','Perbarui':'Update','Simpan':'Save','SPH baru':'New SPH','Baru · belum disimpan':'New · not saved','Mengedit':'Editing','Mengedit · diubah':'Editing · modified',
+'(nama instansi)':'(institution name)','Tanggal di Bawah Tanda Tangan':'Date Below Signature','Tanggal & Tanda Tangan':'Date & Signature','Tanda tangan ikut dari template.':'Signature comes from the template.',
+'Data Penawaran':'Quotation Data','Nama Instansi':'Institution Name','Kepada (UP)':'To (Attn.)','Alamat':'Address','Cari Alamat dari Internet':'Search Address Online',
+'Produk yang Ditawarkan':'Offered Product','Versi Price List':'Price List Version','Kategori Barang':'Item Category','Discount':'Discount','Kondisi Penawaran':'Quotation Terms',
+'Tambah Butir Kondisi':'Add Term','Tulis kondisi penawaran':'Write a quotation term','1. Harga Produk':'1. Product Price','2. Franko':'2. Delivery Point (Franko)','3. Termin Pembayaran DP':'3. Payment Terms (DP)',
+'4. Masa Berlaku Penawaran':'4. Offer Validity','5. Stock Barang':'5. Stock','Hardcopy Dikirim ke Alamat':'Hardcopy Sent to Address','Sudah termasuk PPN':'Including VAT',
+'Daftar Item':'Item List','Nama Item':'Item Name','Harga Satuan':'Unit Price','Tambah Item':'Add Item','Tambah Accessories':'Add Accessories','Tambah Kondisi':'Add Term','Include Accessories':'Include Accessories',
+'Tambah Tabel Penawaran':'Add Quotation Table','Nama Item SPH (opsional)':'SPH Item Name (optional)','Tampilkan harga satuan':'Show unit price','Pilih dari daftar':'Pick from list',
+'Cara Kirim':'Send Method','Salin otomatis + tempel':'Auto-copy + paste','File email (.eml)':'Email file (.eml)','File Email (.eml)':'Email file (.eml)','Tautan Outlook web':'Outlook web link','Teks biasa':'Plain text',
+'Tabel tersalin otomatis, lalu email baru terbuka. Tekan lama di badan email, pilih Tempel.':'The table is copied automatically, then a new email opens. Long-press in the body and choose Paste.',
+'Membuka Outlook lewat tautan web dengan tabel langsung di badan email (bisa di aplikasi atau browser).':'Opens Outlook through a web link with the table in the email body (app or browser).',
+'Teks biasa tanpa garis tabel, langsung terisi. Cadangan kalau trial lain gagal.':'Plain text without table lines, filled in directly. A fallback if the others fail.',
+'Paling lengkap lewat File Email (.eml).':'Most complete via Email File (.eml).','Reset Semua Kolom':'Reset All Fields','Kosongkan':'Clear',
+/* Sponsor */
+'Template Excel':'Excel Template','Pilih File Template (.xlsx)':'Choose Template File (.xlsx)','Ganti File Template':'Change Template File','Hapus':'Delete','Tersimpan di HP ini':'Stored on this phone',
+'Pilih file Form Sponsorship (.xlsx) sekali saja.':'Choose the Sponsorship Form (.xlsx) once.','Type & Organizer':'Type & Organizer','Event Organizer':'Event Organizer','Lampiran Tambahan':'Additional Attachments',
+'Tambah Biaya Lain':'Add Other Cost','Tambah Penerima':'Add Recipient','Tax Purpose':'Tax Purpose','Pembayaran':'Payment','Budgeted Awal Tahun?':'Budgeted at start of year?','Nama biaya':'Cost name','Harga satuan':'Unit price',
+'Satu file email lengkap: penerima, subjek, isi, dan Excel terlampir. Tersimpan di folder Download, buka dengan Outlook.':'One complete email file: recipients, subject, content and the Excel attached. Saved to the Download folder; open it with Outlook.',
+'Bagikan ke Outlook':'Share to Outlook','Excel dibagikan lewat menu Bagikan HP, lalu pilih Outlook. Penerima tidak terisi otomatis. Chrome HP kadang menolak file Excel; kalau gagal, pakai File Email atau Unduh.':'The Excel is shared through the phone share menu; then choose Outlook. Recipients are not filled automatically. Chrome on phones sometimes rejects Excel files; if it fails, use the Email File or Download.',
+'Unduh Excel Saja':'Download Excel Only','Hanya menyimpan file Excel yang sudah terisi ke folder Download.':'Only saves the filled Excel file to the Download folder.',
+'Pilih file template Excel':'Choose the Excel template file','Isi Event Name':'Fill in Event Name','Pilih Produk / Merk':'Choose Product / Brand',
+/* PO */
+'Data PO':'PO Data','Tambah PO Manual':'Add Manual PO','Cari RS, produk, atau kode':'Search hospital, product or code','Bulan Ini':'This Month','Tahun Ini':'This Year','30 Hari':'30 Days',
+'Total PO':'Total PO','Total Qty':'Total Qty','Nominal':'Amount','Belum lengkap':'Incomplete','Semua Produk':'All Products','Tampilkan yang belum':'Show unpriced','Tampilkan semua':'Show all',
+'Harga standar':'Standard price','Harga RS ini':'Price for this hospital','Isi harga':'Set price','tanpa harga':'no price','Unduh CSV':'Download CSV','Kembali ke Beranda':'Back to Home','Batal, kembali ke Beranda':'Cancel, back to Home',
+'Item yang Dipesan':'Ordered Items','Riwayat PO (tanggal)':'PO History (dates)','Per Rumah Sakit':'Per Hospital','Jumlah PO':'PO Count','Jumlah RS':'Hospital Count','Belum ada PO tercatat':'No POs recorded yet',
+'Belum ada PO tercatat.':'No POs recorded yet.','Setiap kali Anda menekan OK di tab Order, order itu otomatis tercatat di sini.':'Every time you tap OK in the Order tab, that order is recorded here automatically.',
+'Tidak ada PO yang cocok dengan pencarian atau periode ini.':'No POs match this search or period.','Semua produk sudah berharga.':'All products have prices.','Semua RS sudah berharga.':'All hospitals have prices.',
+'PO Manual':'Manual PO','Catat PO di luar aplikasi atau PO lama.':'Record a PO made outside the app, or an old PO.','Tanggal PO':'PO Date','Simpan PO':'Save PO','Pakai lagi':'Reuse','Pakai lagi untuk order baru':'Reuse for a new order','Hapus PO':'Delete PO',
+'Untuk semua RS tanpa harga sendiri.':'For all hospitals without their own price.','Cari PO':'Search PO','Rumah Sakit / Instansi':'Hospital / Institution','Nama RS manual':'Hospital name (manual)',
+/* Setting */
+'Format Subjek':'Subject Format','Kalimat Isi Email':'Email Texts','Kontak Penerima':'Recipient Contacts','Merk & Barang':'Brands & Items','Kategori Barang':'Item Categories','Cadangan Data':'Data Backup','Hapus Semua Data':'Delete All Data',
+'Bahasa':'Language','Tentang':'About','Dibuat oleh':'Made by','For personal purpose only.':'For personal purpose only.','Versi':'Version','Perbarui Aplikasi Sekarang':'Update App Now','Data Anda tidak dihapus.':'Your data is not deleted.',
+'Aktifkan integrasi Data PO':'Enable PO Data integration','Hapus Semua Riwayat PO':'Delete All PO History','halaman PO muncul dan setiap order yang dibuat (tombol OK di tab Order) otomatis tercatat.':'the PO page appears and every order you create (OK button in the Order tab) is recorded automatically.',
+'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Salin Data':'Copy Data','Tempel Data':'Paste Data',
+'Menghapus semua data di HP ini secara permanen.':'Permanently deletes all data on this phone.','Tambah Teks Tetap':'Add Fixed Text','Pemisah Antar Barang':'Item Separator','Email Order':'Order Email','Email SPH':'SPH Email',
+'Tambah Kontak':'Add Contact','Tambah Merk':'Add Brand','Tambah Jenis':'Add Type','Tambah Kategori':'Add Category','Tambah RS':'Add Hospital','Tempel Daftar Barang':'Paste Item List','Ubah':'Edit','Hapus barang':'Delete item',
+'tanpa email (ditulis nama)':'no email (name is used)','Tampil di halaman Order (ketuk untuk sembunyikan)':'Shown on the Order page (tap to hide)','Disembunyikan (ketuk untuk tampilkan)':'Hidden (tap to show)',
+'Tampil (ketuk untuk sembunyikan)':'Shown (tap to hide)','Sembunyi (ketuk untuk tampilkan)':'Hidden (tap to show)','Separator':'Separator','Separator sebelum bagian ini':'Separator before this part','Teks':'Text','Tahan lalu geser untuk mengurutkan':'Hold and drag to reorder','Geser untuk mengurutkan':'Drag to reorder',
+'Nama':'Name','Email':'Email','Nama Merk':'Brand Name','Nama Jenis':'Type Name','Nama Kategori':'Category Name','Hapus MERK beserta semua barangnya':'Delete BRAND with all its items','Ubah nama MERK':'Rename BRAND',
+'Format tanggal':'Date format','Tambah barang':'Add item',
+/* dialog titles & misc */
+'Kontak Baru':'New Contact','Ubah Kontak':'Edit Contact','Jenis Baru':'New Type','Ubah Jenis':'Edit Type','Merk Baru':'New Brand','Ubah Nama Merk':'Rename Brand','Kategori Baru':'New Category','Ubah Kategori':'Edit Category',
+'RS / Instansi Baru':'New Hospital / Institution','Ubah RS / Instansi':'Edit Hospital / Institution','Ubah Item':'Edit Item','Ubah Barang':'Edit Item','Teks Tetap Baru':'New Fixed Text','Item Code':'Item Code',
+'Batal':'Cancel','Tutup':'Close','Tinjau':'Review','Impor':'Import','Kembali':'Back','Reset':'Reset','Hapus Semua':'Delete All','Hapus Template':'Delete Template','Siap Dibagikan':'Ready to Share','Bagikan':'Share','Unduh File':'Download File',
+'Cari':'Search','Pilih Item':'Pick Item','Cari kode atau nama':'Search code or name','Cari Alamat':'Search Address','Kata kunci pencarian':'Search keyword','Mencari…':'Searching…','Ketik kata kunci pencarian.':'Type a search keyword.',
+'Pencarian gagal. Perlu koneksi internet.':'Search failed. An internet connection is required.','Tidak ditemukan. Ubah kata kunci di atas lalu cari lagi.':'Not found. Change the keyword above and search again.',
+'Pilih yang sesuai, lalu periksa lagi (data OpenStreetMap).':'Pick the best match, then double-check (OpenStreetMap data).','Tempel hasil "Salin data"':'Paste the "Copy Data" result',
+'Satu produk per baris, kode di dalam tanda kurung:':'One product per line, code inside parentheses:','Periksa kode dan nama, lalu tekan Impor.':'Check the code and name, then tap Import.',
+'Tidak ada item. Tambah di tab Setting, bagian Merk dan Barang.':'No items. Add them in the Settings tab, under Brands & Items.','Belum ada SPH tersimpan.':'No saved SPH yet.','SPH baru (form kosong)':'New SPH (empty form)',
+'SPH sudah dibuat':'SPH Created','SPH ini sudah tersimpan otomatis di Daftar. Pilih Hapus kalau tidak diperlukan, dan form akan dikosongkan.':'This SPH was saved automatically to the List. Choose Delete if you do not need it, and the form will be cleared.',
+'Belum ada kontak yang ditampilkan. Atur di tab Setting.':'No contacts shown. Set them up in the Settings tab.','Belum ada merk. Tambah di tab Setting.':'No brands yet. Add them in the Settings tab.','Belum ada jenis order. Tambah di tab Setting.':'No order types yet. Add them in the Settings tab.',
+'Belum ada barang di tab Setting':'No items in the Settings tab yet','Sudah ada':'Already exists','Isi nama':'Enter a name','Isi item code':'Enter the item code','Isi nama instansi':'Enter the institution name','Isi nama instansi dulu':'Enter the institution name first',
+'Isi minimal 1 item':'Fill in at least 1 item','Isi minimal 1 barang beserta jumlahnya':'Fill in at least 1 item with its quantity','Pilih atau isi rumah sakit dulu':'Select or enter a hospital first','Isi teksnya':'Enter the text','Format email salah':'Invalid email format','Format email salah.':'Invalid email format.',
+'Item code sudah ada':'Item code already exists','Data tidak valid':'Invalid data','Dibatalkan':'Cancelled','Ganti semua data di HP ini?':'Replace all data on this phone?',
+'Tercatat di Data PO':'Recorded in PO Data','PO dihapus':'PO deleted','PO manual tersimpan':'Manual PO saved','Riwayat PO dihapus':'PO history deleted','Template dihapus':'Template deleted','Template disimpan di HP ini':'Template saved on this phone',
+'Form dikosongkan':'Form cleared','Form order direset':'Order form reset','SPH disimpan':'SPH saved','SPH dibuka. Ubah lalu simpan.':'SPH opened. Edit, then save.','Semua kolom SPH direset':'All SPH fields reset','Semua kolom sponsorship direset':'All sponsorship fields reset',
+'Alamat dan UP diisi dari data tersimpan':'Address and Attn. filled from saved data','Alamat diisi. Periksa lagi sebelum kirim.':'Address filled. Double-check before sending.','Memperbarui…':'Updating…','Menyiapkan Excel…':'Preparing Excel…',
+'Menyiapkan file email + lampiran…':'Preparing email file + attachments…','Menyiapkan file email…':'Preparing email file…','CSV tersimpan di folder Download':'CSV saved to the Download folder','Tersimpan di folder Download':'Saved to the Download folder',
+'Gagal menyalin':'Copy failed','Gagal menyalin tabel':'Failed to copy the table','Tabel tersalin. Di email, tekan lama lalu Tempel.':'Table copied. In the email, long-press then Paste.','Data tersalin. Simpan di catatan/chat sendiri.':'Data copied. Keep it in your own notes/chat.',
+'Order dimuat dari Data PO. Periksa lalu tekan OK.':'Order loaded from PO Data. Review, then tap OK.','Data PO aktif: order berikutnya akan tercatat':'PO Data on: the next orders will be recorded','Data PO nonaktif: halaman disembunyikan, order tidak dicatat':'PO Data off: page hidden, orders are not recorded',
+'Pustaka Excel belum termuat. Sambungkan internet sekali, lalu coba lagi.':'The Excel library has not loaded. Connect to the internet once, then try again.','HP ini tidak bisa membagikan file. Excel diunduh ke folder Download.':'This phone cannot share files. The Excel was downloaded to the Download folder.',
+'HP/browser ini tidak bisa membagikan lampiran. Buka email tanpa lampiran?':'This phone/browser cannot share attachments. Open the email without attachments?','HP/browser ini tidak bisa membagikan lampiran. Lanjut tanpa lampiran?':'This phone/browser cannot share attachments. Continue without attachments?',
+'Lampiran siap. Ketuk Bagikan, lalu pilih Outlook.':'Attachments ready. Tap Share, then choose Outlook.','Lampiran siap. Daftar penerima (To) sudah disalin: tempel di kolom To. Ketuk Bagikan, lalu pilih Outlook.':'Attachments ready. The recipient list (To) was copied: paste it into the To field. Tap Share, then choose Outlook.',
+'Form SPH saat ini belum disimpan. Tetap buat SPH baru?':'The current SPH form is not saved. Create a new SPH anyway?','Form SPH saat ini belum disimpan. Tetap buka SPH lain?':'The current SPH form is not saved. Open another SPH anyway?',
+'Hapus kelompok ini beserta item-nya?':'Delete this group with its items?','Hapus SPH ini dari daftar tersimpan dan kosongkan form?':'Delete this SPH from the saved list and clear the form?','Kosongkan form tanpa menyimpan?':'Clear the form without saving?',
+'Reset Form Order':'Reset Order Form','Semua kolom order dikosongkan. Penerima tetap tersimpan.':'All order fields are cleared. Recipients are kept.','Reset Semua Kolom SPH':'Reset All SPH Fields',
+'Semua kolom SPH dikosongkan, termasuk surat dan pilihan penerima. SPH yang sudah tersimpan tidak terhapus.':'All SPH fields are cleared, including the letter and recipient choices. Saved SPH are not deleted.',
+'Reset Semua Kolom Sponsorship':'Reset All Sponsorship Fields','Semua kolom sponsorship dikosongkan, termasuk pilihan penerima. File template tetap tersimpan.':'All sponsorship fields are cleared, including recipient choices. The template file is kept.',
+'File template dihapus dari HP ini. Isian sponsorship tidak ikut terhapus. Anda bisa memilih file template lagi kapan saja.':'The template file is removed from this phone. Sponsorship entries are not deleted. You can choose a template file again anytime.',
+'Semua data di HP ini dihapus permanen: kontak, merk, barang, RS, SPH tersimpan, template Excel, dan draf. Tidak bisa dibatalkan.':'All data on this phone is permanently deleted: contacts, brands, items, hospitals, saved SPH, Excel template and drafts. This cannot be undone.',
+'Seluruh riwayat PO dihapus permanen dari HP ini. Pengaturan lain tidak berubah.':'All PO history is permanently deleted from this phone. Other settings are unchanged.',
+'Hapus Semua Riwayat PO':'Delete All PO History','Hapus Semua Data':'Delete All Data',
+'Tampilkan harga satuan di email':'Show unit price in email','Tanpa lampiran':'No attachments',
+'Mengambil versi terbaru dari internet.':'Fetching the latest version from the internet.',
+'Geser':'Drag','Nama Produk (KODE)':'Product Name (CODE)','untuk urutan. Kolom kecil =':'to reorder. The small column =','sebelum bagian itu.':'before that part.','Hapus tabel':'Delete table','Hapus item':'Delete item','Hapus kelompok':'Delete group',
+'Pilih template dulu.':'Choose a template first.','Barang':'Items','Hapus jenis':'Delete type','Hapus kategori':'Delete category','Hapus merk':'Delete brand',
+'Pemisah antar barang':'Item separator','Sheet':'Sheet','Isi manual':'Enter manually','Penerima To belum punya email':'The To recipient has no email',
+};
+const ENP=[
+[/^\((\d+) belum lengkap\)$/,'($1 incomplete)'],
+[/^(\d+) produk$/,'$1 products'],[/^(\d+) RS$/,'$1 hospitals'],
+[/^(\d+) RS · terakhir (.+)$/,'$1 hospitals · last $2'],[/^(\d+) PO · terakhir (.+)$/,'$1 POs · last $2'],[/^(\d+) PO · pertama (.+) · terakhir (.+)$/,'$1 POs · first $2 · last $3'],
+[/^(\d+) PO tersimpan di HP ini\.$/,'$1 POs stored on this phone.'],
+[/^belum diberi harga, total nominal belum lengkap\.$/,'have no price yet, the total amount is incomplete.'],
+[/^di RS ini belum diberi harga\. Isi di kolom Harga di bawah\.$/,'in this hospital have no price yet. Fill in the Price fields below.'],
+[/^belum berharga untuk produk ini\.$/,'have no price for this product.'],
+[/^(\d+) item ditambah, (\d+) nama dilengkapi, (\d+) dilewati$/,'$1 items added, $2 names completed, $3 skipped'],
+[/^Tinjau (\d+) Item$/,'Review $1 Items'],
+[/^(\d+) baris tanpa kode \(tidak ada tanda kurung\) dilewati\.$/,'$1 lines without a code (no parentheses) were skipped.'],
+[/^Periksa kode dan nama, lalu tekan Impor\.\s*(.*)$/,'Check the code and name, then tap Import. $1'],
+[/^PO tanggal (.+) untuk (.+) dihapus dari Data PO\. Tidak bisa dibatalkan\.$/,'PO dated $1 for $2 will be removed from PO Data. This cannot be undone.'],
+[/^Hapus SPH tersimpan "(.*)"\?$/,'Delete saved SPH "$1"?'],
+[/^Hapus (jenis|kategori|item) (.+)\?$/,function(m){return 'Delete '+({jenis:'type',kategori:'category',item:'item'})[m[1]]+' '+m[2]+'?'}],
+[/^Hapus merk (.+) beserta barangnya\?$/,'Delete brand $1 with all its items?'],
+[/^Hapus (.+)\?$/,'Delete $1?'],
+[/^Tempel Daftar Barang \((.+)\)$/,'Paste Item List ($1)'],[/^Item Baru \((.+)\)$/,'New Item ($1)'],
+[/^Tersimpan di folder Download: (.+)$/,'Saved to the Download folder: $1'],
+[/^Excel siap: (.+)\. Ketuk Bagikan, lalu pilih Outlook\.$/,'Excel ready: $1. Tap Share, then choose Outlook.'],
+[/^Chrome HP menolak membagikan file ini \((.+)\)\. Unduh filenya, lalu lampirkan dari folder Download\.$/,'Chrome on this phone refused to share this file ($1). Download the file, then attach it from the Download folder.'],
+[/^File tidak bisa dipakai: (.+)$/,"File can't be used: $1"],[/^Gagal membuat Excel: (.+)$/,'Failed to create Excel: $1'],
+[/^Template tidak dikenali: baris "(.+)" tidak ditemukan di sheet (.+)$/,'Template not recognised: row "$1" not found in sheet $2'],
+[/^Baris biaya lain di template hanya (\d+), sedangkan diisi (\d+)$/,'The template only has $1 other-cost rows, but $2 were filled in'],
+[/^Gagal membagikan: (.+)$/,'Failed to share: $1'],
+[/^Versi terpasang:\s*(.*)$/,'Installed version: $1'],
+[/^Sheet "(.+)" tidak ada di template$/,'Sheet "$1" is not in the template'],
+[/^Mengedit SPH tersimpan\.(.*)$/,'Editing a saved SPH.$1'],
+[/^(.+) isi manual$/,function(m){return trs(m[1])+' (manual)'}],[/^(.+) persen$/,'$1 percent'],
+[/^Item yang Dipesan \((\d+)\)$/,'Ordered Items ($1)'],
+];
+const TOK=[[/\b(Januari)\b/g,'January'],[/\b(Februari)\b/g,'February'],[/\b(Maret)\b/g,'March'],[/\b(Mei)\b/g,'May'],[/\b(Juni)\b/g,'June'],[/\b(Juli)\b/g,'July'],[/\b(Agustus)\b/g,'August'],[/\b(Oktober)\b/g,'October'],[/\b(Desember)\b/g,'December'],
+ [/\b(Senin)\b/g,'Monday'],[/\b(Selasa)\b/g,'Tuesday'],[/\b(Rabu)\b/g,'Wednesday'],[/\b(Kamis)\b/g,'Thursday'],[/\b(Jumat)\b/g,'Friday'],[/\b(Sabtu)\b/g,'Saturday'],[/\b(Minggu)\b/g,'Sunday'],
+ [/\bMEI\b/g,'MAY'],[/\bAGU\b/g,'AUG'],[/\bOKT\b/g,'OCT'],[/\bDES\b/g,'DEC']];
+function trs(s){
+  if(LANG!=='en'||s==null)return s;
+  const m=/^(\s*)([\s\S]*?)(\s*)$/.exec(String(s));const core=m[2];if(!core)return s;
+  let out=EN[core];
+  if(out===undefined){
+    for(const [re,to] of ENP){const mm=re.exec(core);if(mm){out=typeof to==='function'?to(mm):core.replace(re,to);break}}
+    if(out===undefined)out=core}
+  TOK.forEach(([re,to])=>{out=out.replace(re,to)});
+  return m[1]+out+m[3]}
+function trNode(root){
+  if(LANG!=='en'||!root)return;
+  if(root.nodeType===3){const p=root.parentNode;if(p&&p.nodeName!=='SCRIPT'&&p.nodeName!=='STYLE'&&p.nodeName!=='TEXTAREA'&&!(p.closest&&p.closest('.hv'))){const v=trs(root.nodeValue);if(v!==root.nodeValue)root.nodeValue=v}return}
+  if(root.nodeType!==1)return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentNode&&n.parentNode.nodeName;return p==='SCRIPT'||p==='STYLE'||p==='TEXTAREA'||(n.parentNode.closest&&n.parentNode.closest('.hv'))?2:1}});
+  const list=[];while(w.nextNode())list.push(w.currentNode);
+  list.forEach(n=>{const v=trs(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v});
+  const els=root.matches&&root.matches('[placeholder],[aria-label],[title]')?[root]:[];
+  root.querySelectorAll('[placeholder],[aria-label],[title]').forEach(e=>els.push(e));
+  els.forEach(e=>['placeholder','aria-label','title'].forEach(a=>{if(e.hasAttribute(a)){const o=e.getAttribute(a),v=trs(o);if(v!==o)e.setAttribute(a,v)}}))}
+if(LANG==='en'){
+  document.documentElement.lang='en';
+  const _cf=window.confirm.bind(window),_al=window.alert.bind(window);
+  window.confirm=m=>_cf(trs(m));window.alert=m=>_al(trs(m));
+  trNode(document.body);
+  new MutationObserver(recs=>{recs.forEach(r=>{
+    if(r.type==='childList')r.addedNodes.forEach(n=>trNode(n));
+    else if(r.type==='characterData')trNode(r.target);
+    else if(r.type==='attributes'){const o=r.target.getAttribute(r.attributeName),v=trs(o);if(o!==null&&v!==o)r.target.setAttribute(r.attributeName,v)}})})
+    .observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['placeholder','aria-label','title']})}
+$('langSel').value=LANG;
+$('langSel').onchange=e=>{D.lang=e.target.value==='en'?'en':'id';save();location.reload()};
+
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
   [['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
@@ -1986,7 +2159,7 @@ $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+10)+'px'};
 new ResizeObserver(syncSp).observe($('pv'));
-loadDraft();setPv();renderAll();syncSp();restoreTab();applyPOVisibility();
+loadDraft();setPv();renderAll();syncSp();restoreTab();applyPOVisibility();trNode(document.body);
 </script>
 </body>
 </html>
