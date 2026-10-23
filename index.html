@@ -716,7 +716,7 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
     <div class="row" style="margin-top:6px"><button class="sec" id="exp" style="flex:1">Salin Data</button><button class="sec" id="imp" style="flex:1">Tempel Data</button></div></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-circle-info"></i> Tentang <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
-    <div class="about"><img src="icon-192.png" alt=""><div><b>Fastlook</b><div class="mut">Versi <span id="appV"></span></div><div class="mut hide" id="apkRow">APK <span id="apkV"></span></div></div></div>
+    <div class="about"><img src="icon-192.png" alt=""><div><b>Fastlook</b><div class="mut">Versi <span id="appV"></span></div></div></div>
     <div class="mut" style="margin-top:12px">Dibuat oleh <b>TMS-127</b></div>
     <div class="mut">For personal purpose only.</div>
     <button class="sec add" id="appUpd"><i class="fa-solid fa-rotate"></i> Cek Pembaruan</button></div></details>
@@ -1721,7 +1721,7 @@ function loadDraft(){
   if(d.date&&filled)$('date').value=d.date;
   if(d.sdate)$('sdate').value=d.sdate;
   draftTab=d.t==='s'?'s':'o'}
-function restoreTab(){if(draftTab==='s')tab('s')}
+function restoreTab(){let rt='';try{rt=sessionStorage.getItem('oc.rt')||'';sessionStorage.removeItem('oc.rt')}catch(e){}if(rt==='d')tab('d');else if(draftTab==='s')tab('s')}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){saveDraft();save()}});
 addEventListener('pagehide',()=>{saveDraft();save()});
 
@@ -2388,11 +2388,11 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v58';
+const APPV='v59';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
-  if(NATIVE){toast('Memeriksa pembaruan…');if(await apkCheck(true,true)==='prompt')return}
-  toast('Memperbarui…');
+  if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
+  toast('Memperbarui…');try{sessionStorage.setItem('oc.rt','d')}catch(e){}
   try{const rg=await navigator.serviceWorker.getRegistrations();await Promise.all(rg.map(g=>g.unregister()))}catch(e){}
   try{const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}catch(e){}
   location.replace(location.pathname+'?r='+Date.now())};
@@ -2565,7 +2565,7 @@ const vcmp=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.
 async function apkCheck(manual,quiet){
   if(!NATIVE)return 'none';
   let cur;try{cur=await NATIVE.getVersion()}catch(e){if(manual&&!quiet)toast('Versi aplikasi tidak terbaca');return 'error'}
-  $('apkV').textContent=cur.versionName;
+  $('appV').textContent=cur.versionName+' · '+APPV;
   try{
     const r=await fetch(REL_API,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);
     const best=(await r.json()).filter(x=>!x.draft&&!x.prerelease&&/^apk-v\d+(\.\d+){0,2}$/.test(x.tag_name)).map(x=>({v:x.tag_name.slice(5),rel:x})).sort((a,b)=>vcmp(b.v,a.v))[0];
@@ -2599,8 +2599,7 @@ function apkPrompt(best,asset,cur){
       await new Promise(r=>setTimeout(r,250))}};
   $('dOk').onclick=start;
   $('dlg').showModal()}
-$('apkRow').classList.toggle('hide',!NATIVE);
-if(NATIVE){try{NATIVE.getVersion().then(v=>{$('apkV').textContent=v.versionName}).catch(()=>{})}catch(e){}
+if(NATIVE){try{NATIVE.getVersion().then(v=>{$('appV').textContent=v.versionName+' · '+APPV}).catch(()=>{})}catch(e){}
   let lastChk=0;
   const autoChk=()=>{if(Date.now()-lastChk<10*60*1000||($('dlg')&&$('dlg').open))return;lastChk=Date.now();apkCheck(false)};
   setTimeout(autoChk,2500);
