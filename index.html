@@ -103,6 +103,20 @@ dialog .row{margin-top:14px;justify-content:flex-end}
 .c2{border:1px solid var(--bd);border-radius:10px;padding:8px;margin-top:8px}
 .itx{margin-top:8px;padding-top:8px;border-top:1px dashed var(--bd)}
 .itx:first-of-type{border-top:0}
+
+input,select,textarea{font-size:16px!important;min-height:42px;scroll-margin-top:72px}
+textarea{overflow:hidden;resize:none;line-height:1.35}
+button{touch-action:manipulation}
+.rg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+@media (min-width:520px){.rg{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rt{display:flex;align-items:center;gap:8px;text-align:left;white-space:normal;background:var(--bg);color:var(--mut);border:1px solid var(--bd);min-height:46px;padding:6px 8px;font-size:13px;line-height:1.2}
+.rt .b{flex:none;min-width:32px;text-align:center;font-size:11px;font-weight:700;border-radius:6px;padding:4px 0;background:var(--bd);color:var(--mut)}
+.rt .n{flex:1;min-width:0;overflow-wrap:anywhere}
+.rt.s-to{background:var(--chip);color:var(--tx);border-color:var(--pri)}.rt.s-to .b{background:var(--pri);color:#fff}
+.rt.s-cc{background:rgba(15,138,116,.14);color:var(--tx);border-color:#0f8a74}.rt.s-cc .b{background:#0f8a74;color:#fff}
+body.typing .bar{display:none}
+body.typing .pv .bd{max-height:16vh}
+.reset{width:100%;margin-top:4px}
 </style>
 </head>
 <body>
@@ -127,6 +141,7 @@ dialog .row{margin-top:14px;justify-content:flex-end}
     <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah gambar / PDF / file<input type="file" id="fileIn" multiple hidden></label>
     <div class="mut" id="fileNote" style="margin-top:6px"></div></div>
   <div class="card"><h3>Catatan (opsional)</h3><textarea id="note" placeholder="Ditambahkan di bawah daftar barang"></textarea></div>
+  <button class="sec reset" id="resetOrder"><i class="fa-solid fa-rotate-left"></i> Kosongkan form order</button>
 </main>
 
 <!-- ================= SPH ================= -->
@@ -175,6 +190,7 @@ dialog .row{margin-top:14px;justify-content:flex-end}
   <div class="card"><h3>Cara kirim</h3>
     <div class="chips" id="trials"></div><div class="mut" id="trialTx" style="margin-top:8px"></div>
     <div class="mut" style="margin-top:6px">Coba bergantian dan pilih yang tabelnya utuh di Outlook HP. Pilihan diingat.</div></div>
+  <button class="sec reset" id="resetSph"><i class="fa-solid fa-rotate-left"></i> Kosongkan form SPH</button>
 </main>
 
 <!-- ================= DATA ================= -->
@@ -293,9 +309,11 @@ function problems(){const p=[];
   return p}
 
 /* ---------- render order ---------- */
-function renderRcpt(){
-  $('rcpt').innerHTML=D.contacts.map((c,i)=>shown(c)?`<div class="ct"><div class="nm">${esc(c.name)}${c.email?`<small>${esc(c.email)}</small>`:''}</div>
-    <div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${c.role===r?'on':''}" data-r="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`:'').join('')||'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Data.</span>'}
+function rcptGrid(key){
+  const items=D.contacts.map((c,i)=>{if(!shown(c))return'';const st=c[key]||'off';
+    return `<button class="rt s-${st}" data-i="${i}" aria-pressed="${st!=='off'}" aria-label="${esc(c.name)}: ${st==='off'?'tidak dipilih':st.toUpperCase()}"><span class="b">${st==='off'?'–':st.toUpperCase()}</span><span class="n">${esc(c.name)}</span></button>`}).join('');
+  return items?`<div class="mut" style="margin-bottom:6px">Ketuk nama untuk mengganti: kosong → <b>TO</b> → <b>CC</b> → kosong</div><div class="rg">${items}</div>`:'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Data.</span>'}
+function renderRcpt(){$('rcpt').innerHTML=rcptGrid('role')}
 const renderBrands=()=>$('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Data.</span>';
 const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis order. Tambah di tab Data.</span>';
 const renderRs=()=>$('rs').innerHTML='<option value="">— pilih —</option>'+D.rs.map(r=>`<option ${F.rs===r?'selected':''}>${esc(r)}</option>`).join('');
@@ -330,7 +348,12 @@ $('items').addEventListener('change',e=>{const box=e.target.closest('.item');if(
 $('items').addEventListener('input',e=>{const box=e.target.closest('.item');if(!box)return;const k=e.target.dataset.k;if(k==='qty'||k==='unit'){F.items[+box.dataset.n][k]=e.target.value;renderPrev()}});
 $('items').addEventListener('click',e=>{if(!e.target.matches('[data-del]'))return;F.items.splice(+e.target.closest('.item').dataset.n,1);renderItems();renderPrev()});
 $('date').oninput=renderPrev;$('note').oninput=renderPrev;
-$('rcpt').addEventListener('click',e=>{const r=e.target.dataset.r;if(!r)return;D.contacts[+e.target.parentNode.dataset.i].role=r;save();renderRcpt();renderPrev()});
+const CYC={off:'to',to:'cc',cc:'off'};
+document.addEventListener('click',e=>{const t=e.target.closest('.rt');if(!t)return;
+  const key=t.closest('#rcptS')?'rs':'role',c=D.contacts[+t.dataset.i];
+  c[key]=CYC[c[key]||'off'];save();
+  if(key==='rs')$('rcptS').innerHTML=rcptGrid('rs');else renderRcpt();
+  renderPrev()});
 $('fileIn').onchange=e=>{FILES.push(...e.target.files);e.target.value='';renderFiles();renderPrev()};
 $('files').addEventListener('click',e=>{const i=e.target.dataset.fd;if(i===undefined)return;FILES.splice(+i,1);renderFiles();renderPrev()});
 const copy=async t=>{try{await navigator.clipboard.writeText(t);return true}catch(e){return false}};
@@ -526,7 +549,7 @@ function renderSph(){
     <button class="sec add" data-sact="nAdd" data-g="${gi}"><i class="fa-solid fa-plus"></i> Tambah kondisi</button></div>`).join('');
   $('trials').innerHTML=TRIALS.map(t=>`<button class="chip ${S.trial===t[0]?'on':''}" data-trial="${t[0]}">${t[1]}</button>`).join('');
   $('trialTx').textContent=TRIALS.find(t=>t[0]===S.trial)[2];
-  $('rcptS').innerHTML=D.contacts.map((c,i)=>shown(c)?`<div class="ct"><div class="nm">${esc(c.name)}${c.email?`<small>${esc(c.email)}</small>`:''}</div><div class="seg" data-i="${i}">${['to','cc','off'].map(r=>`<button class="${(c.rs||'off')===r?'on':''}" data-rr="${r}">${r==='off'?'–':r.toUpperCase()}</button>`).join('')}</div></div>`:'').join('')||'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Data.</span>'}
+  $('rcptS').innerHTML=rcptGrid('rs');growAll()}
 
 /* ---------- SPH events ---------- */
 const sv=()=>{save();renderPrev()};
@@ -543,7 +566,6 @@ $('vSph').addEventListener('change',e=>{const t=e.target;
   if(t.id==='tplSel'&&t.value!==''){const tp=D.sph.tpls[+t.value];if(tp){D.sph.form=JSON.parse(JSON.stringify(tp.form));if(tp.subj)D.sph.subj=tp.subj;save();renderSph();renderPrev();toast('Template dimuat')}}});
 $('vSph').addEventListener('click',e=>{
   const S=D.sph,t=e.target.closest('button');if(!t)return;
-  if(t.dataset.rr){D.contacts[+t.parentNode.dataset.i].rs=t.dataset.rr;save();renderSph();renderPrev();return}
   if(t.dataset.pick){S.form[t.dataset.pick]=t.dataset.v;save();renderSph();renderPrev();return}
   if(t.dataset.trial){S.trial=+t.dataset.trial;save();renderSph();return}
   const a=t.dataset.sact;if(!a)return;const g=+t.dataset.g,i=+t.dataset.i,kd=t.dataset.kd;
@@ -635,6 +657,24 @@ async function findAddr(){
   }catch(err){$('dBody').innerHTML='<div class="warn" style="margin-top:8px;font-size:13px">Pencarian gagal. Perlu koneksi internet.</div>'}}
 $('vSph').addEventListener('click',e=>{if(e.target.closest('[data-sact="findAddr"]'))findAddr()});
 
+
+/* ---------- kenyamanan mengetik ---------- */
+const grow=t=>{t.style.height='auto';t.style.height=Math.min(t.scrollHeight+2,220)+'px'};
+const growAll=()=>document.querySelectorAll('textarea').forEach(t=>{if(t.offsetParent)grow(t)});
+document.addEventListener('input',e=>{if(e.target.tagName==='TEXTAREA')grow(e.target)});
+const isFld=x=>x&&x.matches&&x.matches('input:not([type=file]):not([type=checkbox]),textarea,select');
+document.addEventListener('focusin',e=>{if(isFld(e.target)){document.body.classList.add('typing');if(e.target.tagName==='INPUT')e.target.enterKeyHint='next'}});
+document.addEventListener('focusout',()=>setTimeout(()=>{if(!isFld(document.activeElement))document.body.classList.remove('typing')},60));
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;const t=e.target;
+  if(t.closest('dialog')){e.preventDefault();$('dOk').click();return}
+  const main=t.closest('main');if(!main)return;
+  const all=[...main.querySelectorAll('input:not([type=file]):not([type=checkbox]),textarea,select')].filter(x=>x.offsetParent&&!x.disabled);
+  const i=all.indexOf(t);if(i>=0&&i<all.length-1){e.preventDefault();all[i+1].focus()}else t.blur()});
+$('resetOrder').onclick=()=>{if(!confirm('Kosongkan form order? Penerima tetap tersimpan.'))return;
+  F.brand=null;F.jenis=null;F.rs='';F.items=[{item:'',qty:'',unit:'ea'}];FILES=[];$('note').value='';$('date').value=todayISO();renderAll();scrollTo(0,0);toast('Form order dikosongkan')};
+$('resetSph').onclick=()=>{if(!confirm('Kosongkan data penawaran dan daftar item? Penerima, surat, dan buku alamat tetap.'))return;
+  const z=sphSeed();D.sph.form=z.form;D.sph.groups=z.groups;$('sdate').value=todayISO();save();renderSph();renderPrev();scrollTo(0,0);toast('Form SPH dikosongkan')};
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
   [['vOrder','o'],['vSph','s'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
@@ -642,7 +682,7 @@ const tab=t=>{MODE=t;
   document.querySelector('.bar').classList.toggle('hide',t==='d');$('pv').classList.toggle('hide',t==='d');$('pvSp').classList.toggle('hide',t==='d');
   scrollTo(0,0);
   if(t==='d')renderData();else if(t==='s'){renderSph();renderPrev()}else{renderFiles();renderPrev()}
-  if(t!=='d')syncSp()};
+  if(t!=='d'){syncSp();growAll()}};
 $('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tData').onclick=()=>tab('d');
 
 $('date').value=todayISO();
