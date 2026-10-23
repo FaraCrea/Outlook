@@ -226,6 +226,25 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
 .pot2{margin-left:auto;font-style:normal;font-size:12.5px;font-weight:600;color:#0f8a74;white-space:nowrap}
 .poa{flex:none;display:flex}
 .poa .ib{width:32px;min-height:32px}
+.warnb{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;color:#8a5a00;background:#fdeccb;border-radius:999px;padding:2px 9px}
+@media (prefers-color-scheme:dark){.warnb{color:#ffd27a;background:rgba(255,193,7,.16)}}
+.warnb.sm{font-size:10.5px;padding:1px 7px;margin-left:auto;white-space:nowrap}
+.warnbar{background:#fdeccb;color:#6b4500;border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:8px;cursor:pointer;line-height:1.35}
+@media (prefers-color-scheme:dark){.warnbar{background:rgba(255,193,7,.14);color:#ffd27a}}
+.prow{padding:10px 12px;cursor:pointer}
+.prow.nop{border-left:4px solid #e0a100}
+.prl{display:flex;gap:10px;align-items:flex-start}
+.prb{display:flex;align-items:center;gap:10px;margin-top:8px}
+.prp{display:flex;align-items:center;gap:8px}
+.prs{margin-left:auto;text-align:right}
+.nom{font-size:15px;color:#0f8a74}
+.prm{margin-top:6px;display:flex;align-items:center;gap:6px}.prm i{margin-left:auto}
+.nop2{background:rgba(224,161,0,.07);border-radius:8px;padding-left:6px!important;padding-right:6px!important}
+.backb{width:100%;margin-bottom:8px;justify-content:flex-start;text-align:left}
+.dtitle{font-size:19px;font-weight:700;overflow-wrap:anywhere}
+.lnk{color:var(--pri);cursor:pointer}
+.pohd{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.pohd b{font-size:14px}
 </style>
 </head>
 <body>
@@ -374,14 +393,18 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
 
 <!-- ================= DATA PO ================= -->
 <main id="vPO" class="hide">
-  <div class="card" style="padding:10px">
-    <div class="seg" id="poView" style="display:flex"><button data-pv="rs" style="flex:1">Detail per RS</button><button data-pv="prod" style="flex:1">Detail per Produk</button></div>
-    <input id="poq" placeholder="Cari RS, produk, atau kode" autocomplete="off" aria-label="Cari PO" style="margin-top:10px">
-    <div class="chips" id="poPer" style="margin-top:8px"></div>
+  <div id="poHome">
+    <div class="card" style="padding:10px">
+      <input id="poq" placeholder="Cari RS, produk, atau kode" autocomplete="off" aria-label="Cari PO">
+      <div class="chips" id="poPer" style="margin-top:8px"></div>
+    </div>
+    <div class="sumrow" id="poSum"></div>
+    <div id="poWarn"></div>
+    <div class="seg" id="poView" style="display:flex;margin-bottom:8px"><button data-pv="prod" style="flex:1">Semua Produk</button><button data-pv="rs" style="flex:1">Rumah Sakit</button></div>
+    <div id="poList"></div>
+    <div class="row" style="margin-top:4px"><button class="sec" id="poCsv" style="flex:1"><i class="fa-solid fa-file-csv"></i> Unduh CSV</button></div>
   </div>
-  <div class="sumrow" id="poSum"></div>
-  <div id="poList"></div>
-  <div class="row" style="margin-top:4px"><button class="sec" id="poCsv" style="flex:1"><i class="fa-solid fa-file-csv"></i> Unduh CSV</button></div>
+  <div id="poDetail" class="hide"></div>
 </main>
 
 <!-- ================= DATA ================= -->
@@ -1591,8 +1614,10 @@ $('wipeAll').onclick=()=>confirmBox('Hapus Semua Data','Semua data di HP ini dih
   location.reload()});
 /* ---------- Data PO ---------- */
 const BLN=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
-const PQ={q:'',per:'all',view:'rs',open:{}};
-const poD=iso=>{if(!iso)return{d:'--',m:'---',y:'',full:'—'};const [y,m,d]=iso.split('-').map(Number);return{d:String(d),m:BLN[m-1],y:String(y),full:d+' '+BLN[m-1]+' '+String(y).slice(2)}};
+const BLNF=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const PQ={q:'',per:'all',tab:'prod',screen:'home',onlyNo:false,scroll:0,pushed:false};
+const poD=iso=>{if(!iso)return{d:'--',m:'---',y:'',full:'—',hari:'',long:'—'};const [y,m,d]=iso.split('-').map(Number);const hari=HARI[new Date(Date.UTC(y,m-1,d)).getUTCDay()];return{d:String(d),m:BLN[m-1],y:String(y),full:d+' '+BLN[m-1]+' '+String(y).slice(2),hari,long:d+' '+BLNF[m-1]+' '+y}};
 const poUid=()=>'p'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
 const rpf=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
 const nf=n=>Number(n).toLocaleString('id-ID');
@@ -1617,97 +1642,147 @@ function poFiltered(){
   const from=PQ.per==='30'?new Date(now.getTime()-30*86400000).toISOString().slice(0,10):PQ.per==='month'?t.slice(0,8)+'01':PQ.per==='year'?t.slice(0,4)+'-01-01':'';
   return D.po.rows.filter(r=>{
     if(from&&r.date<from)return false;
-    if(q){const hay=[r.rs,r.brand].concat(r.items.map(i=>i.code+' '+i.name)).join(' ').toLowerCase();if(!hay.includes(q))return false}
+    if(q&&PQ.screen==='home'){const hay=[r.rs,r.brand].concat(r.items.map(i=>i.code+' '+i.name)).join(' ').toLowerCase();if(!hay.includes(q))return false}
     return true}).sort((a,b)=>b.date.localeCompare(a.date)||b.ts-a.ts)}
 
-/* agregasi */
-function poByRs(rows){
-  const g={};
-  rows.forEach(r=>{const k=poKey(r),o=g[k]=g[k]||{rs:k,rows:[],qty:0,sales:0,priced:false,prod:{}};o.rows.push(r);
-    r.items.forEach(i=>{const q=Number(i.qty)||0,p=poPrice(k,i.code);o.qty+=q;if(p){o.sales+=p*q;o.priced=true}
-      const pr=o.prod[i.code]=o.prod[i.code]||{code:i.code,name:i.name,qty:0,sales:0};pr.qty+=q;pr.sales+=p*q;if(!pr.name&&i.name)pr.name=i.name})});
-  return g}
-function poByProd(rows){
-  const g={};
-  rows.forEach(r=>{const k=poKey(r);r.items.forEach(i=>{const q=Number(i.qty)||0,p=poPrice(k,i.code);
-    const o=g[i.code]=g[i.code]||{code:i.code,name:i.name,qty:0,sales:0,priced:false,rs:{},last:''};
-    o.qty+=q;if(p){o.sales+=p*q;o.priced=true}if(!o.name&&i.name)o.name=i.name;if(r.date>o.last)o.last=r.date;
-    const s=o.rs[k]=o.rs[k]||{rs:k,qty:0,sales:0,entries:[]};s.qty+=q;s.sales+=p*q;s.entries.push({date:r.date,qty:q})}) });
-  return g}
+function poAnalyze(rows){
+  const prod={},rs={};
+  rows.forEach(r=>{const k=poKey(r),R=rs[k]=rs[k]||{rs:k,rows:[],qty:0,sales:0,noPrice:new Set(),prod:{}};R.rows.push(r);
+    r.items.forEach(i=>{const q=Number(i.qty)||0,p=poPrice(k,i.code);
+      R.qty+=q;R.sales+=p*q;if(!p)R.noPrice.add(i.code);
+      const rp=R.prod[i.code]=R.prod[i.code]||{code:i.code,name:i.name,qty:0,sales:0};rp.qty+=q;rp.sales+=p*q;if(!rp.name&&i.name)rp.name=i.name;
+      const P=prod[i.code]=prod[i.code]||{code:i.code,name:i.name,qty:0,sales:0,noRs:new Set(),rs:{},last:''};
+      P.qty+=q;P.sales+=p*q;if(!P.name&&i.name)P.name=i.name;if(!p)P.noRs.add(k);if(r.date>P.last)P.last=r.date;
+      const s=P.rs[k]=P.rs[k]||{rs:k,qty:0,sales:0,entries:[]};s.qty+=q;s.sales+=p*q;s.entries.push({date:r.date,qty:q})})});
+  return {prod,rs}}
 
-/* potongan HTML */
-const priceInput=(rs,code,placeholder)=>{
-  const v=D.po.price[rs]&&D.po.price[rs][code];
-  return `<input class="pin" data-price="${esc(encK(rs,code))}" inputmode="numeric" value="${v>0?nf(v):''}" placeholder="${placeholder>0?nf(placeholder):'0'}" aria-label="Harga satuan">`};
-const metric=(qty,sales,priced)=>`<div class="pm"><b>${nf(qty)}</b><span>qty</span>${priced?`<em>${rpf(sales)}</em>`:''}</div>`;
+/* potongan html */
+const priceInput=(rs,code,ph)=>{const v=D.po.price[rs]&&D.po.price[rs][code];
+  return `<input class="pin" data-price="${esc(encK(rs,code))}" inputmode="numeric" value="${v>0?nf(v):''}" placeholder="${ph>0?nf(ph):'Isi harga'}" aria-label="Harga satuan">`};
+const warnTag=t=>`<span class="warnb"><i class="fa-solid fa-triangle-exclamation"></i> ${t}</span>`;
+function nominalHtml(sales,noCount,allUnit){
+  if(!sales&&noCount)return warnTag('Belum ada harga');
+  return `<b class="nom">${sales?rpf(sales):'—'}</b>`+(noCount?`<div>${warnTag(noCount+' '+allUnit+' belum berharga')}</div>`:'')}
+const tile=(l,v,w)=>`<div class="tile"><span>${l}</span><b>${v}</b>${w||''}</div>`;
+
 function poLineHtml(r,rsName){
-  const dd=poD(r.date);
+  const dd=poD(r.date);let sub=0,no=0;
+  const items=r.items.map(i=>{const p=poPrice(rsName,i.code),q=Number(i.qty)||0;sub+=p*q;if(!p)no++;
+    return `<div class="poi"><span class="poc">${esc(i.code)}</span><span class="pon">${i.name?esc(i.name)+' · ':''}×${nf(q)} ${esc(i.unit||'')}</span>${p?`<em class="pot2">${rpf(p*q)}</em>`:`<span class="warnb sm">Belum ada harga</span>`}</div>`}).join('');
   return `<div class="po2"><div class="pod"><b>${dd.d}</b><span>${dd.m}</span><small>${dd.y}</small></div>
-    <div class="pob">${r.items.map(i=>{const p=poPrice(rsName,i.code),q=Number(i.qty)||0;return `<div class="poi"><span class="poc">${esc(i.code)}</span><span class="pon">×${nf(q)} ${esc(i.unit||'')}</span>${p?`<em class="pot2">${rpf(p*q)}</em>`:''}</div>`}).join('')}</div>
+    <div class="pob"><div class="pohd"><b>${dd.hari}, ${dd.long}</b>${sub?`<em class="pot2">${rpf(sub)}</em>`:''}</div>${items}</div>
     <div class="poa"><button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i></button></div></div>`}
 
-function rsCardHtml(g){
-  const key='rs:'+g.rs,open=!!PQ.open[key];
-  let h=`<div class="card pogrp"><div class="pogh" data-pg="${esc(key)}"><div style="flex:1;min-width:0"><div class="pogt">${esc(g.rs)}</div><div class="mut">${g.rows.length} PO · terakhir ${poD(g.rows[0].date).full}</div></div>${metric(g.qty,g.sales,g.priced)}<i class="fa-solid fa-chevron-${open?'up':'down'} poch"></i></div>`;
-  if(open){
-    h+='<div class="pbody"><div class="psec">Rekap Produk</div>';
-    Object.values(g.prod).sort((a,b)=>b.qty-a.qty).forEach(p=>{
+/* ---------- beranda ---------- */
+function renderHome(rows,A){
+  let qty=0,sales=0;Object.values(A.rs).forEach(g=>{qty+=g.qty;sales+=g.sales});
+  const prods=Object.values(A.prod),noProd=prods.filter(p=>p.noRs.size>0).length;
+  $('poSum').innerHTML=tile('Total PO',rows.length)+tile('Total Qty',nf(qty))+tile('Total Nominal',sales?rpf(sales):'—',noProd?'<div class="warnb sm">Belum lengkap</div>':'');
+  $('poWarn').innerHTML=noProd?`<div class="warnbar" data-nofilter><i class="fa-solid fa-triangle-exclamation"></i> <b>${noProd} produk</b> belum diberi harga, total nominal belum lengkap. <u>${PQ.onlyNo?'Tampilkan semua':'Tampilkan yang belum'}</u></div>`:'';
+  document.querySelectorAll('#poView button').forEach(b=>b.classList.toggle('on',b.dataset.pv===PQ.tab));
+  let h='';
+  if(PQ.tab==='prod'){
+    let list=prods.sort((a,b)=>b.qty-a.qty);if(PQ.onlyNo)list=list.filter(p=>p.noRs.size>0);
+    if(!list.length)h='<div class="card mut" style="text-align:center;padding:18px">Semua produk sudah berharga.</div>';
+    list.forEach(p=>{
       const std=D.po.price['*']&&D.po.price['*'][p.code];
-      h+=`<div class="pr2"><div class="pr2h"><div style="min-width:0"><b>${esc(p.code)}</b>${p.name?`<div class="mut pnm">${esc(p.name)}</div>`:''}</div><div class="pq"><b>${nf(p.qty)}</b> qty</div></div>
-        <div class="pr2p"><span class="mut">Harga</span>${priceInput(g.rs,p.code,std)}<span class="tot">${p.sales?rpf(p.sales):'—'}</span></div></div>`});
-    h+='<div class="psec">Riwayat PO</div>'+g.rows.map(r=>poLineHtml(r,g.rs)).join('')+'</div>'}
-  return h+'</div>'}
+      h+=`<div class="card prow ${p.noRs.size?'nop':''}" data-go="pr:${esc(p.code)}"><div class="prl"><div style="flex:1;min-width:0"><div class="pogt">${esc(p.code)}</div>${p.name?`<div class="mut pnm">${esc(p.name)}</div>`:''}</div><div class="pm"><b>${nf(p.qty)}</b><span>qty</span></div></div>
+        <div class="prb"><div class="prp"><span class="mut">Harga standar</span>${priceInput('*',p.code,0)}</div><div class="prs">${nominalHtml(p.sales,p.noRs.size,'RS')}</div></div>
+        <div class="mut prm">${Object.keys(p.rs).length} RS · terakhir ${poD(p.last).full} <i class="fa-solid fa-chevron-right"></i></div></div>`})}
+  else{
+    let list=Object.values(A.rs).sort((a,b)=>b.rows[0].date.localeCompare(a.rows[0].date));if(PQ.onlyNo)list=list.filter(g=>g.noPrice.size>0);
+    if(!list.length)h='<div class="card mut" style="text-align:center;padding:18px">Semua RS sudah berharga.</div>';
+    list.forEach(g=>{
+      h+=`<div class="card prow ${g.noPrice.size?'nop':''}" data-go="rs:${esc(g.rs)}"><div class="prl"><div style="flex:1;min-width:0"><div class="pogt">${esc(g.rs)}</div><div class="mut">${g.rows.length} PO · terakhir ${poD(g.rows[0].date).full}</div></div><div class="pm"><b>${nf(g.qty)}</b><span>qty</span></div></div>
+        <div class="prb"><div class="prs" style="flex:1;text-align:left">${nominalHtml(g.sales,g.noPrice.size,'produk')}</div><i class="fa-solid fa-chevron-right" style="color:var(--mut)"></i></div></div>`})}
+  $('poList').innerHTML=h}
 
-function prodCardHtml(o){
-  const key='pr:'+o.code,open=!!PQ.open[key];
-  let h=`<div class="card pogrp"><div class="pogh" data-pg="${esc(key)}"><div style="flex:1;min-width:0"><div class="pogt">${esc(o.code)}</div><div class="mut pnm">${esc(o.name||'—')}</div><div class="mut">${Object.keys(o.rs).length} RS · terakhir ${poD(o.last).full}</div></div>${metric(o.qty,o.sales,o.priced)}<i class="fa-solid fa-chevron-${open?'up':'down'} poch"></i></div>`;
-  if(open){
-    const std=D.po.price['*']&&D.po.price['*'][o.code];
-    h+=`<div class="pbody"><div class="pr2p" style="margin-top:6px"><span class="mut">Harga standar</span>${priceInput('*',o.code,0)}<span class="tot"></span></div>
-      <div class="mut" style="margin:2px 0 4px">Dipakai untuk semua RS, kecuali RS yang diberi harga sendiri di bawah.</div>
-      <div class="psec">Per Rumah Sakit</div>`;
-    Object.values(o.rs).sort((a,b)=>b.qty-a.qty).forEach(s=>{
-      const ds=s.entries.slice().sort((a,b)=>b.date.localeCompare(a.date));
-      h+=`<div class="pr2"><div class="pr2h"><div style="min-width:0"><b>${esc(s.rs)}</b></div><div class="pq"><b>${nf(s.qty)}</b> qty</div></div>
-        <div class="pr2p"><span class="mut">Harga</span>${priceInput(s.rs,o.code,std)}<span class="tot">${s.sales?rpf(s.sales):'—'}</span></div>
-        <div class="dts">${ds.map(e=>`<span><b>${poD(e.date).full}</b> ×${nf(e.qty)}</span>`).join('')}</div></div>`});
-    h+='</div>'}
-  return h+'</div>'}
+/* ---------- detail RS ---------- */
+function renderRsDetail(name,rows,A){
+  const g=A.rs[name];
+  if(!g){PQ.screen='home';return renderPO()}
+  const dts=g.rows.map(r=>r.date).sort(),noN=g.noPrice.size;
+  let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</button>
+    <div class="card"><div class="dtitle">${esc(g.rs)}</div><div class="mut">${g.rows.length} PO · pertama ${poD(dts[0]).full} · terakhir ${poD(dts[dts.length-1]).full}</div>
+    <div class="sumrow" style="margin:10px 0 0">${tile('Jumlah PO',g.rows.length)}${tile('Total Qty',nf(g.qty))}${tile('Total Nominal',g.sales?rpf(g.sales):'—')}</div>
+    ${noN?`<div class="warnbar" style="margin:10px 0 0"><i class="fa-solid fa-triangle-exclamation"></i> <b>${noN} produk</b> di RS ini belum diberi harga. Isi di kolom Harga di bawah.</div>`:''}</div>
+    <div class="psec">Item yang Dipesan (${Object.keys(g.prod).length})</div><div class="card" style="padding:4px 12px">`;
+  Object.values(g.prod).sort((a,b)=>b.qty-a.qty).forEach(p=>{
+    const std=D.po.price['*']&&D.po.price['*'][p.code],noP=!poPrice(g.rs,p.code);
+    h+=`<div class="pr2 ${noP?'nop2':''}"><div class="pr2h"><div style="min-width:0"><b>${esc(p.code)}</b>${p.name?`<div class="mut pnm">${esc(p.name)}</div>`:''}</div><div class="pq"><b>${nf(p.qty)}</b> qty</div></div>
+      <div class="pr2p"><span class="mut">Harga</span>${priceInput(g.rs,p.code,std)}<span class="tot">${p.sales?rpf(p.sales):warnTag('Belum ada harga')}</span></div></div>`});
+  h+='</div><div class="psec">Riwayat PO (tanggal)</div>';
+  let cur='';
+  g.rows.forEach(r=>{const mk=r.date.slice(0,7);if(mk!==cur){cur=mk;const [y,m]=mk.split('-');h+=`<div class="pomh">${BLNF[+m-1]} ${y}</div>`}
+    h+=`<div class="card" style="padding:4px 12px">${poLineHtml(r,g.rs)}</div>`});
+  $('poDetail').innerHTML=h}
+
+/* ---------- detail produk ---------- */
+function renderProdDetail(code,rows,A){
+  const o=A.prod[code];
+  if(!o){PQ.screen='home';return renderPO()}
+  const std=D.po.price['*']&&D.po.price['*'][code],noN=o.noRs.size;
+  let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</button>
+    <div class="card"><div class="dtitle">${esc(o.code)}</div>${o.name?`<div class="mut">${esc(o.name)}</div>`:''}
+    <div class="sumrow" style="margin:10px 0 0">${tile('Total Qty',nf(o.qty))}${tile('Jumlah RS',Object.keys(o.rs).length)}${tile('Total Nominal',o.sales?rpf(o.sales):'—')}</div>
+    <div class="pr2p" style="margin-top:12px"><span class="mut">Harga standar</span>${priceInput('*',code,0)}</div>
+    <div class="mut" style="margin-top:4px">Berlaku untuk semua RS, kecuali RS yang diberi harga sendiri di bawah.</div>
+    ${noN?`<div class="warnbar" style="margin:10px 0 0"><i class="fa-solid fa-triangle-exclamation"></i> <b>${noN} RS</b> belum berharga untuk produk ini.</div>`:''}</div>
+    <div class="psec">Per Rumah Sakit</div>`;
+  Object.values(o.rs).sort((a,b)=>b.qty-a.qty).forEach(s=>{
+    const ds=s.entries.slice().sort((a,b)=>b.date.localeCompare(a.date)),noP=!poPrice(s.rs,code);
+    h+=`<div class="card ${noP?'nop':''}" style="padding:8px 12px"><div class="pr2h"><div style="min-width:0"><b class="lnk" data-go="rs:${esc(s.rs)}">${esc(s.rs)} <i class="fa-solid fa-chevron-right"></i></b></div><div class="pq"><b>${nf(s.qty)}</b> qty</div></div>
+      <div class="pr2p"><span class="mut">Harga</span>${priceInput(s.rs,code,std)}<span class="tot">${s.sales?rpf(s.sales):warnTag('Belum ada harga')}</span></div>
+      <div class="dts">${ds.map(e=>`<span><b>${poD(e.date).full}</b> ×${nf(e.qty)}</span>`).join('')}</div></div>`});
+  $('poDetail').innerHTML=h}
 
 function renderPO(){
   $('poPer').innerHTML=[['all','Semua'],['30','30 Hari'],['month','Bulan Ini'],['year','Tahun Ini']].map(x=>`<button class="chip ${PQ.per===x[0]?'on':''}" data-pper="${x[0]}">${x[1]}</button>`).join('');
-  document.querySelectorAll('#poView button').forEach(b=>b.classList.toggle('on',b.dataset.pv===PQ.view));
-  const rows=poFiltered(),byRs=poByRs(rows);
-  let qty=0,sales=0,priced=false;Object.values(byRs).forEach(g=>{qty+=g.qty;sales+=g.sales;if(g.priced)priced=true});
-  $('poSum').innerHTML=`<div class="tile"><span>Total PO</span><b>${rows.length}</b></div><div class="tile"><span>Total Qty</span><b>${nf(qty)}</b></div><div class="tile"><span>Total Sales</span><b>${priced?rpf(sales):'—'}</b></div>`;
-  const list=$('poList');
-  if(!D.po.rows.length){list.innerHTML='<div class="card" style="text-align:center;padding:24px 16px"><i class="fa-solid fa-clipboard-list" style="font-size:28px;color:var(--mut)"></i><div style="font-weight:600;margin-top:10px">Belum ada PO tercatat</div><div class="mut" style="margin-top:6px">Setiap kali Anda menekan OK di tab Order, order itu otomatis tercatat di sini.</div></div>';return}
-  if(!rows.length){list.innerHTML='<div class="card mut" style="text-align:center;padding:18px">Tidak ada PO yang cocok dengan pencarian atau periode ini.</div>';return}
-  let h='';
-  if(PQ.view==='rs')Object.values(byRs).sort((a,b)=>b.rows[0].date.localeCompare(a.rows[0].date)).forEach(g=>{h+=rsCardHtml(g)});
-  else Object.values(poByProd(rows)).sort((a,b)=>b.last.localeCompare(a.last)||b.qty-a.qty).forEach(o=>{h+=prodCardHtml(o)});
-  if(!priced)h='<div class="hint">Isi <b>Harga</b> di dalam kartu (ketuk RS atau produk) untuk melihat total sales.</div>'+h;
-  list.innerHTML=h}
+  const home=PQ.screen==='home';
+  $('poHome').classList.toggle('hide',!home);$('poDetail').classList.toggle('hide',home);
+  const rows=poFiltered(),A=poAnalyze(rows);
+  if(!D.po.rows.length){$('poHome').classList.remove('hide');$('poDetail').classList.add('hide');
+    $('poSum').innerHTML='';$('poWarn').innerHTML='';
+    $('poList').innerHTML='<div class="card" style="text-align:center;padding:24px 16px"><i class="fa-solid fa-clipboard-list" style="font-size:28px;color:var(--mut)"></i><div style="font-weight:600;margin-top:10px">Belum ada PO tercatat</div><div class="mut" style="margin-top:6px">Setiap kali Anda menekan OK di tab Order, order itu otomatis tercatat di sini.</div></div>';return}
+  if(home){
+    if(!rows.length){$('poSum').innerHTML='';$('poWarn').innerHTML='';$('poList').innerHTML='<div class="card mut" style="text-align:center;padding:18px">Tidak ada PO yang cocok dengan pencarian atau periode ini.</div>';return}
+    renderHome(rows,A)}
+  else if(PQ.screen.startsWith('rs:'))renderRsDetail(PQ.screen.slice(3),rows,A);
+  else renderProdDetail(PQ.screen.slice(3),rows,A)}
+
+function poGo(screen){
+  if(PQ.screen==='home')PQ.scroll=scrollY;
+  PQ.screen=screen;
+  if(!PQ.pushed){try{history.pushState({po:1},'')}catch(e){}PQ.pushed=true}
+  renderPO();scrollTo(0,0)}
+function poBack(){
+  if(PQ.screen==='home')return;
+  if(PQ.pushed){PQ.pushed=false;try{history.back();return}catch(e){}}
+  PQ.screen='home';renderPO();scrollTo(0,PQ.scroll)}
+addEventListener('popstate',()=>{
+  if(MODE==='q'&&PQ.screen!=='home'){PQ.pushed=false;PQ.screen='home';renderPO();scrollTo(0,PQ.scroll)}});
 
 /* events */
 $('poq').addEventListener('input',e=>{PQ.q=e.target.value;renderPO()});
-$('poView').addEventListener('click',e=>{const b=e.target.closest('[data-pv]');if(!b)return;PQ.view=b.dataset.pv;renderPO()});
+$('poView').addEventListener('click',e=>{const b=e.target.closest('[data-pv]');if(!b)return;PQ.tab=b.dataset.pv;renderPO()});
 $('vPO').addEventListener('change',e=>{
   const t=e.target;if(!t.dataset||!t.dataset.price)return;
   const [rs,code]=t.dataset.price.split('|').map(decodeURIComponent),v=parseInt(String(t.value).replace(/\D/g,''),10)||0;
   D.po.price[rs]=D.po.price[rs]||{};
   if(v>0)D.po.price[rs][code]=v;else delete D.po.price[rs][code];
   if(!Object.keys(D.po.price[rs]).length)delete D.po.price[rs];
-  save();renderPO()});
+  save();const y=scrollY;renderPO();scrollTo(0,y)});
 $('vPO').addEventListener('click',e=>{
   if(e.target.closest('input'))return;
   const per=e.target.closest('[data-pper]');if(per){PQ.per=per.dataset.pper;renderPO();return}
+  if(e.target.closest('[data-nofilter]')){PQ.onlyNo=!PQ.onlyNo;renderPO();return}
+  if(e.target.closest('[data-back]')){poBack();return}
   const act=e.target.closest('[data-poa]');
   if(act){const id=act.dataset.id,r=D.po.rows.find(x=>x.id===id);if(!r)return;
     if(act.dataset.poa==='reuse')poReuse(r);
     else confirmBox('Hapus PO','PO tanggal '+poD(r.date).full+' untuk '+poKey(r)+' dihapus dari Data PO. Tidak bisa dibatalkan.','Hapus',()=>{D.po.rows=D.po.rows.filter(x=>x.id!==id);save();renderPO();toast('PO dihapus')});
     return}
-  const g=e.target.closest('[data-pg]');if(g){const k=g.dataset.pg;PQ.open[k]=!PQ.open[k];renderPO()}});
+  const g=e.target.closest('[data-go]');if(g)poGo(g.dataset.go)});
 function poReuse(r){
   F.brand=r.brand||null;F.jenis=r.jenis||null;F.rs=r.rs||'';
   F.items=r.items.length?r.items.map(i=>({item:i.code,qty:String(i.qty),unit:i.unit||'ea'})):[{item:'',qty:'',unit:'ea'}];
@@ -1768,7 +1843,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v47';
+const APPV='v48';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   toast('Memperbarui…');
@@ -1784,7 +1859,7 @@ const tab=t=>{MODE=t;
   if(t==='d')renderData();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
   if(t!=='d'&&t!=='q'){syncSp();growAll()}
   refreshClear()};
-$('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tSpon').onclick=()=>tab('p');$('tPO').onclick=()=>tab('q');$('tData').onclick=()=>tab('d');
+$('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tSpon').onclick=()=>tab('p');$('tPO').onclick=()=>{if(MODE==='q'&&PQ.screen!=='home'){poBack();return}tab('q')};$('tData').onclick=()=>tab('d');
 
 $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
