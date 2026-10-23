@@ -119,6 +119,11 @@ body.typing .pv .bd{max-height:16vh}
 .reset{width:100%;margin-top:4px}
 .pv::after{content:'';position:absolute;left:0;right:0;top:100%;height:10px;background:var(--bg);border-bottom:1px solid var(--bd)}
 main{scroll-padding-top:90px}
+.sv{padding:2px 0}
+.svb{flex:1;min-width:0;text-align:left;white-space:normal;background:transparent;color:var(--tx);padding:6px 4px;min-height:44px;font-size:14px}
+.svb small{display:block;color:var(--mut);font-size:12px;margin-top:1px}
+.sv.cur{background:var(--chip);border-radius:8px}
+.tag{font-size:11px;color:var(--pri);font-weight:600}
 </style>
 </head>
 <body>
@@ -148,11 +153,9 @@ main{scroll-padding-top:90px}
 
 <!-- ================= SPH ================= -->
 <main id="vSph" class="hide">
-  <div class="card"><h3>Template instansi</h3>
-    <div class="row"><select id="tplSel" style="flex:1"></select>
-      <button class="ib pri" data-sact="tplSave" title="Simpan sebagai template" aria-label="Simpan sebagai template"><i class="fa-solid fa-floppy-disk"></i></button>
-      <button class="ib del" data-sact="tplDel" title="Hapus template" aria-label="Hapus template"><i class="fa-solid fa-trash"></i></button></div>
-    <div class="mut" style="margin-top:4px">Isi data instansi sekali, simpan, lalu muat lagi kapan saja.</div></div>
+  <div class="card"><h3>SPH tersimpan</h3><div id="savedList"></div>
+    <div class="row" style="margin-top:8px"><button class="sec" data-sact="sNew" style="flex:1"><i class="fa-solid fa-file-circle-plus"></i> SPH baru</button><button id="btnSave" data-sact="sSave" style="flex:1"></button></div>
+    <div class="mut" id="curInfo" style="margin-top:6px"></div></div>
 
   <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcptS"></div></div>
 
@@ -251,13 +254,15 @@ const seed=()=>({
 let MODE='o';
 const sphSeed=()=>({greet:'Dear Mb Eni,',intro:'Mohon bantunya untuk diproses',closing:'Thanks,',subj:'SPH_{instansi}_{produk} #{tanggal}',trial:1,
   form:{instansi:'',kepada:'',alamat:'',produk:'',versi:'',kategori:'',discount:'',kondisi:['Harga sudah termasuk PPN 11%'],p1:'sudah termasuk PPN',p2:'-',p3:'-',p4:'60 hari',p5:'inden',hc:''},
-  groups:[{title:'',items:[{code:'',name:'',unit:'1',price:''}],acc:[],notes:[]}],tpls:[],book:{}});
+  groups:[{title:'',items:[{code:'',name:'',unit:'1',price:''}],acc:[],notes:[]}],tpls:[],book:{},saved:[],cur:null});
 function sphNorm(x){const s=sphSeed();x=x||{};
   ['greet','intro','closing','subj','trial'].forEach(k=>{if(x[k]===undefined)x[k]=s[k]});
   x.form=Object.assign({},s.form,x.form||{});if(!Array.isArray(x.form.kondisi))x.form.kondisi=[];
   x.groups=Array.isArray(x.groups)&&x.groups.length?x.groups:s.groups;
   x.groups.forEach(g=>{g.items=g.items||[];g.acc=g.acc||[];g.notes=g.notes||[];g.title=g.title||''});
-  x.tpls=x.tpls||[];x.book=x.book||{};return x}
+  x.tpls=x.tpls||[];x.book=x.book||{};x.saved=x.saved||[];x.cur=x.cur||null;
+  if(x.tpls.length&&!x.saved.length){x.saved=x.tpls.map(t=>({id:'t'+Math.random().toString(36).slice(2,8),ts:Date.now(),snap:{form:t.form,groups:sphSeed().groups,greet:x.greet,intro:x.intro,closing:x.closing,subj:t.subj||x.subj,date:'',rcp:{}}}));x.tpls=[]}
+  return x}
 function norm(x){const s=seed();x.sph=sphNorm(x.sph);
   x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.contacts=x.contacts||s.contacts;
   x.subj=x.subj||{};x.subj.parts=x.subj.parts||defParts();x.subj.isep=x.subj.isep??'+';x.subj.dfmt=x.subj.dfmt||'dMy2';
@@ -278,7 +283,7 @@ const ib=(act,icon,title,at='',cls='')=>`<button class="ib ${cls}" data-act="${a
 
 /* ---------- dialog ---------- */
 function ask(title,fields,cb){
-  $('dTitle').textContent=title;$('dErr').textContent='';$('dOk').style.display='';$('dNo').textContent='Batal';$('dBody').onclick=null;
+  $('dTitle').textContent=title;$('dErr').textContent='';$('dOk').style.display='';$('dOk').textContent='Simpan';$('dNo').textContent='Batal';$('dBody').onclick=null;
   $('dBody').innerHTML=fields.map((f,n)=>`<label class="f">${esc(f.label)}<input id="df${n}" type="${f.type||'text'}" value="${esc(f.val||'')}" placeholder="${esc(f.ph||'')}" ${f.type==='email'?'inputmode="email" autocapitalize="off"':''} ${f.up?'style="text-transform:uppercase"':''}></label>`).join('');
   $('dOk').onclick=()=>{const v=fields.map((f,n)=>{let x=$('df'+n).value.trim();return f.up?x.toUpperCase():x});const err=cb(v);if(err){$('dErr').textContent=err;return}$('dlg').close()};
   $('dNo').onclick=()=>$('dlg').close();
@@ -535,7 +540,7 @@ function renderSph(){
   document.querySelectorAll('#vSph [data-f]').forEach(e=>{e.value=f[e.dataset.f]||''});
   document.querySelectorAll('#vSph [data-m]').forEach(e=>{e.value=S[e.dataset.m]||''});
   if(!$('sdate').value)$('sdate').value=todayISO();
-  $('tplSel').innerHTML='<option value="">— muat template —</option>'+S.tpls.map((t,i)=>`<option value="${i}">${esc(t.name)}</option>`).join('');
+  renderSaved();
   $('chProd').innerHTML=D.brands.map(b=>`<button class="chip" data-pick="produk" data-v="${esc(b.name)}">${esc(b.name)}</button>`).join('');
   $('chVer').innerHTML=D.jenis.map(j=>`<button class="chip" data-pick="versi" data-v="${esc(j)}">${esc(j)}</button>`).join('');
   $('sKond').innerHTML=bulletRows(f.kondisi,'data-kb','');
@@ -562,17 +567,12 @@ $('vSph').addEventListener('input',e=>{const t=e.target,S=D.sph;
   else if(t.dataset.nt!==undefined)S.groups[+t.dataset.g].notes[+t.dataset.i]=t.value;
   else if(t.id!=='sdate')return;
   sv()});
-$('vSph').addEventListener('change',e=>{const t=e.target;
-  if(t.id==='tplSel'&&t.value!==''){const tp=D.sph.tpls[+t.value];if(tp){D.sph.form=JSON.parse(JSON.stringify(tp.form));if(tp.subj)D.sph.subj=tp.subj;save();renderSph();renderPrev();toast('Template dimuat')}}});
 $('vSph').addEventListener('click',e=>{
   const S=D.sph,t=e.target.closest('button');if(!t)return;
   if(t.dataset.pick){S.form[t.dataset.pick]=t.dataset.v;save();renderSph();renderPrev();return}
   if(t.dataset.trial){S.trial=+t.dataset.trial;save();renderSph();return}
   const a=t.dataset.sact;if(!a)return;const g=+t.dataset.g,i=+t.dataset.i,kd=t.dataset.kd;
   switch(a){
-    case 'tplSave':return ask('Simpan template',[{label:'Nama template',ph:'mis. Dinkes Kota Yogyakarta',val:S.form.instansi}],v=>{if(!v[0])return'Isi nama';
-      const o={name:v[0],form:JSON.parse(JSON.stringify(S.form)),subj:S.subj};const k=S.tpls.findIndex(x=>x.name===v[0]);if(k>=0)S.tpls[k]=o;else S.tpls.push(o);save();renderSph();toast('Template disimpan')});
-    case 'tplDel':{const k=$('tplSel').value;if(k==='')return toast('Pilih template dulu');if(!confirm('Hapus template '+S.tpls[+k].name+'?'))return;S.tpls.splice(+k,1);save();renderSph();return}
     case 'kAdd':S.form.kondisi.push('');break;
     case 'bDel':{if(t.dataset.g===undefined)S.form.kondisi.splice(i,1);else S.groups[g].notes.splice(i,1);break}
     case 'gAdd':S.groups.push({title:'',items:[{code:'',name:'',unit:'1',price:''}],acc:[],notes:[]});break;
@@ -593,7 +593,7 @@ function mailtoUrl(to,cc,sub,bd){
 async function copyRich(html,txt){
   try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]);return true}
   catch(e){return false}}
-async function sphSend(){
+async function sphSend0(){
   if(sphProblems().length)return;
   const S=D.sph,sub=sphSubject(),html=sphHtml(),txt=sphText(),to=rcpt('to'),cc=rcpt('cc');
   if(S.trial===1){
@@ -616,7 +616,7 @@ const fn=sub.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,12
 const bkey=s=>String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
 function updInst(){
   const S=D.sph,names=Object.values(S.book).map(b=>b.instansi);
-  S.tpls.forEach(t=>{if(t.form.instansi)names.push(t.form.instansi)});
+  S.saved.forEach(t=>{if(t.snap.form.instansi)names.push(t.snap.form.instansi)});
   $('instList').innerHTML=[...new Set(names)].map(n=>`<option value="${esc(n)}">`).join('')}
 function bookSave(){
   const S=D.sph,f=S.form;
@@ -625,7 +625,7 @@ function bookSave(){
 function bookFill(){
   const S=D.sph,f=S.form,k=bkey(f.instansi);if(!k)return false;
   let e=S.book[k];
-  if(!e){const t=S.tpls.find(x=>bkey(x.name)===k||bkey(x.form.instansi)===k);if(t)e={kepada:t.form.kepada,alamat:t.form.alamat}}
+  if(!e){const t=S.saved.find(x=>bkey(x.snap.form.instansi)===k);if(t)e={kepada:t.snap.form.kepada,alamat:t.snap.form.alamat}}
   if(!e||(!e.alamat&&!e.kepada))return false;
   f.alamat=e.alamat||'';f.kepada=e.kepada||'';return true}
 $('vSph').addEventListener('input',e=>{
@@ -672,7 +672,67 @@ document.addEventListener('keydown',e=>{
 $('resetOrder').onclick=()=>{if(!confirm('Kosongkan form order? Penerima tetap tersimpan.'))return;
   F.brand=null;F.jenis=null;F.rs='';F.items=[{item:'',qty:'',unit:'ea'}];FILES=[];$('note').value='';$('date').value=todayISO();renderAll();scrollTo(0,0);toast('Form order dikosongkan')};
 $('resetSph').onclick=()=>{if(!confirm('Kosongkan data penawaran dan daftar item? Penerima, surat, dan buku alamat tetap.'))return;
-  const z=sphSeed();D.sph.form=z.form;D.sph.groups=z.groups;$('sdate').value=todayISO();save();renderSph();renderPrev();scrollTo(0,0);toast('Form SPH dikosongkan')};
+  const z=sphSeed();D.sph.form=z.form;D.sph.groups=z.groups;D.sph.cur=null;$('sdate').value=todayISO();save();renderSph();renderPrev();scrollTo(0,0);toast('Form SPH dikosongkan')};
+/* ---------- SPH tersimpan ---------- */
+const clone=o=>JSON.parse(JSON.stringify(o));
+const sid=()=>'s'+Math.random().toString(36).slice(2,9)+Date.now().toString(36);
+function sphSnap(){
+  const S=D.sph;
+  return {form:clone(S.form),groups:clone(S.groups),greet:S.greet,intro:S.intro,closing:S.closing,subj:S.subj,date:$('sdate').value,
+    rcp:Object.fromEntries(D.contacts.map(c=>[c.name,c.rs||'off']))}}
+function sphDirty(){
+  const S=D.sph,it=S.saved.find(x=>x.id===S.cur);
+  if(!it)return !!(S.form.instansi.trim()||S.groups.some(g=>g.title||g.items.some(i=>i.code||i.name)));
+  return JSON.stringify(sphSnap())!==JSON.stringify(it.snap)}
+function sphSave(){
+  const S=D.sph,snap=sphSnap();let it=S.saved.find(x=>x.id===S.cur);
+  if(it){it.snap=snap;it.ts=Date.now()}
+  else{it={id:sid(),ts:Date.now(),snap};S.saved.push(it);S.cur=it.id}
+  save();renderSph();toast('SPH disimpan')}
+function sphClear(){
+  const S=D.sph,z=sphSeed();S.form=z.form;S.groups=z.groups;S.cur=null;$('sdate').value=todayISO();save();renderSph();renderPrev()}
+function sphOpen(id){
+  const S=D.sph,it=S.saved.find(x=>x.id===id);if(!it)return;
+  if(S.cur!==id&&sphDirty()&&!confirm('Form SPH saat ini belum disimpan. Tetap buka SPH lain?'))return;
+  const n=clone(it.snap);S.form=Object.assign({},sphSeed().form,n.form);S.groups=n.groups;
+  ['greet','intro','closing','subj'].forEach(k=>{if(n[k]!==undefined)S[k]=n[k]});
+  $('sdate').value=n.date||todayISO();
+  D.contacts.forEach(c=>{c.rs=(n.rcp&&n.rcp[c.name])||'off'});
+  S.cur=id;save();renderSph();renderPrev();scrollTo(0,0);toast('SPH dibuka. Ubah lalu simpan.')}
+function renderSaved(){
+  const S=D.sph,list=[...S.saved].sort((a,b)=>b.ts-a.ts);
+  $('savedList').innerHTML=list.map(it=>{const f=it.snap.form,cur=it.id===S.cur;
+    const sub=[f.produk,f.versi,it.snap.date?dateStr(it.snap.date):''].filter(Boolean).join(' · ');
+    return `<div class="ct sv ${cur?'cur':''}"><button class="svb" data-sact="sOpen" data-id="${it.id}"><b>${esc(f.instansi||'(tanpa nama)')}</b>${cur?' <span class="tag">sedang diedit</span>':''}<small>${esc(sub||'—')}</small></button>
+      <button class="ib del" data-sact="sDelSaved" data-id="${it.id}" title="Hapus SPH tersimpan" aria-label="Hapus SPH tersimpan"><i class="fa-solid fa-trash"></i></button></div>`}).join('')
+    ||'<div class="mut">Belum ada SPH tersimpan. Setelah membuat email, Anda bisa memilih Simpan.</div>';
+  const cur=S.saved.find(x=>x.id===S.cur);
+  $('curInfo').textContent=cur?'Mengedit SPH tersimpan. Tombol Simpan akan memperbarui SPH ini.':'SPH baru (belum disimpan).';
+  $('btnSave').innerHTML=cur?'<i class="fa-solid fa-floppy-disk"></i> Perbarui':'<i class="fa-solid fa-floppy-disk"></i> Simpan'}
+$('vSph').addEventListener('click',e=>{
+  const t=e.target.closest('[data-sact]');if(!t)return;const a=t.dataset.sact,S=D.sph;
+  if(a==='sSave'){if(!S.form.instansi.trim()&&!S.groups.some(g=>g.title))return toast('Isi nama instansi dulu');sphSave()}
+  else if(a==='sNew'){if(sphDirty()&&!confirm('Form SPH saat ini belum disimpan. Tetap buat SPH baru?'))return;sphClear();scrollTo(0,0);toast('SPH baru')}
+  else if(a==='sOpen')sphOpen(t.dataset.id);
+  else if(a==='sDelSaved'){const it=S.saved.find(x=>x.id===t.dataset.id);if(!it||!confirm('Hapus SPH tersimpan "'+(it.snap.form.instansi||'tanpa nama')+'"?'))return;
+    S.saved=S.saved.filter(x=>x.id!==it.id);if(S.cur===it.id)S.cur=null;save();renderSph()}});
+function afterSend(){
+  const S=D.sph;
+  $('dTitle').textContent='SPH sudah dibuat';$('dErr').textContent='';$('dBody').onclick=null;
+  $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">Simpan SPH ini supaya bisa dibuka dan diedit lagi nanti, atau hapus dan kosongkan form?</div>';
+  $('dOk').style.display='';$('dOk').textContent=S.cur?'Perbarui':'Simpan';$('dNo').textContent='Hapus';
+  $('dOk').onclick=()=>{sphSave();$('dlg').close()};
+  $('dNo').onclick=()=>{
+    const del=!!S.saved.find(x=>x.id===S.cur);
+    if(!confirm(del?'Hapus SPH ini dari daftar tersimpan dan kosongkan form?':'Kosongkan form tanpa menyimpan?'))return;
+    if(del)S.saved=S.saved.filter(x=>x.id!==S.cur);
+    sphClear();$('dlg').close();toast('Form dikosongkan')};
+  $('dlg').showModal()}
+async function sphSend(){
+  if(sphProblems().length)return;
+  await sphSend0();
+  setTimeout(afterSend,700)}
+
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
   [['vOrder','o'],['vSph','s'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
