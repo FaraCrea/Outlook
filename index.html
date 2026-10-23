@@ -154,6 +154,13 @@ dialog{max-height:82vh;overflow:auto}
 .sel{display:flex;flex-direction:column;gap:6px;min-width:0}
 [data-man]{min-width:0}
 select{font-size:14px!important;min-height:40px;padding:6px 8px}
+.sec2{border:1px solid var(--bd);border-radius:8px;margin-top:10px;overflow:hidden}
+.sech{background:var(--chip);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:5px 8px;color:var(--tx)}
+.secb{padding:2px 4px 6px}
+.isub{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:12px;color:var(--mut);margin:3px 0 0;justify-content:flex-start}
+.pk{min-height:28px;padding:2px 8px;font-size:12px;background:transparent;color:var(--pri);border:1px solid var(--pri);border-radius:6px}
+.isub2{display:flex;align-items:center;gap:6px}
+.itot{margin-left:auto}
 </style>
 </head>
 <body>
@@ -217,9 +224,13 @@ select{font-size:14px!important;min-height:40px;padding:6px 8px}
 
   <div class="card" style="padding:10px 6px"><h3 style="padding-left:6px">5 · Daftar Item</h3>
     <div id="sGroups"></div>
-    <button class="add" data-sact="gAdd" style="margin-top:24px"><i class="fa-solid fa-table"></i> Tabel Penawaran</button></div>
+    <button class="add" data-sact="gAdd" style="margin-top:24px"><i class="fa-solid fa-table"></i> Tambah Tabel Penawaran</button></div>
 
-  <div class="card"><h3>Cara kirim</h3>
+  <div class="card"><h3>Lampiran (Opsional)</h3><div id="filesS"></div>
+    <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah Gambar / PDF / File<input type="file" id="fileInS" multiple hidden></label>
+    <div class="mut" style="margin-top:6px">Lampiran paling lengkap lewat cara kirim File Email (.eml): penerima, subjek, tabel, dan lampiran ikut tersimpan di satu file.</div></div>
+
+  <div class="card"><h3>Cara Kirim</h3>
     <div class="chips" id="trials"></div><div class="mut" id="trialTx" style="margin-top:8px"></div>
     </div>
   <div class="row" style="margin-top:4px"><button class="sec" id="resetSph" style="flex:1"><i class="fa-solid fa-rotate-left"></i> Reset Semua Kolom</button><button id="btnSave" data-sact="sSave" style="flex:1"></button></div>
@@ -296,7 +307,7 @@ function sphNorm(x){const s=sphSeed();x=x||{};
     if(f.kondisi.length===1&&f.kondisi[0]==='Harga sudah termasuk PPN 11%')f.kondisi=[];x.v=2}
   return x}
 function norm(x){const s=seed();x.sph=sphNorm(x.sph);
-  x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.kats=x.kats||s.kats;x.contacts=x.contacts||s.contacts;
+  x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.brands.forEach(b=>{b.items=(b.items||[]).map(it=>typeof it==='string'?{code:it,name:''}:it)});x.kats=x.kats||s.kats;x.contacts=x.contacts||s.contacts;
   x.subj=x.subj||{};x.subj.parts=x.subj.parts||defParts();x.subj.isep=x.subj.isep??'+';x.subj.dfmt=x.subj.dfmt||'dMy2';
   x.mail=x.mail||s.mail;return x}
 let D;try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
@@ -359,7 +370,7 @@ const renderRs=()=>$('rs').innerHTML='<option value="">— pilih —</option>'+D
 function renderItems(){
   const its=brandObj()?brandObj().items:[];
   $('items').innerHTML=F.items.map((r,n)=>`<div class="item" data-n="${n}">
-    <div class="row"><select data-k="item" style="flex:1"><option value="">${F.brand?'— pilih barang —':'Pilih merk dulu'}</option>${its.map(x=>`<option ${r.item===x?'selected':''}>${esc(x)}</option>`).join('')}</select>
+    <div class="row"><select data-k="item" style="flex:1"><option value="">${F.brand?'— pilih barang —':'Pilih merk dulu'}</option>${its.map(x=>`<option value="${esc(x.code)}" ${r.item===x.code?'selected':''}>${esc(x.code)}${x.name?' — '+esc(x.name):''}</option>`).join('')}</select>
       ${F.items.length>1?'<button class="ib del" data-del title="Hapus baris" aria-label="Hapus baris"><i class="fa-solid fa-trash"></i></button>':''}</div>
     <div class="row" style="margin-top:8px"><input data-k="qty" type="number" inputmode="numeric" min="1" placeholder="Jumlah" value="${r.qty}" style="flex:1">
       <input data-k="unit" value="${esc(r.unit)}" style="width:80px" aria-label="Satuan"></div></div>`).join('')}
@@ -369,6 +380,7 @@ function renderFiles(){
   $('fileNote').textContent=FILES.length?'Dengan lampiran, email dibuka lewat menu Bagikan HP. Penerima tidak otomatis terisi: To disalin ke clipboard, tempel di kolom To.':'';
   $('goTx').textContent=FILES.length?'OK → Bagikan ke Outlook (+ lampiran)':'OK → Buka Outlook'}
 function renderPrev(){
+  saveDraft();
   if(MODE==='s')return renderPrevS();
   $('pvSj').textContent=subject();
   $('cJenis').classList.toggle('hide',!partOn('jenis'));$('cRs').classList.toggle('hide',!partOn('rs'));$('cDate').classList.toggle('hide',!partOn('date'));
@@ -435,7 +447,7 @@ function renderData(){
     ${ib('cEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('cDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
 
   $('dBrands').innerHTML=D.brands.map((b,i)=>`<details class="sub" ${openB===i?'open':''}><summary><span class="bn">${esc(b.name)} <span class="mut">(${b.items.length})</span></span>${ib('bEd','pen-to-square','Ubah nama MERK',`data-i="${i}"`,'bx pri')}${ib('bDel','trash-can','Hapus MERK beserta semua barangnya',`data-i="${i}"`,'bx del')}</summary>
-    <div class="its">${b.items.map((x,j)=>`<div class="ct"><div class="nm">${esc(x)}</div>${ib('iEd','pen','Ubah Barang',`data-i="${i}" data-j="${j}"`,'sm pri')}${ib('iDel','xmark','Hapus barang',`data-i="${i}" data-j="${j}"`,'sm del')}</div>`).join('')}
+    <div class="its">${b.items.map((x,j)=>`<div class="ct"><div class="nm">${esc(x.code)}${x.name?`<small>${esc(x.name)}</small>`:''}</div>${ib('iEd','pen','Ubah Barang',`data-i="${i}" data-j="${j}"`,'sm pri')}${ib('iDel','xmark','Hapus barang',`data-i="${i}" data-j="${j}"`,'sm del')}</div>`).join('')}
     <button class="sec add" data-act="iAdd" data-i="${i}"><i class="fa-solid fa-plus"></i> Tambah Barang</button></div></details>`).join('');
 
   $('dJenis').innerHTML=D.jenis.map((x,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span><div class="nm">${esc(x)}</div>${ib('jEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('jDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
@@ -482,9 +494,9 @@ $('vData').addEventListener('click',e=>{
     case 'bAdd':return ask('Merk Baru',[{label:'Nama Merk',up:true}],v=>{if(!v[0])return'Isi nama';if(D.brands.some(b=>b.name===v[0]))return'Sudah ada';D.brands.push({name:v[0],items:[]});openB=D.brands.length-1;upd()});
     case 'bEd':{openB=i;const b=D.brands[i],o=b.name;return ask('Ubah Nama Merk',[{label:'Nama Merk',val:o,up:true}],v=>{if(!v[0])return'Isi nama';b.name=v[0];if(F.brand===o)F.brand=v[0];upd()})}
     case 'bDel':{if(!confirm('Hapus merk '+D.brands[i].name+' beserta barangnya?'))return;const b=D.brands.splice(i,1)[0];if(F.brand===b.name){F.brand=null;F.items=[{item:'',qty:'',unit:'ea'}]}openB=-1;return upd()}
-    case 'iAdd':{openB=i;return ask('Barang Baru ('+D.brands[i].name+')',[{label:'Kode / Nama Barang',up:true}],v=>{if(!v[0])return'Isi nama';const b=D.brands[i];if(b.items.includes(v[0]))return'Sudah ada';b.items.push(v[0]);upd()})}
-    case 'iEd':{openB=i;const b=D.brands[i],o=b.items[j];return ask('Ubah Barang',[{label:'Kode / Nama Barang',val:o,up:true}],v=>{if(!v[0])return'Isi nama';b.items[j]=v[0];F.items.forEach(r=>{if(r.item===o&&F.brand===b.name)r.item=v[0]});upd()})}
-    case 'iDel':{openB=i;const b=D.brands[i],o=b.items[j];if(!confirm('Hapus barang '+o+'?'))return;b.items.splice(j,1);F.items.forEach(r=>{if(r.item===o&&F.brand===b.name)r.item=''});return upd()}
+    case 'iAdd':{openB=i;return ask('Item Baru ('+D.brands[i].name+')',[{label:'Item Code',up:true},{label:'Nama Item'}],v=>{if(!v[0])return'Isi item code';const b=D.brands[i];if(b.items.some(x=>x.code===v[0]))return'Item code sudah ada';b.items.push({code:v[0],name:v[1]});upd()})}
+    case 'iEd':{openB=i;const b=D.brands[i],o=b.items[j];return ask('Ubah Item',[{label:'Item Code',val:o.code,up:true},{label:'Nama Item',val:o.name}],v=>{if(!v[0])return'Isi item code';const old=o.code;o.code=v[0];o.name=v[1];F.items.forEach(r=>{if(r.item===old&&F.brand===b.name)r.item=v[0]});upd()})}
+    case 'iDel':{openB=i;const b=D.brands[i],o=b.items[j];if(!confirm('Hapus item '+o.code+'?'))return;b.items.splice(j,1);F.items.forEach(r=>{if(r.item===o.code&&F.brand===b.name)r.item=''});return upd()}
     case 'rAdd':return ask('RS / Instansi Baru',[{label:'Nama',up:true}],v=>{if(!v[0])return'Isi nama';if(D.rs.includes(v[0]))return'Sudah ada';D.rs.push(v[0]);D.rs.sort();upd()});
     case 'rEd':{const o=D.rs[i];return ask('Ubah RS / Instansi',[{label:'Nama',val:o,up:true}],v=>{if(!v[0])return'Isi nama';D.rs[i]=v[0];D.rs.sort();if(F.rs===o)F.rs=v[0];upd()})}
     case 'rDel':{if(!confirm('Hapus '+D.rs[i]+'?'))return;const x=D.rs.splice(i,1)[0];if(F.rs===x)F.rs='';return upd()}
@@ -578,7 +590,7 @@ function renderPrevS(){
   $('pvSj').textContent=sphSubject();
   const R=(k,v,c='')=>`<div class="pr ${c}"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`;
   $('prev').innerHTML=R('To',rcpt('to').join('; ')||'—')+(rcpt('cc').length?R('CC',rcpt('cc').join('; ')):'')+R('Subjek',sphSubject(),'sj')
-    +`<div class="pr"><div class="k">Isi</div><div class="v"><div class="hv">${sphHtml()}</div></div></div>`;
+    +`<div class="pr"><div class="k">Isi</div><div class="v"><div class="hv">${sphHtml()}</div></div></div>`+(FILES2.length?R('Lampiran',FILES2.map(f=>f.name).join(', ')):'');
   setMissing(sphProblems());$('goTx').textContent='OK → Buat email SPH';renderCurBar()}
 
 /* ---------- SPH render ---------- */
@@ -588,20 +600,20 @@ const TRIALS=[[1,'Salin otomatis + tempel','Tabel tersalin otomatis, lalu email 
  [4,'Teks biasa','Teks biasa tanpa garis tabel, langsung terisi. Cadangan kalau trial lain gagal.']];
 function itemHead(){return '<div class="irow ih"><span>Item Code</span><span>Nama Item</span><span>Qty</span><span>Harga Satuan</span><span></span></div>'}
 function itemRow(kind,gi,ii,it){
-  const q=qtyOf(it.unit),tot=q*parsePrice(it.price);
+  const q=qtyOf(it.unit),tot=q*parsePrice(it.price),hasCat=catOptions().length>0;
   return `<div class="itx" data-g="${gi}" data-kd="${kind}" data-i="${ii}"><div class="irow">
     <input data-ik="code" value="${esc(it.code)}" aria-label="Item Code" autocapitalize="characters" spellcheck="false">
     <textarea data-ik="name" rows="1" aria-label="Nama Item">${esc(it.name)}</textarea>
     <input data-ik="unit" inputmode="numeric" value="${esc(it.unit)}" aria-label="Qty">
     <input data-ik="price" inputmode="numeric" value="${esc(it.price)}" aria-label="Harga Satuan">
     <button class="ib del" data-sact="iDel" data-g="${gi}" data-kd="${kind}" data-i="${ii}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="isub ${q>1?'':'hide'}"><label><input type="checkbox" data-ik="u" ${it.u?'checked':''}> Tampilkan harga satuan di email</label><span class="itot">${tot>0?'Total: '+tot.toLocaleString('id-ID'):''}</span></div></div>`}
+    <div class="isub"><button type="button" class="pk ${hasCat?'':'hide'}" data-sact="pick"><i class="fa-solid fa-list"></i> Pilih dari daftar</button><label class="isub2 ${q>1?'':'hide'}"><input type="checkbox" data-ik="u" ${it.u?'checked':''}> Tampilkan harga satuan</label><span class="itot">${tot>0?'Total: '+tot.toLocaleString('id-ID'):''}</span></div></div>`}
 function updRow(r,o){
   const q=qtyOf(o.unit),tot=q*parsePrice(o.price);
-  r.querySelector('.isub').classList.toggle('hide',!(q>1));
+  r.querySelector('.isub2').classList.toggle('hide',!(q>1));
   r.querySelector('.itot').textContent=tot>0?'Total: '+tot.toLocaleString('id-ID'):''}
 function bulletRows(arr,attr,extra){
-  return arr.map((x,i)=>`<div class="row" style="margin-top:6px"><input ${attr} data-i="${i}" ${extra} value="${esc(x)}"><button class="ib del" data-sact="bDel" ${extra} data-i="${i}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}
+  return arr.map((x,i)=>`<div class="row" style="margin-top:6px"><input ${attr} data-i="${i}" ${extra} value="${esc(x)}" placeholder="Tulis kondisi penawaran"><button class="ib del" data-sact="bDel" ${extra} data-i="${i}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}
 function renderSph(){
   const S=D.sph,f=S.form;updInst();
   document.querySelectorAll('#vSph [data-f]').forEach(e=>{e.value=f[e.dataset.f]||''});
@@ -609,13 +621,15 @@ function renderSph(){
   if(!$('sdate').value)$('sdate').value=todayISO();
   renderSaved();renderSels();
   $('sKond').innerHTML=bulletRows(f.kondisi,'data-kb','');
-  $('sGroups').innerHTML=S.groups.map((g,gi)=>`<div class="c2"><div class="row"><input data-gt data-g="${gi}" value="${esc(g.title)}" placeholder="Nama Item SPH (opsional)"><button class="ib del" data-sact="gDel" data-g="${gi}" title="Hapus kelompok" aria-label="Hapus kelompok"><i class="fa-solid fa-trash"></i></button></div>
-    ${g.items.length?itemHead():''}${g.items.map((it,ii)=>itemRow('items',gi,ii,it)).join('')}
-    <button class="sec add" data-sact="iAdd" data-g="${gi}" data-kd="items"><i class="fa-solid fa-plus"></i> Tambah Item</button>
-    ${g.acc.length?'<div class="l" style="margin-top:10px"><b>Include Accessories</b></div>'+itemHead()+g.acc.map((it,ii)=>itemRow('acc',gi,ii,it)).join(''):''}
-    <button class="sec add" data-sact="iAdd" data-g="${gi}" data-kd="acc"><i class="fa-solid fa-plus"></i> Tambah Accessories</button>
-    ${bulletRows(g.notes,'data-nt','data-g="'+gi+'"')}
-    <button class="sec add" data-sact="nAdd" data-g="${gi}"><i class="fa-solid fa-plus"></i> Kondisi Penawaran</button></div>`).join('');
+  $('sGroups').innerHTML=S.groups.map((g,gi)=>{
+    const sec=(t,body)=>`<div class="sec2"><div class="sech">${t}</div><div class="secb">${body}</div></div>`;
+    const addBtn=(label,attrs)=>`<button class="sec add" data-sact="${attrs}" data-g="${gi}"><i class="fa-solid fa-plus"></i> ${label}</button>`;
+    const itemsBody=itemHead()+g.items.map((it,ii)=>itemRow('items',gi,ii,it)).join('')+addBtn('Tambah Item','iAdd" data-kd="items');
+    const accBody=g.acc.length?itemHead()+g.acc.map((it,ii)=>itemRow('acc',gi,ii,it)).join('')+addBtn('Tambah Accessories','iAdd" data-kd="acc'):'';
+    const noteBody=g.notes.length?bulletRows(g.notes,'data-nt','data-g="'+gi+'"')+addBtn('Tambah Kondisi','nAdd'):'';
+    const more=(g.acc.length?'':addBtn('Tambah Accessories','iAdd" data-kd="acc'))+(g.notes.length?'':addBtn('Kondisi Penawaran','nAdd'));
+    return `<div class="c2"><div class="row"><input data-gt data-g="${gi}" value="${esc(g.title)}" placeholder="Nama Item SPH (opsional)"><button class="ib del" data-sact="gDel" data-g="${gi}" title="Hapus tabel" aria-label="Hapus tabel"><i class="fa-solid fa-trash"></i></button></div>
+    ${sec('Item',itemsBody)}${g.acc.length?sec('Include Accessories',accBody):''}${g.notes.length?sec('Kondisi Penawaran',noteBody):''}${more}</div>`}).join('');
   $('trials').innerHTML=TRIALS.map(t=>`<button class="chip ${S.trial===t[0]?'on':''}" data-trial="${t[0]}">${t[1]}</button>`).join('');
   $('trialTx').textContent=TRIALS.find(t=>t[0]===S.trial)[2];
   $('rcptS').innerHTML=rcptGrid('rs');growAll()}
@@ -625,7 +639,7 @@ const sv=()=>{save();renderPrev()};
 $('vSph').addEventListener('input',e=>{const t=e.target,S=D.sph;
   if(t.dataset.f!==undefined)S.form[t.dataset.f]=t.value;
   else if(t.dataset.m!==undefined)S[t.dataset.m]=t.value;
-  else if(t.dataset.ik){const r=t.closest('.itx'),o=S.groups[+r.dataset.g][r.dataset.kd][+r.dataset.i];o[t.dataset.ik]=t.type==='checkbox'?t.checked:t.value;updRow(r,o)}
+  else if(t.dataset.ik){const r=t.closest('.itx'),o=S.groups[+r.dataset.g][r.dataset.kd][+r.dataset.i];o[t.dataset.ik]=t.type==='checkbox'?t.checked:t.value;autofillItem(r,o,t.dataset.ik);updRow(r,o)}
   else if(t.dataset.gt!==undefined)S.groups[+t.dataset.g].title=t.value;
   else if(t.dataset.kb!==undefined)S.form.kondisi[+t.dataset.i]=t.value;
   else if(t.dataset.nt!==undefined)S.groups[+t.dataset.g].notes[+t.dataset.i]=t.value;
@@ -657,25 +671,6 @@ function mailtoUrl(to,cc,sub,bd){
 async function copyRich(html,txt){
   try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]);return true}
   catch(e){return false}}
-async function sphSend0(){
-  if(sphProblems().length)return jumpMissing();
-  const S=D.sph,sub=sphSubject(),html=sphHtml(),txt=sphText(),to=rcpt('to'),cc=rcpt('cc');
-  if(S.trial===1){
-    const ok=await copyRich(html,txt);
-    toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');
-    location.href=mailtoUrl(to,cc,sub,ok?'(Tempel isi email di sini: tekan lama, pilih Tempel, lalu hapus tulisan ini)':txt);return}
-  if(S.trial===2){
-    const lines=b64(html).match(/.{1,76}/g)||[];
-    const eml=['X-Unsent: 1','To: '+to.join(', ')].concat(cc.length?['Cc: '+cc.join(', ')]:[],['Subject: '+mime(sub),'MIME-Version: 1.0','Content-Type: text/html; charset=UTF-8','Content-Transfer-Encoding: base64',''],lines).join('\r\n');
-const fn=sub.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,120)+'.eml';
-    const f=new File([eml],fn,{type:'message/rfc822'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=fn;document.body.appendChild(a);a.click();a.remove();
-    toast('Tersimpan di folder Download: '+fn);return}
-  if(S.trial===3){
-    location.href='https://outlook.office.com/mail/deeplink/compose?to='+enc(to.join(';'))+(cc.length?'&cc='+enc(cc.join(';')):'')+'&subject='+enc(sub)+'&body='+enc(html);return}
-  location.href=mailtoUrl(to,cc,sub,txt)}
-
-
 /* ---------- buku alamat & cari alamat ---------- */
 const bkey=s=>String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
 function updInst(){renderSels()}
@@ -745,7 +740,7 @@ function confirmBox(title,msg,okLabel,cb){
 $('resetOrder').onclick=()=>confirmBox('Reset Form Order','Semua kolom order dikosongkan. Penerima tetap tersimpan.','Reset',()=>{
   F.brand=null;F.jenis=null;F.rs='';F.items=[{item:'',qty:'',unit:'ea'}];FILES=[];$('note').value='';$('date').value=todayISO();renderAll();scrollTo(0,0);toast('Form order direset')});
 $('resetSph').onclick=()=>confirmBox('Reset Semua Kolom SPH','Semua kolom SPH dikosongkan, termasuk surat dan pilihan penerima. SPH yang sudah tersimpan tidak terhapus.','Reset',()=>{
-  const z=sphSeed(),S=D.sph;S.form=z.form;S.groups=z.groups;manualOpen={};['greet','intro','closing','subj'].forEach(k=>{S[k]=z[k]});S.cur=null;
+  const z=sphSeed(),S=D.sph;S.form=z.form;S.groups=z.groups;manualOpen={};FILES2=[];renderFilesS();['greet','intro','closing','subj'].forEach(k=>{S[k]=z[k]});S.cur=null;
   D.contacts.forEach(c=>{c.rs='off'});$('sdate').value=todayISO();save();renderSph();renderPrev();scrollTo(0,0);toast('Semua kolom SPH direset')});
 /* ---------- SPH tersimpan ---------- */
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -764,7 +759,7 @@ function sphSave(){
   else{it={id:sid(),ts:Date.now(),snap};S.saved.push(it);S.cur=it.id}
   save();renderSph();toast('SPH disimpan')}
 function sphClear(){
-  const S=D.sph,z=sphSeed();S.form=z.form;S.groups=z.groups;S.cur=null;manualOpen={};$('sdate').value=todayISO();save();renderSph();renderPrev()}
+  const S=D.sph,z=sphSeed();S.form=z.form;S.groups=z.groups;S.cur=null;manualOpen={};FILES2=[];renderFilesS();$('sdate').value=todayISO();save();renderSph();renderPrev()}
 function sphOpen(id){
   const S=D.sph,it=S.saved.find(x=>x.id===id);if(!it)return;
   if(S.cur!==id&&sphDirty()&&!confirm('Form SPH saat ini belum disimpan. Tetap buka SPH lain?'))return;
@@ -810,9 +805,9 @@ $('vSph').addEventListener('click',e=>{
 function afterSend(){
   const S=D.sph;
   $('dTitle').textContent='SPH sudah dibuat';$('dErr').textContent='';$('dBody').onclick=null;
-  $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">Simpan SPH ini supaya bisa dibuka dan diedit lagi nanti, atau hapus dan kosongkan form?</div>';
-  $('dOk').style.display='';$('dOk').textContent=S.cur?'Perbarui':'Simpan';$('dNo').textContent='Hapus';
-  $('dOk').onclick=()=>{sphSave();$('dlg').close()};
+  $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">SPH ini sudah tersimpan otomatis di Daftar. Pilih Hapus kalau tidak diperlukan, dan form akan dikosongkan.</div>';
+  $('dOk').style.display='';$('dOk').textContent='Tutup';$('dNo').textContent='Hapus';
+  $('dOk').onclick=()=>$('dlg').close();
   $('dNo').onclick=()=>{
     const del=!!S.saved.find(x=>x.id===S.cur);
     if(!confirm(del?'Hapus SPH ini dari daftar tersimpan dan kosongkan form?':'Kosongkan form tanpa menyimpan?'))return;
@@ -821,6 +816,7 @@ function afterSend(){
   $('dlg').showModal()}
 async function sphSend(){
   if(sphProblems().length)return jumpMissing();
+  if(D.sph.form.instansi.trim())sphSave();
   await sphSend0();
   setTimeout(afterSend,700)}
 
@@ -900,6 +896,102 @@ $('vSph').addEventListener('change',e=>{
   if(sel.value==='__m'){manualOpen[k]=true;renderSels();const inp=document.querySelector(`[data-man="${k}"] input`);if(inp)setTimeout(()=>inp.focus(),50)}
   else{manualOpen[k]=false;f[k]=sel.value;save();renderSels();renderPrev();if(k==='instansi'&&bookFill()){save();renderSph();renderPrev();toast('Alamat dan UP diisi dari data tersimpan')}}});
 
+/* ---------- katalog item, lampiran SPH, simpan otomatis ---------- */
+function catOptions(){
+  const pn=bkey(D.sph.form.produk),b=D.brands.find(x=>bkey(x.name)===pn);
+  const src=b?b.items:D.brands.flatMap(x=>x.items);
+  const seen={},out=[];
+  src.forEach(i=>{const k=bkey(i.code);if(i.code&&!seen[k]){seen[k]=1;out.push(i)}});
+  return out}
+function autofillItem(r,o,ik){
+  if(ik!=='code'&&ik!=='name')return;
+  const v=String(o[ik]||'').trim().toLowerCase();if(!v)return;
+  const hit=catOptions().find(c=>String(ik==='code'?c.code:c.name).trim().toLowerCase()===v);
+  if(!hit)return;
+  const oth=ik==='code'?'name':'code',val=hit[oth]||'';
+  if(val&&o[oth]!==val){o[oth]=val;const inp=r.querySelector(`[data-ik="${oth}"]`);if(inp){inp.value=val;if(inp.tagName==='TEXTAREA')grow(inp)}syncClear()}}
+function pickItem(cb){
+  const list=catOptions();
+  $('dTitle').textContent='Pilih Item';$('dTitle').dataset.k='';$('dErr').textContent='';
+  $('dOk').style.display='none';$('dNo').textContent='Tutup';$('dNo').onclick=()=>$('dlg').close();
+  $('dBody').innerHTML='<div class="row" style="margin-top:8px"><input id="pkq" placeholder="Cari kode atau nama" autocomplete="off"></div><div id="pkl"></div>';
+  const draw=q=>{q=q.trim().toLowerCase();
+    const f=list.filter(c=>!q||c.code.toLowerCase().includes(q)||String(c.name||'').toLowerCase().includes(q));
+    $('pkl').innerHTML=f.length?f.map(c=>`<button class="sec" style="display:block;width:100%;text-align:left;white-space:normal;margin-top:6px" data-ci="${list.indexOf(c)}"><b>${esc(c.code)}</b><br><span style="font-size:12px">${esc(c.name||'')}</span></button>`).join(''):'<div class="mut" style="margin-top:10px">Tidak ada item. Tambah di tab Data, bagian Merk dan Barang.</div>'};
+  draw('');$('pkq').oninput=e=>draw(e.target.value);
+  $('dBody').onclick=e=>{const b=e.target.closest('[data-ci]');if(!b)return;cb(list[+b.dataset.ci]);$('dlg').close()};
+  $('dlg').showModal()}
+$('vSph').addEventListener('click',e=>{
+  const b=e.target.closest('[data-sact="pick"]');if(!b)return;
+  const r=b.closest('.itx'),o=D.sph.groups[+r.dataset.g][r.dataset.kd][+r.dataset.i];
+  pickItem(c=>{o.code=c.code;o.name=c.name||'';
+    r.querySelector('[data-ik=code]').value=o.code;const n=r.querySelector('[data-ik=name]');n.value=o.name;grow(n);
+    syncClear();updRow(r,o);sv()})});
+
+/* lampiran SPH */
+let FILES2=[];
+function renderFilesS(){
+  $('filesS').innerHTML=FILES2.map((f,i)=>`<div class="fl"><i class="fa-solid ${f.type.startsWith('image/')?'fa-image':f.type==='application/pdf'?'fa-file-pdf':'fa-file'}" style="color:var(--mut)"></i><span>${esc(f.name)}</span><small class="mut">${f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'}</small>
+    <button class="ib del" data-fd="${i}" title="Hapus lampiran" aria-label="Hapus lampiran"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}
+$('fileInS').onchange=e=>{FILES2.push(...e.target.files);e.target.value='';renderFilesS();renderPrev()};
+$('filesS').addEventListener('click',e=>{const b=e.target.closest('[data-fd]');if(!b)return;FILES2.splice(+b.dataset.fd,1);renderFilesS();renderPrev()});
+
+const readB64=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]||'');r.onerror=no;r.readAsDataURL(f)});
+async function buildEml(to,cc,sub,html,files){
+  const head=['X-Unsent: 1','To: '+to.join(', ')].concat(cc.length?['Cc: '+cc.join(', ')]:[],['Subject: '+mime(sub),'MIME-Version: 1.0']);
+  const wrap=s=>s.match(/.{1,76}/g)||[];
+  if(!files.length)return head.concat(['Content-Type: text/html; charset=UTF-8','Content-Transfer-Encoding: base64',''],wrap(b64(html))).join('\r\n');
+  const bd='=_oc_'+Date.now().toString(36);
+  const out=head.concat(['Content-Type: multipart/mixed; boundary="'+bd+'"','','--'+bd,'Content-Type: text/html; charset=UTF-8','Content-Transfer-Encoding: base64',''],wrap(b64(html)));
+  for(const f of files){
+    const d=await readB64(f),nm=mime(f.name).split('"').join('');
+    out.push('--'+bd,'Content-Type: '+(f.type||'application/octet-stream')+'; name="'+nm+'"','Content-Transfer-Encoding: base64','Content-Disposition: attachment; filename="'+nm+'"','',...wrap(d))}
+  out.push('--'+bd+'--','');
+  return out.join('\r\n')}
+
+async function sphSend0(){
+  const S=D.sph,sub=sphSubject(),html=sphHtml(),txt=sphText(),to=rcpt('to'),cc=rcpt('cc'),files=FILES2;
+  if(S.trial===2){
+    toast(files.length?'Menyiapkan file email + lampiran…':'Menyiapkan file email…');
+    const eml=await buildEml(to,cc,sub,html,files);
+    const fn=sub.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,120)+'.eml';
+    const f=new File([eml],fn,{type:'message/rfc822'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=fn;document.body.appendChild(a);a.click();a.remove();
+    toast('Tersimpan di folder Download: '+fn);return}
+  if(files.length){
+    let data;
+    if(S.trial===4)data={files,title:sub,text:txt};
+    else{const ok=await copyRich(html,txt);toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');data={files,title:sub,text:sub}}
+    if(navigator.canShare&&navigator.canShare(data)){try{await navigator.share(data)}catch(e){}return}
+    if(!confirm('HP/browser ini tidak bisa membagikan lampiran. Lanjut tanpa lampiran?'))return}
+  if(S.trial===1){
+    const ok=await copyRich(html,txt);
+    toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');
+    location.href=mailtoUrl(to,cc,sub,ok?'(Tempel isi email di sini: tekan lama, pilih Tempel, lalu hapus tulisan ini)':txt);return}
+  if(S.trial===3){
+    const url='https://outlook.office.com/mail/deeplink/compose?to='+enc(to.join(';'))+(cc.length?'&cc='+enc(cc.join(';')):'')+'&subject='+enc(sub)+'&body='+enc(html);
+    if(!window.open(url,'_blank'))location.href=url;return}
+  location.href=mailtoUrl(to,cc,sub,txt)}
+
+/* ---------- simpan otomatis (draf kerja) ---------- */
+const DKEY='outlookcepat.draft.v1';
+let draftTab='o';
+function saveDraft(){
+  try{localStorage.setItem(DKEY,JSON.stringify({t:MODE,F:{brand:F.brand,jenis:F.jenis,rs:F.rs,items:F.items},note:$('note').value,date:$('date').value,sdate:$('sdate').value,ts:Date.now()}))}catch(e){}}
+function loadDraft(){
+  let d=null;try{d=JSON.parse(localStorage.getItem(DKEY))}catch(e){}
+  if(!d||!d.F)return;
+  F.brand=d.F.brand||null;F.jenis=d.F.jenis||null;F.rs=d.F.rs||'';
+  F.items=Array.isArray(d.F.items)&&d.F.items.length?d.F.items:[{item:'',qty:'',unit:'ea'}];
+  $('note').value=d.note||'';
+  const filled=F.brand||F.items.some(i=>i.item||i.qty);
+  if(d.date&&filled)$('date').value=d.date;
+  if(d.sdate)$('sdate').value=d.sdate;
+  draftTab=d.t==='s'?'s':'o'}
+function restoreTab(){if(draftTab==='s')tab('s')}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){saveDraft();save()}});
+addEventListener('pagehide',()=>{saveDraft();save()});
+
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
   [['vOrder','o'],['vSph','s'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
@@ -915,7 +1007,7 @@ $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+10)+'px'};
 new ResizeObserver(syncSp).observe($('pv'));
-setPv();renderAll();syncSp();
+loadDraft();setPv();renderAll();syncSp();restoreTab();
 </script>
 </body>
 </html>
