@@ -126,7 +126,7 @@ body.typing .pv .bd{max-height:16vh}
 <div id="pvSp"></div>
   <div class="card pv" id="pv"><div class="hd" id="pvHd"><h3 style="margin:0">Pratinjau</h3><div class="sj" id="pvSj"></div><span class="ar" id="pvAr"><i class="fa-solid fa-chevron-down"></i></span></div>
     <div class="bd" id="pvBd"><div class="prev" id="prev"></div>
-    <div class="row" style="margin-top:8px"><button class="sec" id="cpSub" style="flex:1"><i class="fa-regular fa-copy"></i> Salin subjek</button><button class="sec" id="cpBody" style="flex:1"><i class="fa-regular fa-copy"></i> Salin isi</button></div></div></div>
+</div></div>
 
 <main id="vOrder">
   <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcpt"></div></div>
@@ -357,8 +357,6 @@ document.addEventListener('click',e=>{const t=e.target.closest('.rt');if(!t)retu
 $('fileIn').onchange=e=>{FILES.push(...e.target.files);e.target.value='';renderFiles();renderPrev()};
 $('files').addEventListener('click',e=>{const i=e.target.dataset.fd;if(i===undefined)return;FILES.splice(+i,1);renderFiles();renderPrev()});
 const copy=async t=>{try{await navigator.clipboard.writeText(t);return true}catch(e){return false}};
-$('cpSub').onclick=async()=>toast(await copy(subject())?'Subjek tersalin':'Gagal menyalin');
-$('cpBody').onclick=async()=>toast(await copy(body())?'Isi tersalin':'Gagal menyalin');
 
 $('go').onclick=async()=>{
   if(MODE==='s')return sphSend();
@@ -611,8 +609,6 @@ const fn=sub.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,12
     location.href='https://outlook.office.com/mail/deeplink/compose?to='+enc(to.join(';'))+(cc.length?'&cc='+enc(cc.join(';')):'')+'&subject='+enc(sub)+'&body='+enc(html);return}
   location.href=mailtoUrl(to,cc,sub,txt)}
 
-$('cpSub').onclick=async()=>toast(await copy(MODE==='s'?sphSubject():subject())?'Subjek tersalin':'Gagal menyalin');
-$('cpBody').onclick=async()=>{if(MODE==='s')toast(await copyRich(sphHtml(),sphText())?'Tabel tersalin':'Gagal menyalin');else toast(await copy(body())?'Isi tersalin':'Gagal menyalin')};
 
 /* ---------- buku alamat & cari alamat ---------- */
 const bkey=s=>String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
