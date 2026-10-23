@@ -199,6 +199,33 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
 .pickbtn>i{color:var(--mut);font-size:12px}
 .pkrow{display:block;width:100%;text-align:left;white-space:normal;margin-top:6px;padding:10px 12px;line-height:1.3}
 .pkrow b{font-size:15px}.pkrow span{display:block;font-size:13px;opacity:.85;margin-top:2px}
+.sumrow{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.tile b{font-size:16px!important;overflow-wrap:anywhere;line-height:1.2}
+.hint{font-size:12.5px;color:var(--mut);background:var(--chip);border-radius:10px;padding:8px 12px;margin-bottom:8px}
+.pm{flex:none;text-align:right;line-height:1.2}
+.pm b{font-size:17px;font-weight:700}.pm span{font-size:11px;color:var(--mut);margin-left:3px}
+.pm em{display:block;font-style:normal;font-size:12.5px;font-weight:700;color:#0f8a74}
+.pbody{border-top:1px solid var(--bd);padding:4px 12px 12px}
+.psec{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 4px}
+.pr2{padding:8px 0;border-top:1px solid var(--bd)}
+.psec+.pr2{border-top:0}
+.pr2h{display:flex;gap:10px;align-items:baseline}
+.pr2h>div:first-child{flex:1}
+.pq{flex:none;font-size:12px;color:var(--mut)}.pq b{font-size:15px;color:var(--tx)}
+.pnm{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal}
+.pr2p{display:flex;align-items:center;gap:8px;margin-top:6px}
+.pin{width:120px!important;flex:none;min-height:38px!important;text-align:right;padding:4px 10px!important}
+.pr2p .tot{margin-left:auto;font-weight:700;font-size:14px;color:#0f8a74}
+.dts{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:12.5px;color:var(--mut)}
+.dts b{color:var(--tx);font-weight:600}
+.po2{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--bd)}
+.psec+.po2{border-top:0}
+.po2 .pob{flex:1;min-width:0}
+.po2 .poi{display:flex;gap:8px;align-items:baseline;font-size:13.5px;padding:1px 0}
+.po2 .pon{color:var(--mut)}
+.pot2{margin-left:auto;font-style:normal;font-size:12.5px;font-weight:600;color:#0f8a74;white-space:nowrap}
+.poa{flex:none;display:flex}
+.poa .ib{width:32px;min-height:32px}
 </style>
 </head>
 <body>
@@ -348,10 +375,9 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
 <!-- ================= DATA PO ================= -->
 <main id="vPO" class="hide">
   <div class="card" style="padding:10px">
-    <input id="poq" placeholder="Cari RS, produk, atau kode" autocomplete="off" aria-label="Cari PO">
+    <div class="seg" id="poView" style="display:flex"><button data-pv="rs" style="flex:1">Detail per RS</button><button data-pv="prod" style="flex:1">Detail per Produk</button></div>
+    <input id="poq" placeholder="Cari RS, produk, atau kode" autocomplete="off" aria-label="Cari PO" style="margin-top:10px">
     <div class="chips" id="poPer" style="margin-top:8px"></div>
-    <div class="row" style="margin-top:8px"><select id="poBrand" aria-label="Filter merk"></select><select id="poJenis" aria-label="Filter jenis"></select></div>
-    <div class="seg" id="poView" style="margin-top:10px;display:flex"><button data-pv="rs" style="flex:1">Per RS</button><button data-pv="prod" style="flex:1">Per Produk</button><button data-pv="tgl" style="flex:1">Per Tanggal</button></div>
   </div>
   <div class="sumrow" id="poSum"></div>
   <div id="poList"></div>
@@ -459,7 +485,7 @@ function sponNorm(x){const s=sponSeed();x=x||{};
   ['types','org','bank'].forEach(k=>{x.form[k]=Object.assign({},s.form[k],x.form[k]||{})});
   const sh0=x.form.share||{};x.form.share={trans:Object.assign({},s.form.share.trans,sh0.trans),manu:Object.assign({},s.form.share.manu,sh0.manu)};
   x.form.tax=Array.isArray(x.form.tax)?x.form.tax:[];x.form.custom=Array.isArray(x.form.custom)?x.form.custom:[];return x}
-function norm(x){const s=seed();x.po=x.po||{};if(x.po.on===undefined)x.po.on=true;x.po.on=!!x.po.on;x.po.rows=Array.isArray(x.po.rows)?x.po.rows:[];x.sph=sphNorm(x.sph);x.spon=sponNorm(x.spon);
+function norm(x){const s=seed();x.po=x.po||{};if(x.po.on===undefined)x.po.on=true;x.po.on=!!x.po.on;x.po.rows=Array.isArray(x.po.rows)?x.po.rows:[];x.po.price=x.po.price&&typeof x.po.price==='object'?x.po.price:{};x.sph=sphNorm(x.sph);x.spon=sponNorm(x.spon);
   x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.brands.forEach(b=>{b.items=(b.items||[]).map(it=>typeof it==='string'?{code:it,name:''}:it)});x.kats=x.kats||s.kats;x.contacts=x.contacts||s.contacts;
   x.subj=x.subj||{};x.subj.parts=x.subj.parts||defParts();x.subj.isep=x.subj.isep??'+';x.subj.dfmt=x.subj.dfmt||'dMy2';
   x.mail=x.mail||s.mail;if(x.mail.closing===undefined)x.mail.closing='';if(!x.mail.itemMode)x.mail.itemMode='kode';return x}
@@ -1043,7 +1069,7 @@ $('vSph').addEventListener('click',e=>{
 /* ---------- tombol hapus isi (x) ---------- */
 function addClear(){
   document.querySelectorAll('input:not([type]),input[type=text],input[type=email],textarea').forEach(el=>{
-    if(el.dataset.xc||el.closest('.irow')||el.closest('.fw')||el.classList.contains('sepi')||el.style.width)return;
+    if(el.dataset.xc||el.closest('.irow')||el.closest('.fw')||el.classList.contains('sepi')||el.classList.contains('pin')||el.style.width)return;
     const w=document.createElement('span');w.className='fw';
     el.parentNode.insertBefore(w,el);w.appendChild(el);
     const b=document.createElement('button');b.type='button';b.className='xc';b.setAttribute('aria-label','Hapus isi kolom');b.setAttribute('tabindex','-1');
@@ -1565,21 +1591,25 @@ $('wipeAll').onclick=()=>confirmBox('Hapus Semua Data','Semua data di HP ini dih
   location.reload()});
 /* ---------- Data PO ---------- */
 const BLN=['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
-const BLNF=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-const PQ={q:'',per:'all',brand:'',jenis:'',view:'rs',open:{}};
+const PQ={q:'',per:'all',view:'rs',open:{}};
 const poD=iso=>{if(!iso)return{d:'--',m:'---',y:'',full:'—'};const [y,m,d]=iso.split('-').map(Number);return{d:String(d),m:BLN[m-1],y:String(y),full:d+' '+BLN[m-1]+' '+String(y).slice(2)}};
 const poUid=()=>'p'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
-const poQty=r=>r.items.reduce((a,i)=>a+(Number(i.qty)||0),0);
+const rpf=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
+const nf=n=>Number(n).toLocaleString('id-ID');
+const poKey=r=>r.rs||'(tanpa RS)';
+const encK=(a,b)=>encodeURIComponent(a)+'|'+encodeURIComponent(b);
+function poPrice(rs,code){
+  const P=D.po.price,a=P[rs]&&Number(P[rs][code]);if(a>0)return a;
+  const d=P['*']&&Number(P['*'][code]);return d>0?d:0}
 
 function poRecord(){
   if(!D.po.on)return;
   const b=brandObj(),items=validItems().map(i=>{const it=b&&b.items.find(x=>x.code===i.item);return{code:i.item,name:it?(it.name||''):'',qty:Number(i.qty)||0,unit:i.unit||'ea'}});
   if(!items.length)return;
-  const rec={id:poUid(),ts:Date.now(),date:$('date').value||todayISO(),brand:F.brand||'',jenis:F.jenis||'',rs:F.rs||'',items,note:$('note').value.trim(),subject:subject(),to:rcpt('to'),cc:rcpt('cc')};
+  const rec={id:poUid(),ts:Date.now(),date:$('date').value||todayISO(),brand:F.brand||'',jenis:F.jenis||'',rs:F.rs||'',items};
   const sig=x=>[x.date,x.brand,x.jenis,x.rs,JSON.stringify(x.items)].join('|');
   const dup=D.po.rows.find(x=>sig(x)===sig(rec)&&rec.ts-x.ts<120000);
-  if(dup){dup.ts=rec.ts;dup.note=rec.note;dup.subject=rec.subject;dup.to=rec.to;dup.cc=rec.cc}
-  else D.po.rows.push(rec);
+  if(dup)dup.ts=rec.ts;else D.po.rows.push(rec);
   save();toast('Tercatat di Data PO')}
 
 function poFiltered(){
@@ -1587,77 +1617,106 @@ function poFiltered(){
   const from=PQ.per==='30'?new Date(now.getTime()-30*86400000).toISOString().slice(0,10):PQ.per==='month'?t.slice(0,8)+'01':PQ.per==='year'?t.slice(0,4)+'-01-01':'';
   return D.po.rows.filter(r=>{
     if(from&&r.date<from)return false;
-    if(PQ.brand&&r.brand!==PQ.brand)return false;
-    if(PQ.jenis&&r.jenis!==PQ.jenis)return false;
-    if(q){const hay=[r.rs,r.brand,r.jenis,r.note].concat(r.items.map(i=>i.code+' '+i.name)).join(' ').toLowerCase();if(!hay.includes(q))return false}
+    if(q){const hay=[r.rs,r.brand].concat(r.items.map(i=>i.code+' '+i.name)).join(' ').toLowerCase();if(!hay.includes(q))return false}
     return true}).sort((a,b)=>b.date.localeCompare(a.date)||b.ts-a.ts)}
 
-const poItemsHtml=r=>r.items.map(i=>`<div class="poi"><span class="poc">${esc(i.code)}</span>${i.name?`<span class="pon">${esc(i.name)}</span>`:''}<b class="poq">×${i.qty} ${esc(i.unit)}</b></div>`).join('');
-function poRowHtml(r,opt){
-  opt=opt||{};const dd=poD(r.date),open=!!PQ.open[r.id];
-  const tags=(opt.rs?`<span class="tag t3">${esc(r.rs||'(tanpa RS)')}</span>`:'')+(r.jenis?`<span class="tag">${esc(r.jenis)}</span>`:'')+(r.brand&&!opt.noBrand?`<span class="tag t2">${esc(r.brand)}</span>`:'');
-  return `<div class="po ${open?'open':''}" data-po="${r.id}"><div class="pod"><b>${dd.d}</b><span>${dd.m}</span><small>${dd.y}</small></div>
-    <div class="pob"><div class="pot">${tags}</div>${poItemsHtml(r)}
-    ${open?`<div class="pox"><div class="mut">Subjek: ${esc(r.subject||'—')}</div>${r.to&&r.to.length?`<div class="mut">To: ${esc(r.to.join('; '))}${r.cc&&r.cc.length?' · CC: '+esc(r.cc.join('; ')):''}</div>`:''}${r.note?`<div class="mut">Catatan: ${esc(r.note)}</div>`:''}
-      <div class="row" style="margin-top:8px;gap:6px"><button class="sec" data-poa="reuse" data-id="${r.id}" style="flex:1;padding:6px 8px;min-height:36px"><i class="fa-solid fa-rotate-right"></i> Pakai Lagi</button><button class="sec" data-poa="copy" data-id="${r.id}" style="flex:1;padding:6px 8px;min-height:36px"><i class="fa-regular fa-copy"></i> Salin</button><button class="sec" data-poa="del" data-id="${r.id}" style="padding:6px 10px;min-height:36px;color:var(--err);border-color:var(--err)" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i></button></div></div>`:''}
-    </div><i class="fa-solid fa-chevron-${open?'up':'down'} poch"></i></div>`}
+/* agregasi */
+function poByRs(rows){
+  const g={};
+  rows.forEach(r=>{const k=poKey(r),o=g[k]=g[k]||{rs:k,rows:[],qty:0,sales:0,priced:false,prod:{}};o.rows.push(r);
+    r.items.forEach(i=>{const q=Number(i.qty)||0,p=poPrice(k,i.code);o.qty+=q;if(p){o.sales+=p*q;o.priced=true}
+      const pr=o.prod[i.code]=o.prod[i.code]||{code:i.code,name:i.name,qty:0,sales:0};pr.qty+=q;pr.sales+=p*q;if(!pr.name&&i.name)pr.name=i.name})});
+  return g}
+function poByProd(rows){
+  const g={};
+  rows.forEach(r=>{const k=poKey(r);r.items.forEach(i=>{const q=Number(i.qty)||0,p=poPrice(k,i.code);
+    const o=g[i.code]=g[i.code]||{code:i.code,name:i.name,qty:0,sales:0,priced:false,rs:{},last:''};
+    o.qty+=q;if(p){o.sales+=p*q;o.priced=true}if(!o.name&&i.name)o.name=i.name;if(r.date>o.last)o.last=r.date;
+    const s=o.rs[k]=o.rs[k]||{rs:k,qty:0,sales:0,entries:[]};s.qty+=q;s.sales+=p*q;s.entries.push({date:r.date,qty:q})}) });
+  return g}
+
+/* potongan HTML */
+const priceInput=(rs,code,placeholder)=>{
+  const v=D.po.price[rs]&&D.po.price[rs][code];
+  return `<input class="pin" data-price="${esc(encK(rs,code))}" inputmode="numeric" value="${v>0?nf(v):''}" placeholder="${placeholder>0?nf(placeholder):'0'}" aria-label="Harga satuan">`};
+const metric=(qty,sales,priced)=>`<div class="pm"><b>${nf(qty)}</b><span>qty</span>${priced?`<em>${rpf(sales)}</em>`:''}</div>`;
+function poLineHtml(r,rsName){
+  const dd=poD(r.date);
+  return `<div class="po2"><div class="pod"><b>${dd.d}</b><span>${dd.m}</span><small>${dd.y}</small></div>
+    <div class="pob">${r.items.map(i=>{const p=poPrice(rsName,i.code),q=Number(i.qty)||0;return `<div class="poi"><span class="poc">${esc(i.code)}</span><span class="pon">×${nf(q)} ${esc(i.unit||'')}</span>${p?`<em class="pot2">${rpf(p*q)}</em>`:''}</div>`}).join('')}</div>
+    <div class="poa"><button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i></button></div></div>`}
+
+function rsCardHtml(g){
+  const key='rs:'+g.rs,open=!!PQ.open[key];
+  let h=`<div class="card pogrp"><div class="pogh" data-pg="${esc(key)}"><div style="flex:1;min-width:0"><div class="pogt">${esc(g.rs)}</div><div class="mut">${g.rows.length} PO · terakhir ${poD(g.rows[0].date).full}</div></div>${metric(g.qty,g.sales,g.priced)}<i class="fa-solid fa-chevron-${open?'up':'down'} poch"></i></div>`;
+  if(open){
+    h+='<div class="pbody"><div class="psec">Rekap Produk</div>';
+    Object.values(g.prod).sort((a,b)=>b.qty-a.qty).forEach(p=>{
+      const std=D.po.price['*']&&D.po.price['*'][p.code];
+      h+=`<div class="pr2"><div class="pr2h"><div style="min-width:0"><b>${esc(p.code)}</b>${p.name?`<div class="mut pnm">${esc(p.name)}</div>`:''}</div><div class="pq"><b>${nf(p.qty)}</b> qty</div></div>
+        <div class="pr2p"><span class="mut">Harga</span>${priceInput(g.rs,p.code,std)}<span class="tot">${p.sales?rpf(p.sales):'—'}</span></div></div>`});
+    h+='<div class="psec">Riwayat PO</div>'+g.rows.map(r=>poLineHtml(r,g.rs)).join('')+'</div>'}
+  return h+'</div>'}
+
+function prodCardHtml(o){
+  const key='pr:'+o.code,open=!!PQ.open[key];
+  let h=`<div class="card pogrp"><div class="pogh" data-pg="${esc(key)}"><div style="flex:1;min-width:0"><div class="pogt">${esc(o.code)}</div><div class="mut pnm">${esc(o.name||'—')}</div><div class="mut">${Object.keys(o.rs).length} RS · terakhir ${poD(o.last).full}</div></div>${metric(o.qty,o.sales,o.priced)}<i class="fa-solid fa-chevron-${open?'up':'down'} poch"></i></div>`;
+  if(open){
+    const std=D.po.price['*']&&D.po.price['*'][o.code];
+    h+=`<div class="pbody"><div class="pr2p" style="margin-top:6px"><span class="mut">Harga standar</span>${priceInput('*',o.code,0)}<span class="tot"></span></div>
+      <div class="mut" style="margin:2px 0 4px">Dipakai untuk semua RS, kecuali RS yang diberi harga sendiri di bawah.</div>
+      <div class="psec">Per Rumah Sakit</div>`;
+    Object.values(o.rs).sort((a,b)=>b.qty-a.qty).forEach(s=>{
+      const ds=s.entries.slice().sort((a,b)=>b.date.localeCompare(a.date));
+      h+=`<div class="pr2"><div class="pr2h"><div style="min-width:0"><b>${esc(s.rs)}</b></div><div class="pq"><b>${nf(s.qty)}</b> qty</div></div>
+        <div class="pr2p"><span class="mut">Harga</span>${priceInput(s.rs,o.code,std)}<span class="tot">${s.sales?rpf(s.sales):'—'}</span></div>
+        <div class="dts">${ds.map(e=>`<span><b>${poD(e.date).full}</b> ×${nf(e.qty)}</span>`).join('')}</div></div>`});
+    h+='</div>'}
+  return h+'</div>'}
 
 function renderPO(){
-  // filter options
-  const brands=[...new Set(D.po.rows.map(r=>r.brand).filter(Boolean))].sort(),jenis=[...new Set(D.po.rows.map(r=>r.jenis).filter(Boolean))].sort();
-  $('poBrand').innerHTML='<option value="">Semua Merk</option>'+brands.map(b=>`<option ${PQ.brand===b?'selected':''}>${esc(b)}</option>`).join('');
-  $('poJenis').innerHTML='<option value="">Semua Jenis</option>'+jenis.map(b=>`<option ${PQ.jenis===b?'selected':''}>${esc(b)}</option>`).join('');
   $('poPer').innerHTML=[['all','Semua'],['30','30 Hari'],['month','Bulan Ini'],['year','Tahun Ini']].map(x=>`<button class="chip ${PQ.per===x[0]?'on':''}" data-pper="${x[0]}">${x[1]}</button>`).join('');
   document.querySelectorAll('#poView button').forEach(b=>b.classList.toggle('on',b.dataset.pv===PQ.view));
-  const rows=poFiltered(),rsSet=new Set(rows.map(r=>r.rs||'(tanpa RS)')),qty=rows.reduce((a,r)=>a+poQty(r),0);
-  $('poSum').innerHTML=`<div class="tile"><span>Total PO</span><b>${rows.length}</b></div><div class="tile"><span>Rumah Sakit</span><b>${rsSet.size}</b></div><div class="tile"><span>Total Qty</span><b>${qty.toLocaleString('id-ID')}</b></div><div class="tile"><span>PO Terakhir</span><b>${rows.length?poD(rows[0].date).full:'—'}</b></div>`;
+  const rows=poFiltered(),byRs=poByRs(rows);
+  let qty=0,sales=0,priced=false;Object.values(byRs).forEach(g=>{qty+=g.qty;sales+=g.sales;if(g.priced)priced=true});
+  $('poSum').innerHTML=`<div class="tile"><span>Total PO</span><b>${rows.length}</b></div><div class="tile"><span>Total Qty</span><b>${nf(qty)}</b></div><div class="tile"><span>Total Sales</span><b>${priced?rpf(sales):'—'}</b></div>`;
   const list=$('poList');
   if(!D.po.rows.length){list.innerHTML='<div class="card" style="text-align:center;padding:24px 16px"><i class="fa-solid fa-clipboard-list" style="font-size:28px;color:var(--mut)"></i><div style="font-weight:600;margin-top:10px">Belum ada PO tercatat</div><div class="mut" style="margin-top:6px">Setiap kali Anda menekan OK di tab Order, order itu otomatis tercatat di sini.</div></div>';return}
-  if(!rows.length){list.innerHTML='<div class="card mut" style="text-align:center;padding:18px">Tidak ada PO yang cocok dengan pencarian atau filter.</div>';return}
+  if(!rows.length){list.innerHTML='<div class="card mut" style="text-align:center;padding:18px">Tidak ada PO yang cocok dengan pencarian atau periode ini.</div>';return}
   let h='';
-  if(PQ.view==='rs'){
-    const g={};rows.forEach(r=>{const k=r.rs||'(tanpa RS)';(g[k]=g[k]||[]).push(r)});
-    Object.keys(g).sort((a,b)=>g[b][0].date.localeCompare(g[a][0].date)).forEach(k=>{
-      const rr=g[k],open=PQ.open['rs:'+k],bs=[...new Set(rr.map(r=>r.brand).filter(Boolean))];
-      h+=`<div class="card pogrp"><div class="pogh" data-pg="rs:${esc(k)}"><div style="flex:1;min-width:0"><div class="pogt">${esc(k)}</div><div class="mut">${rr.length} PO · terakhir ${poD(rr[0].date).full} · ${rr.reduce((a,r)=>a+poQty(r),0).toLocaleString('id-ID')} qty</div><div class="pot" style="margin-top:4px">${bs.map(b=>`<span class="tag t2">${esc(b)}</span>`).join('')}</div></div><i class="fa-solid fa-chevron-${open?'up':'down'}" style="color:var(--mut)"></i></div>${open?'<div class="pol">'+rr.map(r=>poRowHtml(r)).join('')+'</div>':''}</div>`})}
-  else if(PQ.view==='prod'){
-    const g={};rows.forEach(r=>r.items.forEach(i=>{const k=i.code;const o=g[k]=g[k]||{code:i.code,name:i.name,qty:0,po:new Set(),rs:{},last:''};o.qty+=Number(i.qty)||0;o.po.add(r.id);if(!o.name&&i.name)o.name=i.name;
-      const s=o.rs[r.rs||'(tanpa RS)']=o.rs[r.rs||'(tanpa RS)']||{qty:0,dates:[]};s.qty+=Number(i.qty)||0;s.dates.push(r.date);if(r.date>o.last)o.last=r.date}));
-    Object.values(g).sort((a,b)=>b.last.localeCompare(a.last)).forEach(o=>{
-      const open=PQ.open['pr:'+o.code];
-      h+=`<div class="card pogrp"><div class="pogh" data-pg="pr:${esc(o.code)}"><div style="flex:1;min-width:0"><div class="pogt">${esc(o.code)}</div><div class="mut">${esc(o.name||'—')}</div><div class="mut">${o.qty.toLocaleString('id-ID')} qty · ${o.po.size} PO · terakhir ${poD(o.last).full}</div></div><i class="fa-solid fa-chevron-${open?'up':'down'}" style="color:var(--mut)"></i></div>
-        ${open?'<div class="pol">'+Object.keys(o.rs).sort((a,b)=>o.rs[b].dates.slice().sort().pop().localeCompare(o.rs[a].dates.slice().sort().pop())).map(k=>{const s=o.rs[k],ds=s.dates.slice().sort().reverse();return `<div class="prr"><div style="flex:1;min-width:0"><b>${esc(k)}</b><div class="mut">${ds.map(d=>poD(d).full).join(' · ')}</div></div><b class="poq">×${s.qty.toLocaleString('id-ID')}</b></div>`}).join('')+'</div>':''}</div>`})}
-  else{
-    let cur='';
-    rows.forEach(r=>{const mk=r.date.slice(0,7);if(mk!==cur){cur=mk;const [y,m]=mk.split('-');h+=`<div class="pomh">${BLNF[+m-1]} ${y}</div>`}
-      h+=`<div class="card pogrp" style="padding:0">${poRowHtml(r,{rs:true})}</div>`})}
+  if(PQ.view==='rs')Object.values(byRs).sort((a,b)=>b.rows[0].date.localeCompare(a.rows[0].date)).forEach(g=>{h+=rsCardHtml(g)});
+  else Object.values(poByProd(rows)).sort((a,b)=>b.last.localeCompare(a.last)||b.qty-a.qty).forEach(o=>{h+=prodCardHtml(o)});
+  if(!priced)h='<div class="hint">Isi <b>Harga</b> di dalam kartu (ketuk RS atau produk) untuk melihat total sales.</div>'+h;
   list.innerHTML=h}
 
 /* events */
 $('poq').addEventListener('input',e=>{PQ.q=e.target.value;renderPO()});
-$('poBrand').onchange=e=>{PQ.brand=e.target.value;renderPO()};
-$('poJenis').onchange=e=>{PQ.jenis=e.target.value;renderPO()};
 $('poView').addEventListener('click',e=>{const b=e.target.closest('[data-pv]');if(!b)return;PQ.view=b.dataset.pv;renderPO()});
+$('vPO').addEventListener('change',e=>{
+  const t=e.target;if(!t.dataset||!t.dataset.price)return;
+  const [rs,code]=t.dataset.price.split('|').map(decodeURIComponent),v=parseInt(String(t.value).replace(/\D/g,''),10)||0;
+  D.po.price[rs]=D.po.price[rs]||{};
+  if(v>0)D.po.price[rs][code]=v;else delete D.po.price[rs][code];
+  if(!Object.keys(D.po.price[rs]).length)delete D.po.price[rs];
+  save();renderPO()});
 $('vPO').addEventListener('click',e=>{
+  if(e.target.closest('input'))return;
   const per=e.target.closest('[data-pper]');if(per){PQ.per=per.dataset.pper;renderPO();return}
   const act=e.target.closest('[data-poa]');
   if(act){const id=act.dataset.id,r=D.po.rows.find(x=>x.id===id);if(!r)return;
     if(act.dataset.poa==='reuse')poReuse(r);
-    else if(act.dataset.poa==='copy')copy(poText(r)).then(ok=>toast(ok?'PO tersalin':'Gagal menyalin'));
-    else if(act.dataset.poa==='del')confirmBox('Hapus PO','PO ini dihapus dari Data PO. Tidak bisa dibatalkan.','Hapus',()=>{D.po.rows=D.po.rows.filter(x=>x.id!==id);save();renderPO();toast('PO dihapus')});
+    else confirmBox('Hapus PO','PO tanggal '+poD(r.date).full+' untuk '+poKey(r)+' dihapus dari Data PO. Tidak bisa dibatalkan.','Hapus',()=>{D.po.rows=D.po.rows.filter(x=>x.id!==id);save();renderPO();toast('PO dihapus')});
     return}
-  const g=e.target.closest('[data-pg]');if(g){const k=g.dataset.pg;PQ.open[k]=!PQ.open[k];renderPO();return}
-  const row=e.target.closest('[data-po]');if(row){const k=row.dataset.po;PQ.open[k]=!PQ.open[k];renderPO()}});
-function poText(r){const dd=poD(r.date);return ['PO '+(r.rs||'(tanpa RS)')+' · '+dd.d+' '+dd.m+' '+dd.y,[r.brand,r.jenis].filter(Boolean).join(' · ')].concat(r.items.map(i=>i.code+(i.name?' - '+i.name:'')+': '+i.qty+' '+i.unit)).filter(Boolean).join(String.fromCharCode(10))}
+  const g=e.target.closest('[data-pg]');if(g){const k=g.dataset.pg;PQ.open[k]=!PQ.open[k];renderPO()}});
 function poReuse(r){
   F.brand=r.brand||null;F.jenis=r.jenis||null;F.rs=r.rs||'';
   F.items=r.items.length?r.items.map(i=>({item:i.code,qty:String(i.qty),unit:i.unit||'ea'})):[{item:'',qty:'',unit:'ea'}];
-  $('date').value=todayISO();$('note').value=r.note||'';
+  $('date').value=todayISO();$('note').value='';
   tab('o');renderAll();toast('Order dimuat dari Data PO. Periksa lalu tekan OK.')}
 $('poCsv').onclick=()=>{
   const rows=poFiltered(),NL=String.fromCharCode(13,10),q=v=>'"'+String(v==null?'':v).split('"').join('""')+'"';
-  const out=[['Tanggal','RS','Merk','Jenis','Kode','Nama Item','Qty','Unit','Subjek'].map(q).join(',')];
-  rows.forEach(r=>r.items.forEach(i=>out.push([r.date,r.rs,r.brand,r.jenis,i.code,i.name,i.qty,i.unit,r.subject].map(q).join(','))));
+  const out=[['Tanggal','RS','Kode','Nama Item','Qty','Unit','Harga Satuan','Total'].map(q).join(',')];
+  rows.forEach(r=>r.items.forEach(i=>{const p=poPrice(poKey(r),i.code),n=Number(i.qty)||0;out.push([r.date,poKey(r),i.code,i.name,n,i.unit,p||'',p?p*n:''].map(q).join(','))}));
   const f=new File(['﻿'+out.join(NL)],'Data PO '+todayISO()+'.csv',{type:'text/csv'});
   const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove();toast('CSV tersimpan di folder Download')};
 
@@ -1709,7 +1768,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v46';
+const APPV='v47';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   toast('Memperbarui…');
