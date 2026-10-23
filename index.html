@@ -723,8 +723,12 @@ const grow=t=>{t.style.height='auto';t.style.height=Math.min(t.scrollHeight+2,22
 const growAll=()=>document.querySelectorAll('textarea').forEach(t=>{if(t.offsetParent)grow(t)});
 document.addEventListener('input',e=>{if(e.target.tagName==='TEXTAREA')grow(e.target)});
 const isFld=x=>x&&x.matches&&x.matches('input:not([type=file]):not([type=checkbox]),textarea,select');
-document.addEventListener('focusin',e=>{if(isFld(e.target)){document.body.classList.add('typing');if(e.target.tagName==='INPUT')e.target.enterKeyHint='next'}});
-document.addEventListener('focusout',()=>setTimeout(()=>{if(!isFld(document.activeElement))document.body.classList.remove('typing')},60));
+document.addEventListener('focusin',e=>{if(isFld(e.target)&&e.target.tagName==='INPUT')e.target.enterKeyHint='next'});
+let baseH=Math.max(innerHeight,(window.visualViewport||{}).height||0);
+const kbCheck=()=>{const h=window.visualViewport?visualViewport.height:innerHeight;document.body.classList.toggle('typing',h<baseH-140)};
+if(window.visualViewport)visualViewport.addEventListener('resize',kbCheck);
+addEventListener('resize',kbCheck);
+addEventListener('orientationchange',()=>setTimeout(()=>{baseH=Math.max(innerHeight,(window.visualViewport||{}).height||0);kbCheck()},500));
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;const t=e.target;
   if(t.closest('dialog')){e.preventDefault();$('dOk').click();return}
