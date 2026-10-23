@@ -345,6 +345,10 @@ select{font-size:14px!important;min-height:40px;padding:6px 8px}
   <details class="card dsec"><summary><i class="fa-solid fa-floppy-disk"></i> Cadangan Data <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <div class="mut">Data tersimpan di HP ini saja. Salin sebagai cadangan, atau pindahkan ke HP lain.</div>
     <div class="row" style="margin-top:8px"><button class="sec" id="exp" style="flex:1">Salin Data</button><button class="sec" id="imp" style="flex:1">Tempel Data</button></div></div></details>
+
+  <details class="card dsec"><summary><i class="fa-solid fa-triangle-exclamation" style="color:var(--err)"></i> Hapus Semua Data <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
+    <div class="mut">Menghapus semua yang tersimpan di HP ini: kontak, merk, barang, RS, SPH tersimpan, template Excel, dan draf. Tidak bisa dibatalkan. Salin cadangan dulu kalau masih perlu.</div>
+    <button class="add" id="wipeAll" style="background:var(--err);margin-top:10px"><i class="fa-solid fa-trash"></i> Hapus Semua Data</button></div></details>
 </main>
 
 <div class="bar"><div class="in"><div class="msg warn" id="msg"></div><button id="go"><i class="fa-regular fa-paper-plane"></i> <span id="goTx">OK → Buka Outlook</span></button></div></div>
@@ -400,7 +404,7 @@ function norm(x){const s=seed();x.sph=sphNorm(x.sph);x.spon=sponNorm(x.spon);
   x.mail=x.mail||s.mail;if(x.mail.closing===undefined)x.mail.closing='';if(!x.mail.itemMode)x.mail.itemMode='kode';return x}
 let D;try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 D=norm(D&&D.brands?D:seed());
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
+const save=()=>{if(window.__wipe)return;try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
 const F={brand:null,jenis:null,rs:'',items:[{item:'',qty:'',unit:'ea'}]};
 let FILES=[];
 const todayISO=()=>{const t=new Date();return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`};
@@ -1087,6 +1091,7 @@ async function sphSend0(){
 const DKEY='outlookcepat.draft.v1';
 let draftTab='o';
 function saveDraft(){
+  if(window.__wipe)return;
   try{localStorage.setItem(DKEY,JSON.stringify({t:MODE,F:{brand:F.brand,jenis:F.jenis,rs:F.rs,items:F.items},note:$('note').value,date:$('date').value,sdate:$('sdate').value,ts:Date.now()}))}catch(e){}}
 function loadDraft(){
   let d=null;try{d=JSON.parse(localStorage.getItem(DKEY))}catch(e){}
@@ -1323,7 +1328,7 @@ const MIME_X='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 /* template di IndexedDB (tidak di GitHub: berisi tanda tangan) */
 let _idb=null;
 const idbOpen=()=>new Promise((ok,no)=>{if(_idb)return ok(_idb);const r=indexedDB.open('outlookcepat2',1);
-  r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{_idb=r.result;ok(_idb)};r.onerror=()=>no(r.error)});
+  r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{_idb=r.result;_idb.onversionchange=()=>{try{_idb.close()}catch(e){}_idb=null};ok(_idb)};r.onerror=()=>no(r.error)});
 const idbGet=async k=>{const db=await idbOpen();return new Promise((ok,no)=>{const q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})};
 const idbSet=async(k,v)=>{const db=await idbOpen();return new Promise((ok,no)=>{const q=db.transaction('kv','readwrite').objectStore('kv').put(v,k);q.onsuccess=()=>ok();q.onerror=()=>no(q.error)})};
 let TPL=null,FILES3=[],sponManual=false;
@@ -1480,6 +1485,13 @@ function shareDialog(data,note){
     pr.then(()=>$('dlg').close()).catch(e=>{if(e&&e.name==='AbortError')return;fail(e)})};
   $('dNo').onclick=()=>$('dlg').close();
   $('dlg').showModal()}
+$('wipeAll').onclick=()=>confirmBox('Hapus Semua Data','Semua data di HP ini dihapus permanen: kontak, merk, barang, RS, SPH tersimpan, template Excel, dan draf. Tidak bisa dibatalkan.','Hapus Semua',async()=>{
+  window.__wipe=true;
+  try{['outlookcepat.order.v1','outlookcepat.draft.v1','oc.pv'].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  try{if(_idb){_idb.close();_idb=null}await new Promise(res=>{const q=indexedDB.deleteDatabase('outlookcepat2');q.onsuccess=q.onerror=q.onblocked=()=>res()})}catch(e){}
+  try{const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}catch(e){}
+  try{const rg=await navigator.serviceWorker.getRegistrations();await Promise.all(rg.map(g=>g.unregister()))}catch(e){}
+  location.reload()});
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
   [['vOrder','o'],['vSph','s'],['vSpon','p'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
