@@ -117,6 +117,8 @@ button{touch-action:manipulation}
 body.typing .bar{display:none}
 body.typing .pv .bd{max-height:16vh}
 .reset{width:100%;margin-top:4px}
+.pv::after{content:'';position:absolute;left:0;right:0;top:100%;height:10px;background:var(--bg);border-bottom:1px solid var(--bd)}
+main{scroll-padding-top:90px}
 </style>
 </head>
 <body>
@@ -683,7 +685,7 @@ $('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tData').oncli
 
 $('date').value=todayISO();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+6)+'px'};
+const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+10)+'px'};
 new ResizeObserver(syncSp).observe($('pv'));
 setPv();renderAll();syncSp();
 </script>
