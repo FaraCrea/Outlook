@@ -171,9 +171,9 @@ dialog .row{margin-top:14px;justify-content:flex-end}
     <div id="sGroups"></div>
     <button class="sec add" data-sact="gAdd"><i class="fa-solid fa-plus"></i> Tambah kelompok SPH</button></div>
 
-  <div class="card"><h3>Cara kirim (uji coba)</h3>
+  <div class="card"><h3>Cara kirim</h3>
     <div class="chips" id="trials"></div><div class="mut" id="trialTx" style="margin-top:8px"></div>
-    <div class="mut" style="margin-top:6px">Coba Trial 1, 2, 3 bergantian dan lihat mana yang tabelnya utuh di Outlook HP.</div></div>
+    <div class="mut" style="margin-top:6px">Coba bergantian dan pilih yang tabelnya utuh di Outlook HP. Pilihan diingat.</div></div>
 </main>
 
 <!-- ================= DATA ================= -->
@@ -497,10 +497,10 @@ function renderPrevS(){
   const p=sphProblems();$('msg').textContent=p[0]||'';$('go').disabled=!!p.length;$('goTx').textContent='OK → Buat email SPH'}
 
 /* ---------- SPH render ---------- */
-const TRIALS=[[1,'Trial 1','Tabel tersalin otomatis, lalu email baru terbuka. Tekan lama di badan email, pilih Tempel.'],
- [2,'Trial 2','Membuat file .eml berisi email lengkap (To, CC, subjek, tabel). Buka file itu dengan Outlook.'],
- [3,'Trial 3','Membuka Outlook lewat tautan web dengan tabel langsung di badan email (bisa di aplikasi atau browser).'],
- [4,'Teks','Teks biasa tanpa garis tabel, langsung terisi. Cadangan kalau trial lain gagal.']];
+const TRIALS=[[1,'Salin otomatis + tempel','Tabel tersalin otomatis, lalu email baru terbuka. Tekan lama di badan email, pilih Tempel.'],
+ [2,'File email (.eml)','Membuat file .eml berisi email lengkap (To, CC, subjek, tabel). Buka file itu dengan Outlook.'],
+ [3,'Tautan Outlook web','Membuka Outlook lewat tautan web dengan tabel langsung di badan email (bisa di aplikasi atau browser).'],
+ [4,'Teks biasa','Teks biasa tanpa garis tabel, langsung terisi. Cadangan kalau trial lain gagal.']];
 function itemRow(kind,gi,ii,it,price){
   return `<div class="itx" data-g="${gi}" data-kd="${kind}" data-i="${ii}"><div class="row"><input data-ik="code" value="${esc(it.code)}" placeholder="Item code"><input data-ik="unit" value="${esc(it.unit)}" placeholder="Unit" style="width:62px;flex:none">${price?`<input data-ik="price" inputmode="numeric" value="${esc(it.price)}" placeholder="Harga" style="width:104px;flex:none">`:''}</div>
   <div class="row" style="margin-top:6px"><input data-ik="name" value="${esc(it.name)}" placeholder="Nama item"><button class="ib del" data-sact="iDel" data-g="${gi}" data-kd="${kind}" data-i="${ii}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div></div>`}
