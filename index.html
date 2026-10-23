@@ -679,25 +679,31 @@ $('vSph').addEventListener('input',e=>{
 $('vSph').addEventListener('change',e=>{
   const t=e.target;if(['instansi','kepada','alamat'].includes(t.dataset.f))bookSave()});
 
-async function findAddr(){
-  const q=D.sph.form.instansi.trim();
-  if(!q)return toast('Isi nama instansi dulu');
-  $('dTitle').textContent='Cari alamat';$('dErr').textContent='';
-  $('dBody').innerHTML='<div class="mut" style="margin-top:8px">Mencari…</div>';
-  $('dOk').style.display='none';$('dNo').textContent='Tutup';$('dNo').onclick=()=>$('dlg').close();
-  $('dlg').showModal();
+async function addrSearch(q){
+  const box=$('adRes');q=(q||'').trim();
+  if(!q){box.innerHTML='<div class="mut" style="margin-top:8px">Ketik kata kunci pencarian.</div>';return}
+  box.innerHTML='<div class="mut" style="margin-top:8px">Mencari…</div>';
   try{
-    const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=id&accept-language=id&q='+enc(q));
+    const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&countrycodes=id&accept-language=id&q='+enc(q));
     const j=await r.json();
-    if(!j.length){$('dBody').innerHTML='<div class="mut" style="margin-top:8px">Tidak ditemukan. Isi alamat secara manual.</div>';return}
+    if(!j.length){box.innerHTML='<div class="mut" style="margin-top:8px">Tidak ditemukan. Ubah kata kunci di atas lalu cari lagi.</div>';return}
     const clean=d=>d.display_name.split(', ').filter(x=>x!=='Indonesia');
-    $('dBody').innerHTML='<div class="mut" style="margin:6px 0">Pilih yang paling sesuai, lalu periksa lagi. Data dari peta (OpenStreetMap), bisa kurang lengkap, misalnya nomor jalan.</div>'
+    box.innerHTML='<div class="mut" style="margin:8px 0 2px">Pilih yang paling sesuai, lalu periksa lagi. Data dari peta (OpenStreetMap), bisa kurang lengkap, misalnya nomor jalan.</div>'
       +j.map((x,i)=>{const p=clean(x);return `<button class="sec" style="display:block;width:100%;text-align:left;white-space:normal;margin-top:6px" data-ad="${i}"><b>${esc(p[0])}</b><br><span style="font-size:12px">${esc(p.slice(1).join(', '))}</span></button>`}).join('');
-    $('dBody').onclick=ev=>{
+    box.onclick=ev=>{
       const b=ev.target.closest('[data-ad]');if(!b)return;
       D.sph.form.alamat=clean(j[+b.dataset.ad]).slice(1).join(', ');
       bookSave();renderSph();renderPrev();$('dlg').close();toast('Alamat diisi. Periksa lagi sebelum kirim.')}
-  }catch(err){$('dBody').innerHTML='<div class="warn" style="margin-top:8px;font-size:13px">Pencarian gagal. Perlu koneksi internet.</div>'}}
+  }catch(err){box.innerHTML='<div class="warn" style="margin-top:8px;font-size:13px">Pencarian gagal. Perlu koneksi internet.</div>'}}
+function findAddr(){
+  const q=D.sph.form.instansi.trim();
+  $('dTitle').textContent='Cari Alamat';$('dErr').textContent='';$('dBody').onclick=null;
+  $('dBody').innerHTML=`<div class="row" style="margin-top:8px"><input id="adq" value="${esc(q)}" autocomplete="off" aria-label="Kata kunci pencarian"><button id="adGo"><i class="fa-solid fa-magnifying-glass"></i> Cari</button></div><div id="adRes"></div>`;
+  $('dOk').style.display='none';$('dNo').textContent='Tutup';$('dNo').onclick=()=>$('dlg').close();
+  $('dOk').onclick=()=>addrSearch($('adq').value);
+  $('adGo').onclick=()=>addrSearch($('adq').value);
+  $('dlg').showModal();
+  if(q)addrSearch(q);else setTimeout(()=>$('adq').focus(),60)}
 $('vSph').addEventListener('click',e=>{if(e.target.closest('[data-sact="findAddr"]'))findAddr()});
 
 
