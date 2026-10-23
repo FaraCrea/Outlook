@@ -714,11 +714,17 @@ document.addEventListener('keydown',e=>{
   const main=t.closest('main');if(!main)return;
   const all=[...main.querySelectorAll('input:not([type=file]):not([type=checkbox]),textarea,select')].filter(x=>x.offsetParent&&!x.disabled);
   const i=all.indexOf(t);if(i>=0&&i<all.length-1){e.preventDefault();all[i+1].focus()}else t.blur()});
-$('resetOrder').onclick=()=>{if(!confirm('Kosongkan form order? Penerima tetap tersimpan.'))return;
-  F.brand=null;F.jenis=null;F.rs='';F.items=[{item:'',qty:'',unit:'ea'}];FILES=[];$('note').value='';$('date').value=todayISO();renderAll();scrollTo(0,0);toast('Form order dikosongkan')};
-$('resetSph').onclick=()=>{if(!confirm('Reset semua kolom SPH, termasuk surat dan pilihan penerima?'))return;
+function confirmBox(title,msg,okLabel,cb){
+  $('dTitle').textContent=title;$('dErr').textContent='';$('dBody').onclick=null;
+  $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">'+esc(msg)+'</div>';
+  $('dOk').style.display='';$('dOk').textContent=okLabel;$('dNo').textContent='Batal';
+  $('dOk').onclick=()=>{$('dlg').close();cb()};$('dNo').onclick=()=>$('dlg').close();
+  $('dlg').showModal()}
+$('resetOrder').onclick=()=>confirmBox('Reset Form Order','Semua kolom order dikosongkan. Penerima tetap tersimpan.','Reset',()=>{
+  F.brand=null;F.jenis=null;F.rs='';F.items=[{item:'',qty:'',unit:'ea'}];FILES=[];$('note').value='';$('date').value=todayISO();renderAll();scrollTo(0,0);toast('Form order direset')});
+$('resetSph').onclick=()=>confirmBox('Reset Semua Kolom SPH','Semua kolom SPH dikosongkan, termasuk surat dan pilihan penerima. SPH yang sudah tersimpan tidak terhapus.','Reset',()=>{
   const z=sphSeed(),S=D.sph;S.form=z.form;S.groups=z.groups;['greet','intro','closing','subj'].forEach(k=>{S[k]=z[k]});S.cur=null;
-  D.contacts.forEach(c=>{c.rs='off'});$('sdate').value=todayISO();save();renderSph();renderPrev();scrollTo(0,0);toast('Semua kolom SPH direset')};
+  D.contacts.forEach(c=>{c.rs='off'});$('sdate').value=todayISO();save();renderSph();renderPrev();scrollTo(0,0);toast('Semua kolom SPH direset')});
 /* ---------- SPH tersimpan ---------- */
 const clone=o=>JSON.parse(JSON.stringify(o));
 const sid=()=>'s'+Math.random().toString(36).slice(2,9)+Date.now().toString(36);
