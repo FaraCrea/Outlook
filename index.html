@@ -131,6 +131,17 @@ dialog{max-height:82vh;overflow:auto}
 #msg{cursor:pointer}
 @keyframes hl{0%,70%{box-shadow:0 0 0 3px var(--err);border-color:var(--err)}100%{box-shadow:0 0 0 0 transparent}}
 .hl{animation:hl 2.2s ease-out}
+.irow{display:grid;grid-template-columns:64px minmax(0,1fr) 38px 82px 24px;gap:4px;align-items:start}
+.irow input,.irow textarea{font-size:14px!important;min-height:38px;padding:4px 6px}
+.irow textarea{line-height:1.25;padding-top:8px}
+.irow.ih{margin-top:8px;font-size:11px;color:var(--mut);font-weight:600}
+.irow.ih span{padding:0 2px}
+.irow .ib{width:24px;min-height:38px;font-size:12px}
+.isub{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--mut);margin:3px 0 0}
+.isub label{display:flex;align-items:center;gap:6px}
+.isub input{width:18px;min-height:18px;height:18px;padding:0}
+.itot{font-weight:600;color:var(--tx)}
+.c2{padding:6px 4px}
 </style>
 </head>
 <body>
@@ -192,7 +203,7 @@ dialog{max-height:82vh;overflow:auto}
     <label class="f">5. Stock Barang<input data-f="p5"></label>
     <label class="f">Hardcopy Dikirim ke Alamat<input data-f="hc"></label></div>
 
-  <div class="card"><h3>5 · Daftar item (kelompok SPH)</h3>
+  <div class="card" style="padding:10px 6px"><h3 style="padding-left:6px">5 · Daftar Item (Kelompok SPH)</h3>
     <div id="sGroups"></div>
     <button class="sec add" data-sact="gAdd"><i class="fa-solid fa-plus"></i> Tambah Kelompok SPH</button></div>
 
@@ -474,6 +485,10 @@ const sdate=()=>$('sdate').value||todayISO();
 function sphSubject(){const S=D.sph,f=S.form;
   return S.subj.split('{instansi}').join(f.instansi||'(INSTANSI)').split('{produk}').join(f.produk||'(PRODUK)').split('{versi}').join(f.versi||'(VERSI)').split('{tanggal}').join(dateStr(sdate()))}
 
+const sphMoney=v=>v>0?v.toLocaleString('id-ID'):'';
+function sphCols(all){
+  const multi=all.some(i=>qtyOf(i.unit)>1),showU=all.some(i=>qtyOf(i.unit)>1&&i.u);
+  return {multi,showU}}
 function sphHtml(){
   const S=D.sph,f=S.form,B='border:1px solid #000;padding:3px 6px;vertical-align:top;';
   const ff='font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000;';
@@ -494,13 +509,21 @@ function sphHtml(){
     const its=g.items.filter(i=>i.code||i.name),acc=g.acc.filter(i=>i.code||i.name);
     if(!g.title&&!its.length&&!acc.length)return;
     gn++;let n=0;
-    h+=`<p style="margin:14px 0 4px"><b>${gn}. ${H(g.title)}</b></p>`+tbl+'<tr>'
-      +['No','Item Code','Nama Item','Unit','Harga Nett + PPN per unit (Rp)'].map(t=>`<th style="${B}text-align:center">${t}</th>`).join('')+'</tr>';
-    its.forEach(i=>{n++;h+=`<tr><td style="${B}text-align:center">${n}</td><td style="${B}">${H(i.code)}</td><td style="${B}">${H(i.name)}</td><td style="${B}text-align:center">${H(i.unit)}</td><td style="${B}text-align:right">${H(fmtP(i.price))}</td></tr>`});
-    if(acc.length){h+=`<tr><td colspan="5" style="${B}"><b><u>Include Accessories</u></b></td></tr>`;
-      acc.forEach(i=>{n++;h+=`<tr><td style="${B}text-align:center">${n}</td><td style="${B}">${H(i.code)}</td><td style="${B}">${H(i.name)}</td><td style="${B}text-align:center">${H(i.unit)}</td><td style="${B}text-align:right">${H(fmtP(i.price))}</td></tr>`})}
-    const tot=its.concat(acc).reduce((a,i)=>a+qtyOf(i.unit)*parsePrice(i.price),0);
-    if(tot>0)h+=`<tr><td colspan="4" style="${B}text-align:right"><b>Total</b></td><td style="${B}text-align:right"><b>${tot.toLocaleString('id-ID')}</b></td></tr>`;
+    const {multi,showU}=sphCols(its.concat(acc)),cols=showU?6:5;
+    const heads=['No','Item Code','Nama Item','Unit'].concat(showU?['Harga Satuan (Rp)','Total Harga (Rp)']:[multi?'Total Harga Nett + PPN (Rp)':'Harga Nett + PPN per unit (Rp)']);
+    h+=`<p style="margin:14px 0 4px"><b>${gn}. ${H(g.title)}</b></p>`+tbl+'<tr>'+heads.map(t=>`<th style="${B}text-align:center">${t}</th>`).join('')+'</tr>';
+    let sum=0;
+    const rowHtml=i=>{
+      n++;const q=qtyOf(i.unit),pr=parsePrice(i.price),tot=q*pr;sum+=tot;
+      const raw=String(i.price||'').trim(),R=`<td style="${B}text-align:right">`;
+      const money=v=>v>0?sphMoney(v):(raw&&pr===0?H(raw):'');
+      let c=`<td style="${B}text-align:center">${n}</td><td style="${B}">${H(i.code)}</td><td style="${B}">${H(i.name)}</td><td style="${B}text-align:center">${H(i.unit)}</td>`;
+      if(showU)c+=R+((q===1||i.u)?money(pr):'')+'</td>'+R+money(tot)+'</td>';
+      else c+=R+money(tot)+'</td>';
+      return '<tr>'+c+'</tr>'};
+    its.forEach(i=>{h+=rowHtml(i)});
+    if(acc.length){h+=`<tr><td colspan="${cols}" style="${B}"><b><u>Include Accessories</u></b></td></tr>`;acc.forEach(i=>{h+=rowHtml(i)})}
+    if(sum>0)h+=`<tr><td colspan="${cols-1}" style="${B}text-align:right"><b>Total</b></td><td style="${B}text-align:right"><b>${sum.toLocaleString('id-ID')}</b></td></tr>`;
     h+='</table>';
     const nt=ul(g.notes);if(nt)h+=`<p style="margin:8px 0 2px"><b>Kondisi Penawaran:</b></p>`+nt;
   });
@@ -515,10 +538,13 @@ function sphText(){
   L.push('1. Harga produk : '+f.p1,'2. Franko : '+f.p2,'3. Termin Pembayaran DP : '+f.p3,'4. Masa berlaku penawaran : '+f.p4,'5. Stock barang : '+f.p5,'Hardcopy dikirim ke alamat : '+f.hc);
   let gn=0;
   S.groups.forEach(g=>{const its=g.items.filter(i=>i.code||i.name),acc=g.acc.filter(i=>i.code||i.name);if(!g.title&&!its.length&&!acc.length)return;
-    gn++;let n=0;L.push('',gn+'. '+g.title);
-    its.forEach(i=>{n++;L.push(`${n}. ${i.code} | ${i.name} | ${i.unit} | Rp ${fmtP(i.price)}`)});
-    if(acc.length){L.push('Include Accessories');acc.forEach(i=>{n++;L.push(`${n}. ${i.code} | ${i.name} | ${i.unit}${i.price?' | Rp '+fmtP(i.price):''}`)})}
-    const tot=its.concat(acc).reduce((a,i)=>a+qtyOf(i.unit)*parsePrice(i.price),0);if(tot>0)L.push('Total : Rp '+tot.toLocaleString('id-ID'));
+    gn++;let n=0,sum=0;L.push('',gn+'. '+g.title);
+    const line=i=>{n++;const q=qtyOf(i.unit),pr=parsePrice(i.price),tot=q*pr;sum+=tot;
+      const price=pr>0?(q>1&&i.u?` | ${i.unit} x Rp ${sphMoney(pr)} = Rp ${sphMoney(tot)}`:` | ${i.unit} | Rp ${sphMoney(tot)}`):` | ${i.unit}`+(i.price&&pr===0?' | '+i.price:'');
+      L.push(`${n}. ${i.code} | ${i.name}${price}`)};
+    its.forEach(line);
+    if(acc.length){L.push('Include Accessories');acc.forEach(line)}
+    if(sum>0)L.push('Total : Rp '+sphMoney(sum));
     const nt=g.notes.filter(x=>x.trim());if(nt.length){L.push('Kondisi Penawaran:');nt.forEach(x=>L.push('- '+x))}});
   if(S.closing)L.push('',S.closing);
   return L.join('\r\n')}
@@ -540,9 +566,20 @@ const TRIALS=[[1,'Salin otomatis + tempel','Tabel tersalin otomatis, lalu email 
  [2,'File email (.eml)','File .eml berisi email lengkap (To, CC, subjek, tabel) otomatis tersimpan di folder Download dengan nama sesuai subjek. Buka lewat aplikasi File, pilih Outlook.'],
  [3,'Tautan Outlook web','Membuka Outlook lewat tautan web dengan tabel langsung di badan email (bisa di aplikasi atau browser).'],
  [4,'Teks biasa','Teks biasa tanpa garis tabel, langsung terisi. Cadangan kalau trial lain gagal.']];
-function itemRow(kind,gi,ii,it,price){
-  return `<div class="itx" data-g="${gi}" data-kd="${kind}" data-i="${ii}"><div class="row"><input data-ik="code" value="${esc(it.code)}" placeholder="Item Code"><input data-ik="unit" value="${esc(it.unit)}" placeholder="Unit" style="width:62px;flex:none">${price?`<input data-ik="price" inputmode="numeric" value="${esc(it.price)}" placeholder="Harga" style="width:104px;flex:none">`:''}</div>
-  <div class="row" style="margin-top:6px"><input data-ik="name" value="${esc(it.name)}" placeholder="Nama Item"><button class="ib del" data-sact="iDel" data-g="${gi}" data-kd="${kind}" data-i="${ii}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div></div>`}
+function itemHead(){return '<div class="irow ih"><span>Item Code</span><span>Nama Item</span><span>Qty</span><span>Harga Satuan</span><span></span></div>'}
+function itemRow(kind,gi,ii,it){
+  const q=qtyOf(it.unit),tot=q*parsePrice(it.price);
+  return `<div class="itx" data-g="${gi}" data-kd="${kind}" data-i="${ii}"><div class="irow">
+    <input data-ik="code" value="${esc(it.code)}" aria-label="Item Code" autocapitalize="characters" spellcheck="false">
+    <textarea data-ik="name" rows="1" aria-label="Nama Item">${esc(it.name)}</textarea>
+    <input data-ik="unit" inputmode="numeric" value="${esc(it.unit)}" aria-label="Qty">
+    <input data-ik="price" inputmode="numeric" value="${esc(it.price)}" aria-label="Harga Satuan">
+    <button class="ib del" data-sact="iDel" data-g="${gi}" data-kd="${kind}" data-i="${ii}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="isub ${q>1?'':'hide'}"><label><input type="checkbox" data-ik="u" ${it.u?'checked':''}> Tampilkan harga satuan di email</label><span class="itot">${tot>0?'Total: '+tot.toLocaleString('id-ID'):''}</span></div></div>`}
+function updRow(r,o){
+  const q=qtyOf(o.unit),tot=q*parsePrice(o.price);
+  r.querySelector('.isub').classList.toggle('hide',!(q>1));
+  r.querySelector('.itot').textContent=tot>0?'Total: '+tot.toLocaleString('id-ID'):''}
 function bulletRows(arr,attr,extra){
   return arr.map((x,i)=>`<div class="row" style="margin-top:6px"><input ${attr} data-i="${i}" ${extra} value="${esc(x)}"><button class="ib del" data-sact="bDel" ${extra} data-i="${i}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}
 function renderSph(){
@@ -553,9 +590,9 @@ function renderSph(){
   renderSaved();
   $('sKond').innerHTML=bulletRows(f.kondisi,'data-kb','');
   $('sGroups').innerHTML=S.groups.map((g,gi)=>`<div class="c2"><div class="row"><input data-gt data-g="${gi}" value="${esc(g.title)}" placeholder="Judul Kelompok"><button class="ib del" data-sact="gDel" data-g="${gi}" title="Hapus kelompok" aria-label="Hapus kelompok"><i class="fa-solid fa-trash"></i></button></div>
-    ${g.items.map((it,ii)=>itemRow('items',gi,ii,it,true)).join('')}
+    ${g.items.length?itemHead():''}${g.items.map((it,ii)=>itemRow('items',gi,ii,it)).join('')}
     <button class="sec add" data-sact="iAdd" data-g="${gi}" data-kd="items"><i class="fa-solid fa-plus"></i> Tambah Item</button>
-    ${g.acc.length?'<div class="l" style="margin-top:10px"><b>Include Accessories</b></div>'+g.acc.map((it,ii)=>itemRow('acc',gi,ii,it,true)).join(''):''}
+    ${g.acc.length?'<div class="l" style="margin-top:10px"><b>Include Accessories</b></div>'+itemHead()+g.acc.map((it,ii)=>itemRow('acc',gi,ii,it)).join(''):''}
     <button class="sec add" data-sact="iAdd" data-g="${gi}" data-kd="acc"><i class="fa-solid fa-plus"></i> Tambah Accessories</button>
     <div class="l" style="margin-top:10px"><b>Kondisi Penawaran Kelompok Ini</b></div>
     ${bulletRows(g.notes,'data-nt','data-g="'+gi+'"')}
@@ -569,7 +606,7 @@ const sv=()=>{save();renderPrev()};
 $('vSph').addEventListener('input',e=>{const t=e.target,S=D.sph;
   if(t.dataset.f!==undefined)S.form[t.dataset.f]=t.value;
   else if(t.dataset.m!==undefined)S[t.dataset.m]=t.value;
-  else if(t.dataset.ik){const r=t.closest('.itx');S.groups[+r.dataset.g][r.dataset.kd][+r.dataset.i][t.dataset.ik]=t.value}
+  else if(t.dataset.ik){const r=t.closest('.itx'),o=S.groups[+r.dataset.g][r.dataset.kd][+r.dataset.i];o[t.dataset.ik]=t.type==='checkbox'?t.checked:t.value;updRow(r,o)}
   else if(t.dataset.gt!==undefined)S.groups[+t.dataset.g].title=t.value;
   else if(t.dataset.kb!==undefined)S.form.kondisi[+t.dataset.i]=t.value;
   else if(t.dataset.nt!==undefined)S.groups[+t.dataset.g].notes[+t.dataset.i]=t.value;
