@@ -252,22 +252,46 @@ select{font-size:14px!important;min-height:40px;padding:6px 8px}
 
   <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcptP"></div></div>
 
-  <div class="card"><h3>2 · Event</h3>
+  <div class="card"><h3>2 · Type &amp; Event Organizer</h3>
+    <div class="mut" style="margin-bottom:6px">Type</div>
+    <div class="chips"><button class="chip" data-ty="exh">Exhibition</button><button class="chip" data-ty="ws">Workshop</button><button class="chip" data-ty="pres">Presentation / Talks</button><button class="chip" data-ty="third">3rd Party</button><button class="chip" data-ty="otherT">Others (Trial)</button></div>
+    <div class="mut" style="margin:12px 0 6px">Event Organizer</div>
+    <div class="chips"><button class="chip" data-og="trans">Transmedic</button><button class="chip" data-og="manu">Manufacturer</button><button class="chip" data-og="otherO">Others</button></div></div>
+
+  <div class="card"><h3>3 · Event</h3>
     <div class="fr" style="margin-top:0"><label for="sp_name">Event Name</label><input id="sp_name" data-s="name" autocomplete="off"></div>
     <div class="fr"><label for="sp_date">Event Date</label><input id="sp_date" type="date" data-s="date"></div>
     <div class="fr"><label for="sp_loc">Event Location</label><input id="sp_loc" data-s="location" autocomplete="off"></div>
     <div class="fr top"><label>Manufacturer</label><div class="sel"><select id="sponMan" aria-label="Manufacturer"></select><div id="sponManBox" class="hide"><input data-s="manufacturer" autocomplete="off" aria-label="Manufacturer isi manual"></div></div></div>
     <div class="fr top"><label for="sp_obj">Objective of Event</label><textarea id="sp_obj" data-s="objective" rows="2"></textarea></div></div>
 
-  <div class="card"><h3>3 · Target Group</h3>
+  <div class="card"><h3>4 · Target Group</h3>
     <div class="chips"><button class="chip" data-tg="doctors">Doctors</button><button class="chip" data-tg="nurses">Nurses</button><button class="chip" data-tg="others">Others</button></div>
     <div class="fr" style="margin-top:10px"><label for="sp_part">No. of Participants</label><input id="sp_part" data-s="participants" inputmode="numeric" autocomplete="off"></div></div>
 
-  <div class="card"><h3>4 · Cost of Event</h3><div id="costStd"></div><div id="costCus"></div>
+  <div class="card"><h3>5 · Cost of Event</h3><div id="costStd"></div><div id="costCus"></div>
     <button class="sec add" id="costAdd"><i class="fa-solid fa-plus"></i> Tambah Biaya Lain</button>
     <div class="row" style="margin-top:10px;justify-content:flex-end"><b id="costTot"></b></div></div>
 
-  <div class="card"><h3>5 · Tanggal di Bawah Tanda Tangan</h3>
+  <div class="card"><h3>6 · Cost Sharing</h3>
+    <div class="mut" style="margin:0 0 4px"><b>Transmedic</b></div>
+    <div class="row"><input data-sh="trans.pct" inputmode="numeric" placeholder="%" aria-label="Transmedic persen" style="flex:.5"><input data-sh="trans.idr" inputmode="numeric" placeholder="IDR" aria-label="Transmedic IDR"><input data-sh="trans.type" placeholder="Payment Type" aria-label="Transmedic payment type"></div>
+    <div class="mut" style="margin:12px 0 4px"><b>Manufacturer / Participant</b></div>
+    <div class="row"><input data-sh="manu.pct" inputmode="numeric" placeholder="%" aria-label="Manufacturer / Participant persen" style="flex:.5"><input data-sh="manu.idr" inputmode="numeric" placeholder="IDR" aria-label="Manufacturer / Participant IDR"><input data-sh="manu.type" placeholder="Payment Type" aria-label="Manufacturer / Participant payment type"></div>
+  </div>
+
+  <div class="card"><h3>7 · Pembayaran</h3>
+    <div class="fr" style="margin-top:0"><label for="sp_pay">Payable To</label><input id="sp_pay" data-s="payable" autocomplete="off"></div>
+    <div class="fr"><label for="sp_bn">Bank Name</label><input id="sp_bn" data-b="name" autocomplete="off"></div>
+    <div class="fr"><label for="sp_ba">Bank Account Name</label><input id="sp_ba" data-b="acc" autocomplete="off"></div>
+    <div class="fr"><label for="sp_bo">Bank Account Nos.</label><input id="sp_bo" data-b="no" inputmode="numeric" autocomplete="off"></div>
+    <div class="fr"><label for="sp_due">Payment Due Date</label><input id="sp_due" type="date" data-s="due"></div>
+    <div class="fr"><label>Budgeted Awal Tahun?</label><div class="chips"><button class="chip" data-bud="Yes">Yes</button><button class="chip" data-bud="No">No</button></div></div></div>
+
+  <div class="card"><h3>8 · For Tax Purpose (Recipient Data)</h3><div id="taxList"></div>
+    <button class="sec add" id="taxAdd"><i class="fa-solid fa-plus"></i> Tambah Penerima</button></div>
+
+  <div class="card"><h3>9 · Tanggal di Bawah Tanda Tangan</h3>
     <div class="fr" style="margin-top:0"><label for="sponSign">Tanggal</label><input id="sponSign" type="date"></div>
     <div class="mut" style="margin-top:6px">Tanda tangan ikut dari template.</div></div>
 
@@ -361,10 +385,15 @@ function sphNorm(x){const s=sphSeed();x=x||{};
     if(f.kondisi.length===1&&f.kondisi[0]==='Harga sudah termasuk PPN 11%')f.kondisi=[];x.v=2}
   return x}
 const sponSeed=()=>({sheet:'',trial:1,subj:'SPONSORSHIP_{event}_{manufacturer} #{tanggal}',greet:'Dear Mb Eni,',intro:'Mohon bantuannya untuk diproses. Form sponsorship terlampir.',closing:'Thanks,',
-  form:{name:'',date:'',location:'',manufacturer:'',objective:'',doctors:false,nurses:false,others:false,participants:'',std:{},custom:[],signDate:''}});
+  form:{name:'',date:'',location:'',manufacturer:'',objective:'',doctors:false,nurses:false,others:false,participants:'',std:{},custom:[],signDate:'',
+    types:{exh:false,ws:false,pres:false,third:false,otherT:false},org:{trans:false,manu:false,otherO:false},
+    share:{trans:{pct:'100',idr:'',type:''},manu:{pct:'',idr:'',type:''}},payable:'',bank:{name:'',acc:'',no:''},due:'',budgeted:'',tax:[]}});
 function sponNorm(x){const s=sponSeed();x=x||{};
   ['sheet','trial','subj','greet','intro','closing'].forEach(k=>{if(x[k]===undefined)x[k]=s[k]});
-  x.form=Object.assign({},s.form,x.form||{});x.form.std=x.form.std||{};x.form.custom=Array.isArray(x.form.custom)?x.form.custom:[];return x}
+  x.form=Object.assign({},s.form,x.form||{});x.form.std=x.form.std||{};
+  ['types','org','bank'].forEach(k=>{x.form[k]=Object.assign({},s.form[k],x.form[k]||{})});
+  const sh0=x.form.share||{};x.form.share={trans:Object.assign({},s.form.share.trans,sh0.trans),manu:Object.assign({},s.form.share.manu,sh0.manu)};
+  x.form.tax=Array.isArray(x.form.tax)?x.form.tax:[];x.form.custom=Array.isArray(x.form.custom)?x.form.custom:[];return x}
 function norm(x){const s=seed();x.sph=sphNorm(x.sph);x.spon=sponNorm(x.spon);
   x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.brands.forEach(b=>{b.items=(b.items||[]).map(it=>typeof it==='string'?{code:it,name:''}:it)});x.kats=x.kats||s.kats;x.contacts=x.contacts||s.contacts;
   x.subj=x.subj||{};x.subj.parts=x.subj.parts||defParts();x.subj.isep=x.subj.isep??'+';x.subj.dfmt=x.subj.dfmt||'dMy2';
@@ -1111,7 +1140,8 @@ async function xLoadSheet(zip,sheetName){
     if(t==='inlineStr')return xAll(c,'t').map(x=>x.textContent).join('');
     return v?v.textContent:''};
   const rowNums=()=>Object.keys(rows).map(Number).sort((a,b)=>a-b);
-  const findRow=(col,pred,from)=>{for(const r of rowNums()){if(from&&r<from)continue;if(pred(xNorm(text(col+r))))return r}return 0};
+  const merges=xAll(doc,'mergeCell').map(m=>m.getAttribute('ref'));
+  const findRow=(col,pred,from,to)=>{for(const r of rowNums()){if(from&&r<from)continue;if(to&&r>to)continue;if(pred(xNorm(text(col+r))))return r}return 0};
   const ensure=ref=>{
     const p=xRefOf(ref);let row=rows[p.row];
     if(!row){row=doc.createElementNS(XNS,'row');row.setAttribute('r',String(p.row));
@@ -1130,7 +1160,7 @@ async function xLoadSheet(zip,sheetName){
   const setNum=(ref,n,formula)=>{const c=ensure(ref);clear(c);
     if(formula){const f=doc.createElementNS(XNS,'f');f.appendChild(doc.createTextNode(formula));c.appendChild(f)}
     const v=doc.createElementNS(XNS,'v');v.appendChild(doc.createTextNode(String(n)));c.appendChild(v)};
-  return {list,sh,doc,rows,cell,text,findRow,setStr,setNum,rowNums,sst}}
+  return {list,sh,doc,rows,cell,text,findRow,setStr,setNum,rowNums,sst,merges}}
 
 function xLocate(S){
   const A=(t)=>S.findRow('A',x=>x===t),Astart=(t)=>S.findRow('A',x=>x.startsWith(t));
@@ -1140,6 +1170,14 @@ function xLocate(S){
   L.signDate=L.sign?S.findRow('A',x=>x==='date',L.sign):0;
   const need={name:'Event Name',date:'Event Date',loc:'Event location',man:'Manufacturer',obj:'Objective of event',types:'Types',part:'No. of Participants',costStart:'Cost of event',total:'Total cost',sign:'Signatory',signDate:'Date'};
   Object.keys(need).forEach(k=>{if(!L[k])throw new Error('Template tidak dikenali: baris "'+need[k]+'" tidak ditemukan di sheet '+S.sh.name)});
+  L.pay=S.findRow('A',x=>x==='payable to');
+  L.bankName=S.findRow('C',x=>x==='bank name');L.bankAcc=S.findRow('C',x=>x==='bank account name');L.bankNo=S.findRow('C',x=>x.startsWith('bank account nos'));
+  L.due=S.findRow('A',x=>x.startsWith('payment due date'));
+  L.budget=S.findRow('C',x=>x.startsWith('has it been budgeted'));
+  L.shT=S.findRow('C',x=>x==='transmedic',L.total);L.shM=S.findRow('C',x=>x.startsWith('manufacturer/participant'),L.total);
+  const hdr=S.findRow('C',x=>x==='name',L.total);L.tax=[];
+  if(hdr)S.merges.forEach(m=>{const mm=/^E(\d+):F(\d+)$/.exec(m);if(mm&&+mm[1]===+mm[2]&&+mm[1]>hdr)L.tax.push(+mm[1])});
+  L.tax.sort((a,b)=>a-b);
   L.std=[];L.custom=[];
   for(let r=L.costStart;r<L.total;r++){const lb=S.text('C'+r).trim();if(lb)L.std.push({row:r,label:lb});else L.custom.push(r)}
   return L}
@@ -1149,9 +1187,50 @@ async function xlsxModel(buf,sheetName){
   const visible=list.filter(s=>s.state==='visible').map(s=>s.name);
   const use=sheetName&&visible.includes(sheetName)?sheetName:visible[0];
   const S=await xLoadSheet(zip,use),L=xLocate(S);
-  return {sheets:visible,sheet:use,std:L.std,customRows:L.custom.length}}
+  return {sheets:visible,sheet:use,std:L.std,customRows:L.custom.length,taxRows:L.tax.length,hasPay:!!L.pay,hasBank:!!L.bankName,hasShare:!!L.shT,hasBudget:!!L.budget}}
 
 const xSerial=iso=>{if(!iso)return 0;const [y,m,d]=iso.split('-').map(Number);return Math.round(Date.UTC(y,m-1,d)/86400000)+25569};
+
+async function xChecks(zip,S,L,data){
+  const want={exh:!!(data.types&&data.types.exh),ws:!!(data.types&&data.types.ws),pres:!!(data.types&&data.types.pres),third:!!(data.types&&data.types.third),otherT:!!(data.types&&data.types.otherT),
+    trans:!!(data.org&&data.org.trans),manu:!!(data.org&&data.org.manu),otherO:!!(data.org&&data.org.otherO)};
+  const OPT=[['exh','A',x=>x.includes('exhibition')],['ws','C',x=>x.includes('workshop')],['pres','A',x=>x.includes('presentation')],['third','A',x=>x.includes('3rd party')],
+    ['otherT','A',x=>x.includes('others, pls specify trial')],['trans','D',x=>x.includes('transmedic')],['manu','D',x=>x.includes('manufacturer')],
+    ['otherO','D',x=>x.includes('others, pls specify')&&!x.includes('trial')]];
+  const clean=t=>xNorm(String(t).replace(/[\u25a1\u2610\u2611\u2612]/g,''));
+  const opts={};
+  OPT.forEach(([k,col,pred])=>{const row=S.findRow(col,x=>pred(clean(x)),7,L.name-1);if(row)opts[k]={col,row}});
+  const colW={},rowH={};
+  xAll(S.doc,'col').forEach(c=>{for(let i=+c.getAttribute('min');i<=+c.getAttribute('max');i++)colW[i]=parseFloat(c.getAttribute('width'))});
+  const fp=S.doc.getElementsByTagName('sheetFormatPr')[0],defH=fp&&fp.getAttribute('defaultRowHeight')?parseFloat(fp.getAttribute('defaultRowHeight')):12;
+  Object.keys(S.rows).forEach(r=>{const h=S.rows[r].getAttribute('ht');rowH[r]=h?parseFloat(h):defH});
+  const colPx=c=>(colW[c]||9.14)*7+5,rowPx=r=>(rowH[r]||defH)*4/3;
+  const xAt=(c0,off)=>{let x=0;for(let c=1;c<=c0;c++)x+=colPx(c);return x+off/9525};
+  const yAt=(r0,off)=>{let y=0;for(let r=1;r<=r0;r++)y+=rowPx(r);return y+off/9525};
+  const cellOf=(x,y)=>{let c=1,ax=0;while(c<30&&ax+colPx(c)<=x){ax+=colPx(c);c++}let r=1,ay=0;while(r<300&&ay+rowPx(r)<=y){ay+=rowPx(r);r++}return {col:String.fromCharCode(64+c),row:r}};
+  const num=(n,t)=>parseInt(n.getElementsByTagName(t)[0].textContent,10);
+  const ctrls=xAll(S.doc,'control').map(c=>{
+    const fr=c.getElementsByTagName('from')[0],to=c.getElementsByTagName('to')[0];if(!fr||!to)return null;
+    const x=(xAt(num(fr,'xdr:col'),num(fr,'xdr:colOff'))+xAt(num(to,'xdr:col'),num(to,'xdr:colOff')))/2,y=(yAt(num(fr,'xdr:row'),num(fr,'xdr:rowOff'))+yAt(num(to,'xdr:row'),num(to,'xdr:rowOff')))/2;
+    return {rid:c.getAttribute('r:id'),shape:c.getAttribute('shapeId'),cell:cellOf(x,y)}}).filter(Boolean);
+  const relsRaw=await xRead(zip,xRelsPath(S.sh.path));
+  const rels=relsRaw?xAll(xParse(relsRaw),'Relationship'):[];
+  const ctrlPath=rid=>{const r=rels.find(x=>x.getAttribute('Id')===rid);return r?xResolve(S.sh.path,r.getAttribute('Target')):null};
+  const vmlRel=rels.find(x=>/vmlDrawing$/.test(x.getAttribute('Type')));
+  const vmlPath=vmlRel?xResolve(S.sh.path,vmlRel.getAttribute('Target')):null;
+  let vml=vmlPath?await xRead(zip,vmlPath):null;
+  for(const k of Object.keys(opts)){
+    if(!want[k])continue;
+    const o=opts[k],c=ctrls.find(x=>x.cell.col===o.col&&x.cell.row===o.row);
+    if(c){
+      const cp=ctrlPath(c.rid);
+      if(cp){let t=await xRead(zip,cp);if(t&&t.indexOf('checked=')<0){t=t.replace(/\/>\s*$/,' checked="Checked"/>');zip.file(cp,t,{createFolders:false})}}
+      if(vml){const id='_x0000_s'+c.shape,i=vml.indexOf('id="'+id+'"');
+        if(i>=0){const j=vml.indexOf('</x:ClientData>',i);if(j>=0&&vml.slice(i,j).indexOf('<x:Checked>')<0)vml=vml.slice(0,j)+'<x:Checked>1</x:Checked>'+vml.slice(j)}}
+    }else{
+      const ref=o.col+o.row,t=S.text(ref);
+      if(/[\u25a1\u2610]/.test(t))S.setStr(ref,t.replace(/[\u25a1\u2610]/,'\u2612'))}}
+  if(vml&&vmlPath)zip.file(vmlPath,vml,{createFolders:false})}
 
 async function xlsxBuild(buf,sheetName,data){
   const zip=await JSZip.loadAsync(buf,{createFolders:false}),S=await xLoadSheet(zip,sheetName),L=xLocate(S);
@@ -1175,6 +1254,27 @@ async function xlsxBuild(buf,sheetName,data){
     if(p>0){if(q>1)S.setNum('D'+r,v,p+'*'+q);else S.setNum('D'+r,v);sum+=v}else S.setStr('D'+r,'')});
   S.setNum('D'+L.total,sum,'SUM(D'+L.costStart+':D'+(L.total-1)+')');
   if(data.signDate)S.setNum('C'+L.signDate,xSerial(data.signDate));
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const fmtD=iso=>{if(!iso)return'';const [y,m,d]=iso.split('-').map(Number);return d+'/'+mon[m-1]+'/'+y};
+  if(L.pay)S.setStr('C'+L.pay,data.payable||'');
+  const bk=data.bank||{};
+  if(L.bankName)S.setStr('D'+L.bankName,bk.name||'');
+  if(L.bankAcc)S.setStr('D'+L.bankAcc,bk.acc||'');
+  if(L.bankNo)S.setStr('D'+L.bankNo,bk.no||'');
+  if(L.due)S.setStr('C'+L.due,fmtD(data.due));
+  if(L.budget&&data.budgeted)S.setStr('F'+L.budget,data.budgeted);
+  [[L.shT,data.share&&data.share.trans],[L.shM,data.share&&data.share.manu]].forEach(([row,sh])=>{
+    if(!row||!sh)return;
+    const pct=Number(sh.pct);
+    if(sh.pct!==''&&!isNaN(pct))S.setNum('D'+row,pct);else S.setStr('D'+row,'');
+    const idr=Number(sh.idr);
+    if(sh.idr!==''&&!isNaN(idr)&&idr>0)S.setNum('E'+row,idr);
+    else if(sh.pct!==''&&!isNaN(pct)&&sum>0)S.setNum('E'+row,Math.round(sum*pct/100));else S.setStr('E'+row,'');
+    S.setStr('F'+row,sh.type||'')});
+  const taxList=(data.tax||[]).filter(t=>t.name||t.npwp||t.addr);
+  L.tax.forEach((row,i)=>{const t=taxList[i]||{};
+    S.setStr('C'+row,t.name||'');S.setStr('D'+row,t.npwp||'');S.setStr('E'+row,t.addr||'')});
+  await xChecks(zip,S,L,data);
   zip.file(S.sh.path,xStr(S.doc),{createFolders:false});
   // --- buang sheet lain
   const others=S.list.filter(s=>s.path!==S.sh.path);
@@ -1279,6 +1379,15 @@ function renderSpon(){
   const max=sponCusMax();
   $('costAdd').classList.toggle('hide',!TPL||f.custom.length>=max);
   $('costTot').textContent='Total: '+sponCostTotal().toLocaleString('id-ID');
+  document.querySelectorAll('#vSpon [data-ty]').forEach(b=>b.classList.toggle('on',!!f.types[b.dataset.ty]));
+  document.querySelectorAll('#vSpon [data-og]').forEach(b=>b.classList.toggle('on',!!f.org[b.dataset.og]));
+  document.querySelectorAll('#vSpon [data-bud]').forEach(b=>b.classList.toggle('on',f.budgeted===b.dataset.bud));
+  document.querySelectorAll('#vSpon [data-sh]').forEach(e=>{const [who,k]=e.dataset.sh.split('.');e.value=f.share[who][k]||''});
+  document.querySelectorAll('#vSpon [data-b]').forEach(e=>{e.value=f.bank[e.dataset.b]||''});
+  const maxTax=TPL&&TPL.model?TPL.model.taxRows:0;
+  $('taxList').innerHTML=f.tax.map((t,i)=>`<div class="itx" data-ti="${i}"><div class="row"><input data-tx="name" value="${esc(t.name||'')}" placeholder="Name" aria-label="Name"><button class="ib del" data-sact2="tDel" data-i="${i}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="row" style="margin-top:6px"><input data-tx="npwp" value="${esc(t.npwp||'')}" placeholder="NPWP" aria-label="NPWP"><input data-tx="addr" value="${esc(t.addr||'')}" placeholder="Address" aria-label="Address"></div></div>`).join('');
+  $('taxAdd').classList.toggle('hide',!TPL||f.tax.length>=maxTax);
   $('sponTrials').innerHTML=SPONTR.map(t=>`<button class="chip ${S.trial===t[0]?'on':''}" data-st="${t[0]}">${t[1]}</button>`).join('');
   $('sponTrialTx').textContent=SPONTR.find(t=>t[0]===S.trial)[2];
   $('rcptP').innerHTML=rcptGrid('sp');
@@ -1295,6 +1404,9 @@ $('vSpon').addEventListener('input',e=>{const t=e.target,S=D.spon,f=S.form;
   else if(t.dataset.cs!==undefined){f.std[t.dataset.cs]=t.value;$('costTot').textContent='Total: '+sponCostTotal().toLocaleString('id-ID')}
   else if(t.dataset.cc){const r=t.closest('[data-ci]'),c=f.custom[+r.dataset.ci];c[t.dataset.cc]=t.value;
     const v=(Number(c.qty)||1)*(Number(c.price)||0);r.querySelector('.itot').textContent=v>0?'= '+v.toLocaleString('id-ID'):'';$('costTot').textContent='Total: '+sponCostTotal().toLocaleString('id-ID')}
+  else if(t.dataset.sh!==undefined){const [who,k]=t.dataset.sh.split('.');f.share[who][k]=t.value}
+  else if(t.dataset.b!==undefined)f.bank[t.dataset.b]=t.value;
+  else if(t.dataset.tx){const r=t.closest('[data-ti]');f.tax[+r.dataset.ti][t.dataset.tx]=t.value}
   else if(t.id==='sponSign')f.signDate=t.value;
   else return;
   sv3()});
@@ -1305,6 +1417,11 @@ $('vSpon').addEventListener('change',e=>{const t=e.target,S=D.spon,f=S.form;
 $('vSpon').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;const S=D.spon,f=S.form;
   if(b.dataset.tg){f[b.dataset.tg]=!f[b.dataset.tg];save();renderSpon();renderPrev()}
+  else if(b.dataset.ty){f.types[b.dataset.ty]=!f.types[b.dataset.ty];save();renderSpon();renderPrev()}
+  else if(b.dataset.og){f.org[b.dataset.og]=!f.org[b.dataset.og];save();renderSpon();renderPrev()}
+  else if(b.dataset.bud){f.budgeted=f.budgeted===b.dataset.bud?'':b.dataset.bud;save();renderSpon();renderPrev()}
+  else if(b.id==='taxAdd'){f.tax.push({name:'',npwp:'',addr:''});save();renderSpon();renderPrev()}
+  else if(b.dataset.sact2==='tDel'){f.tax.splice(+b.dataset.i,1);save();renderSpon();renderPrev()}
   else if(b.dataset.st){S.trial=+b.dataset.st;save();renderSpon();renderPrev()}
   else if(b.dataset.sact2==='cDel'){f.custom.splice(+b.dataset.i,1);save();renderSpon();renderPrev()}
   else if(b.id==='costAdd'){f.custom.push({label:'',qty:'1',price:''});save();renderSpon();renderPrev()}});
@@ -1332,7 +1449,7 @@ async function sponSend(){
   if(typeof JSZip==='undefined')return toast('Pustaka Excel belum termuat. Sambungkan internet sekali, lalu coba lagi.');
   toast('Menyiapkan Excel…');
   const std={};(TPL.model.std||[]).forEach(r=>{std[r.row]=Number(f.std[r.label])||0});
-  const data={name:f.name,date:f.date,location:f.location,manufacturer:f.manufacturer,objective:f.objective,target:{doctors:f.doctors,nurses:f.nurses,others:f.others},participants:f.participants,std,custom:f.custom,signDate:f.signDate};
+  const data={name:f.name,date:f.date,location:f.location,manufacturer:f.manufacturer,objective:f.objective,target:{doctors:f.doctors,nurses:f.nurses,others:f.others},participants:f.participants,std,custom:f.custom,signDate:f.signDate,types:f.types,org:f.org,share:f.share,payable:f.payable,bank:f.bank,due:f.due,budgeted:f.budgeted,tax:f.tax};
   let bytes;try{bytes=await xlsxBuild(TPL.buf,S.sheet,data)}catch(err){alert('Gagal membuat Excel: '+err.message);return}
   const xf=new File([bytes],sponFileName(),{type:MIME_X}),sub=sponSubject();
   const dl=file=>{const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;document.body.appendChild(a);a.click();a.remove()};
