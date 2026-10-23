@@ -603,7 +603,7 @@ function renderData(){
 
   $('dBrands').innerHTML=D.brands.map((b,i)=>`<details class="sub" ${openB===i?'open':''}><summary><span class="bn">${esc(b.name)} <span class="mut">(${b.items.length})</span></span>${ib('bEd','pen-to-square','Ubah nama MERK',`data-i="${i}"`,'bx pri')}${ib('bDel','trash-can','Hapus MERK beserta semua barangnya',`data-i="${i}"`,'bx del')}</summary>
     <div class="its">${b.items.map((x,j)=>`<div class="ct"><div class="nm">${esc(x.code)}${x.name?`<small>${esc(x.name)}</small>`:''}</div>${ib('iEd','pen','Ubah Barang',`data-i="${i}" data-j="${j}"`,'sm pri')}${ib('iDel','xmark','Hapus barang',`data-i="${i}" data-j="${j}"`,'sm del')}</div>`).join('')}
-    <button class="sec add" data-act="iAdd" data-i="${i}"><i class="fa-solid fa-plus"></i> Tambah Barang</button></div></details>`).join('');
+    <button class="sec add" data-act="iAdd" data-i="${i}"><i class="fa-solid fa-plus"></i> Tambah Barang</button><button class="sec add" data-act="iPaste" data-i="${i}"><i class="fa-solid fa-paste"></i> Tempel Daftar Barang</button></div></details>`).join('');
 
   $('dJenis').innerHTML=D.jenis.map((x,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span><div class="nm">${esc(x)}</div>${ib('jEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('jDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
   $('dKat').innerHTML=D.kats.map((x,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span><div class="nm">${esc(x)}</div>${ib('tEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('tDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
@@ -649,6 +649,7 @@ $('vData').addEventListener('click',e=>{
     case 'bAdd':return ask('Merk Baru',[{label:'Nama Merk',up:true}],v=>{if(!v[0])return'Isi nama';if(D.brands.some(b=>b.name===v[0]))return'Sudah ada';D.brands.push({name:v[0],items:[]});openB=D.brands.length-1;upd()});
     case 'bEd':{openB=i;const b=D.brands[i],o=b.name;return ask('Ubah Nama Merk',[{label:'Nama Merk',val:o,up:true}],v=>{if(!v[0])return'Isi nama';b.name=v[0];if(F.brand===o)F.brand=v[0];upd()})}
     case 'bDel':{if(!confirm('Hapus merk '+D.brands[i].name+' beserta barangnya?'))return;const b=D.brands.splice(i,1)[0];if(F.brand===b.name){F.brand=null;F.items=[{item:'',qty:'',unit:'ea'}]}openB=-1;return upd()}
+    case 'iPaste':return importItems(i);
     case 'iAdd':{openB=i;return ask('Item Baru ('+D.brands[i].name+')',[{label:'Item Code',up:true},{label:'Nama Item'}],v=>{if(!v[0])return'Isi item code';const b=D.brands[i];if(b.items.some(x=>x.code===v[0]))return'Item code sudah ada';b.items.push({code:v[0],name:v[1]});upd()})}
     case 'iEd':{openB=i;const b=D.brands[i],o=b.items[j];return ask('Ubah Item',[{label:'Item Code',val:o.code,up:true},{label:'Nama Item',val:o.name}],v=>{if(!v[0])return'Isi item code';const old=o.code;o.code=v[0];o.name=v[1];F.items.forEach(r=>{if(r.item===old&&F.brand===b.name)r.item=v[0]});upd()})}
     case 'iDel':{openB=i;const b=D.brands[i],o=b.items[j];if(!confirm('Hapus item '+o.code+'?'))return;b.items.splice(j,1);F.items.forEach(r=>{if(r.item===o.code&&F.brand===b.name)r.item=''});return upd()}
@@ -1647,6 +1648,47 @@ function applyPOVisibility(){
 function renderPOSetting(){$('poOn').checked=!!D.po.on;$('poCount').textContent=D.po.rows.length?D.po.rows.length+' PO tersimpan di HP ini.':'Belum ada PO tercatat.'}
 $('poOn').onchange=e=>{D.po.on=e.target.checked;save();applyPOVisibility();renderPOSetting();toast(D.po.on?'Data PO aktif: order berikutnya akan tercatat':'Data PO nonaktif: halaman disembunyikan, order tidak dicatat')};
 $('poClear').onclick=()=>confirmBox('Hapus Semua Riwayat PO','Seluruh riwayat PO dihapus permanen dari HP ini. Pengaturan lain tidak berubah.','Hapus Semua',()=>{D.po.rows=[];save();renderPOSetting();renderPO();toast('Riwayat PO dihapus')});
+
+/* ---------- impor daftar barang (tempel) ---------- */
+function parseItemLines(txt,brand){
+  const out=[],seen={};
+  String(txt).split(/\r?\n/).map(l=>l.trim()).filter(Boolean).forEach(l=>{
+    let code='',name=l;
+    const m=/^(.*?)\s*\(([^()]+)\)\s*$/.exec(l);
+    if(m){name=m[1].trim();code=m[2].trim()}
+    else{const t=l.split(/\s+/),last=t[t.length-1];if(t.length>1&&/\d/.test(last)&&last.length>=3){code=last;name=t.slice(0,-1).join(' ')}}
+    if(brand){const esc2=brand.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');name=name.replace(new RegExp('^'+esc2+'\\s+','i'),'')}
+    code=code.toUpperCase();
+    const key=code||('#'+l);
+    if(!seen[key]){seen[key]=1;out.push({code,name:name.trim()})}});
+  return out}
+let impText='';
+function importItems(bi){
+  const b=D.brands[bi];openB=bi;
+  $('dTitle').textContent='Tempel Daftar Barang ('+b.name+')';$('dTitle').dataset.k='';$('dErr').textContent='';$('dBody').onclick=null;
+  $('dBody').innerHTML='<div class="mut" style="margin-top:8px">Tempel daftar produk, satu per baris. Kode diambil dari tanda kurung di ujung kanan, misalnya <b>Nama Produk (KODE)</b>.</div><textarea id="impTx" rows="8" style="margin-top:8px"></textarea>';
+  $('impTx').value=impText;
+  $('dOk').style.display='';$('dOk').textContent='Tinjau';$('dNo').textContent='Batal';$('dNo').onclick=()=>$('dlg').close();
+  $('dOk').onclick=()=>{impText=$('impTx').value;const list=parseItemLines(impText,b.name);if(!list.length){$('dErr').textContent='Tidak ada baris yang bisa dibaca.';return}previewImport(bi,list)};
+  if(!$('dlg').open)$('dlg').showModal();
+  setTimeout(()=>{const t=$('impTx');if(t)t.focus()},60)}
+function previewImport(bi,list){
+  const b=D.brands[bi];
+  $('dTitle').textContent='Tinjau '+list.length+' Item';$('dErr').textContent='';
+  $('dBody').innerHTML='<div class="mut" style="margin-top:8px">Periksa kode dan nama. Baris tanpa kode (kolom merah) tidak ikut diimpor, kecuali kodenya Anda isi di sini.</div><div id="impL">'
+    +list.map((x,i)=>`<div class="itx"><div class="row"><input data-ic value="${esc(x.code)}" placeholder="Kode" style="flex:.8${x.code?'':';border-color:var(--err)'}"><input data-in value="${esc(x.name)}" placeholder="Nama Item" style="flex:1.6"></div></div>`).join('')+'</div>';
+  $('dOk').textContent='Impor';$('dNo').textContent='Kembali';$('dNo').onclick=()=>importItems(bi);
+  $('dOk').onclick=()=>{
+    const codes=[...document.querySelectorAll('#impL [data-ic]')],names=[...document.querySelectorAll('#impL [data-in]')];
+    let add=0,upd=0,skip=0;
+    codes.forEach((ci,i)=>{const code=ci.value.trim().toUpperCase(),name=names[i].value.trim();
+      if(!code){skip++;return}
+      const ex=b.items.find(x=>x.code===code);
+      if(ex){if(!ex.name&&name){ex.name=name;upd++}else skip++}
+      else{b.items.push({code,name});add++}});
+    impText='';$('dlg').close();upd_();toast(add+' item ditambah, '+upd+' nama dilengkapi, '+skip+' dilewati')};
+  }
+const upd_=()=>{save();renderData();renderAll()};
 
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
