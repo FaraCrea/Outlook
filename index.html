@@ -1228,7 +1228,7 @@ const idbGet=async k=>{const db=await idbOpen();return new Promise((ok,no)=>{con
 const idbSet=async(k,v)=>{const db=await idbOpen();return new Promise((ok,no)=>{const q=db.transaction('kv','readwrite').objectStore('kv').put(v,k);q.onsuccess=()=>ok();q.onerror=()=>no(q.error)})};
 let TPL=null,FILES3=[],sponManual=false;
 const SPONTR=[[1,'File Email (.eml)','Satu file email lengkap: penerima, subjek, isi, dan Excel terlampir. Tersimpan di folder Download, buka dengan Outlook.'],
- [2,'Bagikan ke Outlook','Excel dibagikan lewat menu Bagikan HP, lalu pilih Outlook. Penerima tidak terisi otomatis.'],
+ [2,'Bagikan ke Outlook','Excel dibagikan lewat menu Bagikan HP, lalu pilih Outlook. Penerima tidak terisi otomatis. Chrome HP kadang menolak file Excel; kalau gagal, pakai File Email atau Unduh.'],
  [3,'Unduh Excel Saja','Hanya menyimpan file Excel yang sudah terisi ke folder Download.']];
 const sponCusMax=()=>TPL&&TPL.model?TPL.model.customRows:0;
 const sponCostTotal=()=>{const f=D.spon.form;let t=0;
@@ -1351,12 +1351,16 @@ $('resetSpon').onclick=()=>confirmBox('Reset Semua Kolom Sponsorship','Semua kol
   D.contacts.forEach(c=>{c.sp='off'});save();renderSpon();renderPrev();scrollTo(0,0);toast('Semua kolom sponsorship direset')});
 function shareDialog(data,note){
   $('dTitle').textContent='Siap Dibagikan';$('dTitle').dataset.k='';$('dErr').textContent='';$('dBody').onclick=null;
-  $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">'+esc(note)+'</div>';
+  $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">'+esc(note)+'</div><div id="shFb"></div>';
   $('dOk').style.display='';$('dOk').textContent='Bagikan';$('dNo').textContent='Tutup';
+  const fail=e=>{
+    $('dErr').textContent='Chrome HP menolak membagikan file ini ('+(e&&e.name||e)+'). Unduh filenya, lalu lampirkan dari folder Download.';
+    $('shFb').innerHTML='<button class="sec" id="shDl" style="width:100%;margin-top:10px"><i class="fa-solid fa-download"></i> Unduh File</button>';
+    $('shDl').onclick=()=>{data.files.forEach((f,i)=>setTimeout(()=>{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()},i*400));toast('Tersimpan di folder Download')}};
   $('dOk').onclick=()=>{
-    $('dErr').textContent='';
-    let pr;try{pr=navigator.share(data)}catch(e){$('dErr').textContent='Gagal membagikan: '+(e&&e.name||e);return}
-    pr.then(()=>$('dlg').close()).catch(e=>{if(e&&e.name==='AbortError')return;$('dErr').textContent='Gagal membagikan: '+(e&&e.name||e)+'. Coba cara Unduh Excel Saja.'})};
+    $('dErr').textContent='';$('shFb').innerHTML='';
+    let pr;try{pr=navigator.share(data)}catch(e){fail(e);return}
+    pr.then(()=>$('dlg').close()).catch(e=>{if(e&&e.name==='AbortError')return;fail(e)})};
   $('dNo').onclick=()=>$('dlg').close();
   $('dlg').showModal()}
 /* ---------- tabs ---------- */
