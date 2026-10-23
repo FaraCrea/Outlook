@@ -153,6 +153,7 @@ dialog{max-height:82vh;overflow:auto}
 .fr.top>label{padding-top:10px}
 .sel{display:flex;flex-direction:column;gap:6px;min-width:0}
 [data-man]{min-width:0}
+select{font-size:14px!important;min-height:40px;padding:6px 8px}
 </style>
 </head>
 <body>
@@ -195,7 +196,7 @@ dialog{max-height:82vh;overflow:auto}
     <label class="f">Subjek <span class="mut">(pakai {instansi} {produk} {versi} {tanggal})</span><input data-m="subj"></label></div>
 
   <div class="card"><h3>3 · Data Penawaran</h3>
-    <div class="fr"><label for="f_instansi">Nama Instansi</label><input id="f_instansi" data-f="instansi" list="instList" autocomplete="off"></div><datalist id="instList"></datalist>
+    <div class="fr top"><label>Nama Instansi</label><div class="sel"><select data-sel="instansi" aria-label="Nama Instansi"></select><div data-man="instansi" class="hide"><input data-f="instansi" autocomplete="off" aria-label="Nama Instansi isi manual"></div></div></div>
     <div class="fr"><label for="f_kepada">Kepada (UP)</label><input id="f_kepada" data-f="kepada"></div>
     <div class="fr top"><label for="f_alamat">Alamat</label><textarea id="f_alamat" data-f="alamat" rows="2"></textarea></div>
     <button class="sec add" data-sact="findAddr"><i class="fa-solid fa-magnifying-glass"></i> Cari Alamat dari Internet</button>
@@ -570,7 +571,7 @@ function sphText(){
 
 function sphProblems(){const p=[];
   if(!rcpt('to').length)p.push({m:'Pilih minimal 1 penerima (To)',el:'#rcptS'});
-  if(!D.sph.form.instansi.trim())p.push({m:'Isi nama instansi',el:'[data-f=instansi]'});
+  if(!D.sph.form.instansi.trim())p.push({m:'Isi nama instansi',el:'[data-sel="instansi"]'});
   if(!D.sph.groups.some(g=>g.items.some(i=>i.code||i.name)))p.push({m:'Isi minimal 1 item',el:'#sGroups'});
   return p}
 function renderPrevS(){
@@ -677,10 +678,7 @@ const fn=sub.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,12
 
 /* ---------- buku alamat & cari alamat ---------- */
 const bkey=s=>String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
-function updInst(){
-  const S=D.sph,names=Object.values(S.book).map(b=>b.instansi);
-  S.saved.forEach(t=>{if(t.snap.form.instansi)names.push(t.snap.form.instansi)});
-  $('instList').innerHTML=[...new Set(names)].map(n=>`<option value="${esc(n)}">`).join('')}
+function updInst(){renderSels()}
 function bookSave(){
   const S=D.sph,f=S.form;
   if(f.instansi.trim()&&f.alamat.trim())S.book[bkey(f.instansi)]={instansi:f.instansi.trim(),kepada:f.kepada,alamat:f.alamat};
@@ -881,12 +879,18 @@ refreshClear();
 
 /* ---------- pilihan dropdown SPH ---------- */
 let manualOpen={};
-const SELOPTS={produk:()=>D.brands.map(b=>b.name),versi:()=>D.jenis,kategori:()=>D.kats};
+function instOptions(){
+  const S=D.sph,names=[...D.rs];
+  Object.values(S.book).forEach(b=>names.push(b.instansi));
+  S.saved.forEach(t=>{if(t.snap.form.instansi)names.push(t.snap.form.instansi)});
+  const seen={},out=[];
+  names.forEach(n=>{const k=bkey(n);if(n&&!seen[k]){seen[k]=1;out.push(n)}});
+  return out.sort((a,b)=>a.localeCompare(b,'id'))}
+const SELOPTS={instansi:instOptions,produk:()=>D.brands.map(b=>b.name),versi:()=>D.jenis,kategori:()=>D.kats};
 function renderSels(){
   const f=D.sph.form;
-  ['produk','versi','kategori'].forEach(k=>{
+  ['instansi','produk','versi','kategori'].forEach(k=>{
     const sel=document.querySelector(`[data-sel="${k}"]`),box=document.querySelector(`[data-man="${k}"]`),opts=SELOPTS[k](),v=f[k]||'';
-    if(opts.includes(v))manualOpen[k]=false;
     const manual=!!manualOpen[k]||(v&&!opts.includes(v));
     sel.innerHTML='<option value="">— Pilih —</option>'+opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')+'<option value="__m">Isi manual…</option>';
     sel.value=manual?'__m':(opts.includes(v)?v:'');
@@ -894,7 +898,7 @@ function renderSels(){
 $('vSph').addEventListener('change',e=>{
   const sel=e.target.closest('[data-sel]');if(!sel)return;const k=sel.dataset.sel,f=D.sph.form;
   if(sel.value==='__m'){manualOpen[k]=true;renderSels();const inp=document.querySelector(`[data-man="${k}"] input`);if(inp)setTimeout(()=>inp.focus(),50)}
-  else{manualOpen[k]=false;f[k]=sel.value;save();renderSels();renderPrev()}});
+  else{manualOpen[k]=false;f[k]=sel.value;save();renderSels();renderPrev();if(k==='instansi'&&bookFill()){save();renderSph();renderPrev();toast('Alamat dan UP diisi dari data tersimpan')}}});
 
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
