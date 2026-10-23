@@ -971,7 +971,7 @@ async function sphSend0(){
   if(S.trial===1){
     const ok=await copyRich(html,txt);
     toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');
-    location.href=mailtoUrl(to,cc,sub,ok?'(Tempel isi email di sini: tekan lama, pilih Tempel, lalu hapus tulisan ini)':txt);return}
+    location.href=mailtoUrl(to,cc,sub,ok?'':txt);return}
   if(S.trial===3){
     const url='https://outlook.office.com/mail/deeplink/compose?to='+enc(to.join(';'))+(cc.length?'&cc='+enc(cc.join(';')):'')+'&subject='+enc(sub)+'&body='+enc(html);
     if(!window.open(url,'_blank'))location.href=url;return}
