@@ -247,7 +247,8 @@ select{font-size:14px!important;min-height:40px;padding:6px 8px}
 <main id="vSpon" class="hide">
   <div class="card" id="tplCard"><h3>Template Excel</h3><div id="tplInfo"></div>
     <div class="fr hide" id="tplSheetRow"><label>Sheet</label><select id="tplSheet"></select></div>
-    <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-file-excel"></i> <span id="tplBtnTx">Pilih File Template (.xlsx)</span><input type="file" id="tplIn" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></label></div>
+    <div class="row" style="margin-top:8px"><label class="sec" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:40px;cursor:pointer;font-size:14px"><i class="fa-solid fa-file-excel"></i> <span id="tplBtnTx">Pilih File Template (.xlsx)</span><input type="file" id="tplIn" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></label>
+      <button class="sec hide" id="tplDel" style="color:var(--err);border-color:var(--err)"><i class="fa-solid fa-trash"></i> Hapus</button></div></div>
 
   <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcptP"></div></div>
 
@@ -1262,7 +1263,7 @@ function renderSpon(){
     $('tplSheetRow').classList.toggle('hide',TPL.model.sheets.length<2);
     $('tplSheet').innerHTML=TPL.model.sheets.map(n=>`<option ${n===S.sheet?'selected':''}>${esc(n)}</option>`).join('')}
   else{$('tplInfo').innerHTML='<div class="mut">Belum ada template. Pilih file Form Sponsorship (.xlsx) sekali saja; file disimpan di HP ini.</div>';$('tplSheetRow').classList.add('hide')}
-  $('tplBtnTx').textContent=TPL?'Ganti File Template':'Pilih File Template (.xlsx)';
+  $('tplBtnTx').textContent=TPL?'Ganti File Template':'Pilih File Template (.xlsx)';$('tplDel').classList.toggle('hide',!TPL);
   // manufacturer select
   const opts=D.brands.map(b=>b.name),sel=$('sponMan'),v=f.manufacturer||'';
   const manual=sponManual||(v&&!opts.includes(v));
@@ -1314,6 +1315,8 @@ async function loadTplModel(sheet){
   if(!TPL)return;
   try{const m=await xlsxModel(TPL.buf,sheet);TPL.model=m;D.spon.sheet=m.sheet;TPL.sheet=m.sheet;await idbSet('tpl',TPL);save();renderSpon();renderPrev()}
   catch(err){toast('Template: '+err.message)}}
+$('tplDel').onclick=()=>confirmBox('Hapus Template','File template dihapus dari HP ini. Isian sponsorship tidak ikut terhapus. Anda bisa memilih file template lagi kapan saja.','Hapus',async()=>{
+  TPL=null;try{await idbSet('tpl',null)}catch(e){}D.spon.sheet='';save();renderSpon();renderPrev();toast('Template dihapus')});
 $('tplIn').onchange=async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
   if(typeof JSZip==='undefined')return toast('Pustaka Excel belum termuat. Sambungkan internet sekali, lalu coba lagi.');
