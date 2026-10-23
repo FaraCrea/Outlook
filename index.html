@@ -487,7 +487,7 @@ $('go').onclick=async()=>{
     const data={files:FILES,title:subject(),text:body()};
     if(navigator.canShare&&navigator.canShare(data)){
       await copy(rcpt('to').join('; '));
-      try{await navigator.share(data)}catch(e){}
+      shareDialog(data,'Lampiran siap. Daftar penerima (To) sudah disalin: tempel di kolom To. Ketuk Bagikan, lalu pilih Outlook.');
       return}
     if(!confirm('HP/browser ini tidak bisa membagikan lampiran. Buka email tanpa lampiran?'))return}
   const m=r=>rcpt(r).map(encodeURIComponent).join(',');
@@ -1042,7 +1042,7 @@ async function sphSend0(){
     let data;
     if(S.trial===4)data={files,title:sub,text:txt};
     else{const ok=await copyRich(html,txt);toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');data={files,title:sub,text:sub}}
-    if(navigator.canShare&&navigator.canShare(data)){try{await navigator.share(data)}catch(e){}return}
+    if(navigator.canShare&&navigator.canShare(data)){shareDialog(data,'Lampiran siap. Ketuk Bagikan, lalu pilih Outlook.');return}
     if(!confirm('HP/browser ini tidak bisa membagikan lampiran. Lanjut tanpa lampiran?'))return}
   if(S.trial===1){
     const ok=await copyRich(html,txt);
@@ -1337,7 +1337,7 @@ async function sponSend(){
   const files=[xf].concat(FILES3);
   if(S.trial===2){
     const data2={files,title:sub,text:sponText()};
-    if(navigator.canShare&&navigator.canShare(data2)){try{await navigator.share(data2)}catch(e){}return}
+    if(navigator.canShare&&navigator.canShare(data2)){shareDialog(data2,'Excel siap: '+xf.name+'. Ketuk Bagikan, lalu pilih Outlook.');return}
     dl(xf);toast('HP ini tidak bisa membagikan file. Excel diunduh ke folder Download.');return}
   const eml=await buildEml(rcpt('to'),rcpt('cc'),sub,sponHtml(),files);
   const fn=sub.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,110)+'.eml';
@@ -1346,6 +1346,16 @@ async function sponSend(){
 $('resetSpon').onclick=()=>confirmBox('Reset Semua Kolom Sponsorship','Semua kolom sponsorship dikosongkan, termasuk pilihan penerima. File template tetap tersimpan.','Reset',()=>{
   const z=sponSeed(),S=D.spon;S.form=z.form;['subj','greet','intro','closing'].forEach(k=>{S[k]=z[k]});sponManual=false;FILES3=[];
   D.contacts.forEach(c=>{c.sp='off'});save();renderSpon();renderPrev();scrollTo(0,0);toast('Semua kolom sponsorship direset')});
+function shareDialog(data,note){
+  $('dTitle').textContent='Siap Dibagikan';$('dTitle').dataset.k='';$('dErr').textContent='';$('dBody').onclick=null;
+  $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">'+esc(note)+'</div>';
+  $('dOk').style.display='';$('dOk').textContent='Bagikan';$('dNo').textContent='Tutup';
+  $('dOk').onclick=()=>{
+    $('dErr').textContent='';
+    let pr;try{pr=navigator.share(data)}catch(e){$('dErr').textContent='Gagal membagikan: '+(e&&e.name||e);return}
+    pr.then(()=>$('dlg').close()).catch(e=>{if(e&&e.name==='AbortError')return;$('dErr').textContent='Gagal membagikan: '+(e&&e.name||e)+'. Coba cara Unduh Excel Saja.'})};
+  $('dNo').onclick=()=>$('dlg').close();
+  $('dlg').showModal()}
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
   [['vOrder','o'],['vSph','s'],['vSpon','p'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
