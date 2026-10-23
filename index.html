@@ -175,12 +175,18 @@ select{font-size:14px!important;min-height:40px;padding:6px 8px}
 <main id="vOrder">
   <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcpt"></div></div>
   <div class="card"><h3>2 · Merk</h3><div class="chips" id="brands"></div></div>
-  <div class="card"><h3>3 · Barang &amp; Jumlah</h3><div id="items"></div>
+  <div class="card"><h3>3 · Barang &amp; Jumlah</h3>
+    <div class="row" style="margin-bottom:8px"><span class="mut" style="flex:none">Tampil di email</span><div class="seg" id="itemMode" style="margin-left:auto"><button data-im="kode">Kode</button><button data-im="desk">Deskripsi</button><button data-im="semua">Semua</button></div></div>
+    <div id="items"></div>
     <button class="sec add" id="addItem"><i class="fa-solid fa-plus"></i> Tambah Barang</button></div>
   <div class="card" id="cJenis"><h3>4 · Jenis Order</h3><div class="chips" id="jenis"></div></div>
   <div class="card" id="cRs"><h3>5 · Rumah Sakit / Instansi</h3><select id="rs"></select><div class="mut" style="margin-top:4px">Belum ada di daftar? Tambah di tab Data.</div></div>
   <div class="card" id="cDate"><h3>6 · Tanggal</h3>
     <div class="row"><input type="date" id="date" style="flex:1"><div id="dateTxt" style="font-weight:600;min-width:96px;text-align:right"></div></div></div>
+  <div class="card"><h3>Isi Email</h3>
+    <div class="fr top" style="margin-top:0"><label>Salam</label><textarea data-o="greet" rows="1"></textarea></div>
+    <div class="fr top"><label>Isi</label><textarea data-o="intro" rows="2"></textarea></div>
+    <div class="fr top"><label>Penutup</label><textarea data-o="closing" rows="1"></textarea></div></div>
   <div class="card"><h3>Lampiran (opsional)</h3><div id="files"></div>
     <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah Gambar / PDF / File<input type="file" id="fileIn" multiple hidden></label>
     <div class="mut" id="fileNote" style="margin-top:6px"></div></div>
@@ -246,8 +252,14 @@ select{font-size:14px!important;min-height:40px;padding:6px 8px}
     <button class="sec add" data-act="sAddText"><i class="fa-solid fa-plus"></i> Tambah Teks Tetap</button></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-envelope-open-text"></i> Kalimat Isi Email <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
-    <label class="f">Salam<textarea id="mGreet" rows="2"></textarea></label>
-    <label class="f">Isi<textarea id="mIntro" rows="3"></textarea></label><div class="mut" style="margin-top:6px">Tekan Enter untuk baris baru.</div></div></details>
+    <div class="mut"><b>Email Order</b></div>
+    <label class="f">Salam<textarea id="mGreet" rows="1"></textarea></label>
+    <label class="f">Isi<textarea id="mIntro" rows="2"></textarea></label>
+    <label class="f">Penutup<textarea id="mClose" rows="1"></textarea></label>
+    <div class="mut" style="margin-top:16px"><b>Email SPH</b></div>
+    <label class="f">Salam<textarea id="sGreet" rows="1"></textarea></label>
+    <label class="f">Isi<textarea id="sIntro" rows="2"></textarea></label>
+    <label class="f">Penutup<textarea id="sClose" rows="1"></textarea></label></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-user-group"></i> Kontak Penerima <i class="fa-solid fa-chevron-down c"></i></summary><div class="in"><div id="dCt"></div>
     <button class="sec add" data-act="cAdd"><i class="fa-solid fa-plus"></i> Tambah Kontak</button></div></details>
@@ -289,7 +301,7 @@ const seed=()=>({
   jenis:['BELI PUTUS','ECAT','NON ECAT'],kats:['BHP','MESIN'],
   contacts:['Doni Kurniawan','Niken Dyah Sintasari','TMID Blood Bank Ops','TMID Jogja Ops','TMID Solo Ops','Tmid Semarang Ops','TMID JKT Warehouse','TMID LDS Jakarta'].map(n=>({name:n,email:'',role:'to'})),
   subj:{parts:defParts(),isep:'+',dfmt:'dMy2'},
-  mail:{greet:'Dear Ops,',intro:'Please help me to prepare this order below'}
+  mail:{greet:'Dear Ops,',intro:'Please help me to prepare this order below',closing:'',itemMode:'kode'}
 });
 
 let MODE='o';
@@ -309,7 +321,7 @@ function sphNorm(x){const s=sphSeed();x=x||{};
 function norm(x){const s=seed();x.sph=sphNorm(x.sph);
   x.brands=x.brands||s.brands;x.rs=x.rs||s.rs;x.jenis=x.jenis||s.jenis;x.brands.forEach(b=>{b.items=(b.items||[]).map(it=>typeof it==='string'?{code:it,name:''}:it)});x.kats=x.kats||s.kats;x.contacts=x.contacts||s.contacts;
   x.subj=x.subj||{};x.subj.parts=x.subj.parts||defParts();x.subj.isep=x.subj.isep??'+';x.subj.dfmt=x.subj.dfmt||'dMy2';
-  x.mail=x.mail||s.mail;return x}
+  x.mail=x.mail||s.mail;if(x.mail.closing===undefined)x.mail.closing='';if(!x.mail.itemMode)x.mail.itemMode='kode';return x}
 let D;try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 D=norm(D&&D.brands?D:seed());
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
@@ -340,10 +352,18 @@ function subject(sample){
   let o='',first=true;
   for(const p of D.subj.parts){if(!p.on)continue;const v=p.k==='text'?p.t:V[p.k];if(!v)continue;o+=(first?'':p.pre)+v;first=false}
   return o}
+function itemText(code){
+  const b=brandObj(),it=b&&b.items.find(x=>x.code===code),name=it?(it.name||''):'',m=D.mail.itemMode;
+  if(m==='desk')return name||code;
+  if(m==='semua')return name?code+' - '+name:code;
+  return code}
 function body(){
-  const L=[D.mail.greet,'',D.mail.intro,''];
-  validItems().forEach(i=>L.push(`${i.item}: ${+i.qty} ${i.unit||'ea'}`));
+  const L=[];
+  if(D.mail.greet)L.push(D.mail.greet,'');
+  if(D.mail.intro)L.push(D.mail.intro,'');
+  validItems().forEach(i=>L.push(`${itemText(i.item)}: ${+i.qty} ${i.unit||'ea'}`));
   const n=$('note').value.trim();if(n)L.push('',n);
+  if(D.mail.closing)L.push('',D.mail.closing);
   return L.join('\r\n').replace(/\r?\n/g,'\r\n')}
 const addr=c=>(c.email||c.name).replace(/[,;]/g,' ').trim();
 const shown=c=>c.show!==false;
@@ -388,7 +408,10 @@ function renderPrev(){
   const R=(k,v,c='')=>`<div class="pr ${c}"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`;
   $('prev').innerHTML=R('To',rcpt('to').join('; ')||'—')+(rcpt('cc').length?R('CC',rcpt('cc').join('; ')):'')+R('Subjek',subject(),'sj')+R('Isi',body().replace(/\r\n/g,'\n'))+(FILES.length?R('Lampiran',FILES.map(f=>f.name).join(', ')):'');
   setMissing(problems())}
-const renderAll=()=>{renderRcpt();renderBrands();renderJenis();renderRs();renderItems();renderFiles();renderPrev()};
+function renderOrderMail(){
+  document.querySelectorAll('[data-o]').forEach(e=>{e.value=D.mail[e.dataset.o]||''});
+  document.querySelectorAll('#itemMode button').forEach(b=>b.classList.toggle('on',b.dataset.im===D.mail.itemMode))}
+const renderAll=()=>{renderRcpt();renderBrands();renderJenis();renderRs();renderItems();renderFiles();renderOrderMail();renderPrev()};
 
 /* ---------- events order ---------- */
 $('brands').onclick=e=>{const b=e.target.dataset.b;if(!b)return;if(F.brand!==b){F.brand=b;F.items=[{item:'',qty:'',unit:'ea'}]}renderBrands();renderItems();renderPrev()};
@@ -441,7 +464,7 @@ function renderData(){
     ${p.k==='date'?`<select class="dfs" data-dfmt aria-label="Format tanggal"><option value="dMy2" ${D.subj.dfmt==='dMy2'?'selected':''}>22 OCT 26</option><option value="dMy4" ${D.subj.dfmt==='dMy4'?'selected':''}>22 OCT 2026</option><option value="slash" ${D.subj.dfmt==='slash'?'selected':''}>22/10/2026</option></select>`:''}
     <input class="sepi" data-sp="pre" data-i="${i}" value="${esc(p.pre)}" placeholder="${i===0?'':'sep'}" title="Separator sebelum bagian ini" aria-label="Separator" ${i===0?'disabled':''}>
     ${p.k==='text'?ib('sDel','trash','Hapus',`data-i="${i}"`,'del'):''}</div></div>`).join('');
-  $('isep').value=D.subj.isep;$('mGreet').value=D.mail.greet;$('mIntro').value=D.mail.intro;
+  $('isep').value=D.subj.isep;$('mGreet').value=D.mail.greet;$('mIntro').value=D.mail.intro;$('mClose').value=D.mail.closing;$('sGreet').value=D.sph.greet;$('sIntro').value=D.sph.intro;$('sClose').value=D.sph.closing;
 
   $('dCt').innerHTML=D.contacts.map((c,i)=>`<div class="ct"><span class="grip" title="Tahan lalu geser untuk mengurutkan" aria-label="Geser untuk mengurutkan"><i class="fa-solid fa-grip-vertical"></i></span>${ib('cTog',shown(c)?'eye':'eye-slash',shown(c)?'Tampil di halaman Order (ketuk untuk sembunyikan)':'Disembunyikan (ketuk untuk tampilkan)',`data-i="${i}"`,shown(c)?'pri':'')}<div class="nm" ${shown(c)?'':'style="opacity:.5"'}>${esc(c.name)}<small>${c.email?esc(c.email):'tanpa email (ditulis nama)'}</small></div>
     ${ib('cEd','pen','Ubah',`data-i="${i}"`,'pri')}${ib('cDel','trash','Hapus',`data-i="${i}"`,'del')}</div>`).join('');
@@ -506,7 +529,11 @@ $('vData').addEventListener('input',e=>{const t=e.target;
   if(t.dataset.sp){D.subj.parts[+t.dataset.i][t.dataset.sp]=t.value;save();$('sEx').textContent=subject(true);renderPrev()}
   else if(t.id==='isep'){D.subj.isep=t.value;save();$('sEx').textContent=subject(true);renderPrev()}
   else if(t.id==='mGreet'){D.mail.greet=t.value;save();renderPrev()}
-  else if(t.id==='mIntro'){D.mail.intro=t.value;save();renderPrev()}});
+  else if(t.id==='mIntro'){D.mail.intro=t.value;save();renderPrev()}
+  else if(t.id==='mClose'){D.mail.closing=t.value;save();renderPrev()}
+  else if(t.id==='sGreet'){D.sph.greet=t.value;save()}
+  else if(t.id==='sIntro'){D.sph.intro=t.value;save()}
+  else if(t.id==='sClose'){D.sph.closing=t.value;save()}});
 $('exp').onclick=async()=>toast(await copy(JSON.stringify(D))?'Data tersalin. Simpan di catatan/chat sendiri.':'Gagal menyalin');
 $('imp').onclick=()=>ask('Tempel Data',[{label:'Tempel hasil "Salin data"'}],v=>{try{const x=JSON.parse(v[0]);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return'Dibatalkan';D=norm(x);upd()}catch(e){return'Data tidak valid'}});
 
@@ -544,7 +571,7 @@ function sphHtml(){
     gn++;let n=0;
     const {multi,showU}=sphCols(its.concat(acc)),cols=showU?6:5;
     const heads=['No','Item Code','Nama Item','Unit'].concat(showU?['Harga Satuan (Rp)','Total Harga (Rp)']:[multi?'Total Harga Nett + PPN (Rp)':'Harga Nett + PPN per unit (Rp)']);
-    h+=GAP+(g.title?`<p style="margin:0 0 4px"><b>${gn}. ${H(g.title)}</b></p>`:'')+tbl+'<tr>'+heads.map(t=>`<th style="${B}text-align:center${t==='No'||t==='Unit'?';white-space:nowrap':''}">${t}</th>`).join('')+'</tr>';
+    h+=(gn>1?GAP+GAP:GAP)+(g.title?`<p style="margin:0 0 4px"><b>${gn}. ${H(g.title)}</b></p>`:'')+tbl+'<tr>'+heads.map(t=>`<th style="${B}text-align:center${t==='No'||t==='Unit'?';white-space:nowrap':''}">${t}</th>`).join('')+'</tr>';
     let sum=0;
     const rowHtml=i=>{
       n++;const q=qtyOf(i.unit),pr=parsePrice(i.price),tot=q*pr;sum+=tot;
@@ -997,6 +1024,8 @@ function restoreTab(){if(draftTab==='s')tab('s')}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){saveDraft();save()}});
 addEventListener('pagehide',()=>{saveDraft();save()});
 
+$('vOrder').addEventListener('input',e=>{const k=e.target.dataset.o;if(!k)return;D.mail[k]=e.target.value;save();renderPrev()});
+$('itemMode').addEventListener('click',e=>{const b=e.target.closest('[data-im]');if(!b)return;D.mail.itemMode=b.dataset.im;save();renderOrderMail();renderPrev()});
 /* ---------- tabs ---------- */
 const tab=t=>{MODE=t;
   [['vOrder','o'],['vSph','s'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
