@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0f6cbd">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161b23" media="(prefers-color-scheme: dark)">
 <title>Outlook Cepat</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -15,8 +16,8 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{overflow-x:clip;max-width:100%}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;padding-bottom:84px}
-header{background:#0f6cbd;color:#fff;padding:0 12px 0 16px;position:fixed;top:0;left:0;right:0;z-index:8;display:flex;align-items:center;height:46px}
-body{padding-top:46px}
+header{position:fixed;top:0;left:0;right:0;z-index:8;display:flex;align-items:stretch;height:46px}
+body{padding-top:var(--hh,58px)}
 header b{flex:none;font-size:18px;margin-right:8px}
 header button{flex:1;background:transparent;color:#fff;border:0;font:inherit;font-size:13.5px;padding:6px 2px;min-height:0;opacity:.7;border-radius:0}
 header button.on{opacity:1;border-bottom:2px solid #fff}
@@ -55,7 +56,7 @@ button i{pointer-events:none}
 .pr.sj .v{font-weight:600}
 .prev b{display:block;color:var(--mut);font-size:12px;font-weight:600;margin-top:6px}
 .prev b:first-child{margin-top:0}
-.pv{position:fixed;top:46px;left:0;right:0;width:100%;margin:0!important;border-radius:0;border-width:0 0 1px 0;padding:8px max(12px,calc((100% - 616px)/2));background:var(--card);z-index:7;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+.pv{position:fixed;top:var(--hh,58px);left:0;right:0;width:100%;margin:0!important;border-radius:0;border-width:0 0 1px 0;padding:8px max(12px,calc((100% - 616px)/2));background:var(--card);z-index:7;box-shadow:0 3px 8px rgba(0,0,0,.15)}
 .pv .hd{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:28px}
 .pv .hd .sj{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;font-weight:600}
 .pv .hd .ar{color:var(--mut);font-size:12px}
@@ -247,36 +248,119 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
 .pohd b{font-size:14px}
 .pr2p{flex-wrap:wrap}
 .stdtag{font-size:11px;color:var(--mut);background:var(--chip);border-radius:999px;padding:2px 8px}
+
+/* ===== tema v2: lembut, minimalis ===== */
+:root{--hh:58px;--bg:#f4f5f8;--card:#fff;--tx:#161a22;--mut:#6a7585;--pri:#1766d6;--bd:#e7e9ee;--err:#d03b3b;--chip:#e9f1ff;--fill:#f0f2f6;--ok:#0f8a74;--sh:0 1px 2px rgba(16,24,40,.05),0 2px 8px rgba(16,24,40,.05)}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1016;--card:#161b23;--tx:#e9ecf1;--mut:#96a1b1;--pri:#5aa8ff;--bd:#252c37;--chip:#18283e;--fill:#0f1319;--ok:#3ecf9e;--sh:none}}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:15px;-webkit-font-smoothing:antialiased}
+main{padding:14px 14px 6px}
+header{height:var(--hh);background:var(--card);color:var(--tx);border-bottom:1px solid var(--bd);box-shadow:0 1px 0 rgba(0,0,0,.02)}
+header button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 2px;font-size:11.5px;font-weight:600;color:var(--mut);opacity:1;border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;min-height:0;height:100%}
+header button i{font-size:18px}
+header button.on{color:var(--pri);border-bottom-color:var(--pri)}
+.card{border:0;box-shadow:var(--sh);border-radius:18px;padding:16px;margin-bottom:12px}
+@media (prefers-color-scheme:dark){.card{border:1px solid var(--bd)}}
+h3{margin:0 0 12px;font-size:15px;font-weight:650;color:var(--tx);text-transform:none;letter-spacing:0;display:flex;align-items:center;gap:8px}
+h3 i{color:var(--pri);width:18px;text-align:center;font-size:14px}
+input,select,textarea{background:var(--fill);border:1.5px solid transparent;border-radius:12px;min-height:46px;padding:9px 13px;transition:border-color .12s,background .12s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pri);background:var(--card)}
+input::placeholder,textarea::placeholder{color:var(--mut);opacity:.7}
+button{border-radius:12px;font-weight:600;min-height:44px}
+button.sec{background:var(--chip);color:var(--pri);border:0}
+button.sec:active,.chip:active,.rt:active{transform:scale(.98)}
+.add{margin-top:10px;min-height:44px}
+.chips{gap:8px}
+.chip{background:var(--fill);color:var(--tx);border:1.5px solid transparent;padding:7px 15px;min-height:38px;font-weight:500}
+.chip.on{background:var(--chip);color:var(--pri);border-color:var(--pri);font-weight:600}
+.seg{background:var(--fill);border:0;padding:3px;border-radius:13px;gap:2px}
+.seg button{border-radius:10px;min-height:36px;color:var(--mut);background:transparent;font-weight:600}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+.ib{border-radius:10px}
+.rt{background:var(--fill);border:1.5px solid transparent;border-radius:14px;min-height:50px;font-weight:500}
+.rt.s-to{background:var(--chip);border-color:var(--pri)}
+.rt.s-cc{background:rgba(15,138,116,.12);border-color:var(--ok)}
+.rt.s-cc .b{background:var(--ok)}
+.rt .b{border-radius:8px}
+.pickbtn{background:var(--fill);border:1.5px solid transparent;border-radius:12px}
+.pv{background:var(--card);box-shadow:0 4px 14px rgba(16,24,40,.1);border-bottom:1px solid var(--bd)}
+.pv h3{margin:0;font-size:13px;color:var(--mut);font-weight:600}
+.pv h3 i{color:var(--mut)}
+.prev{background:var(--fill);border:0;border-radius:12px}
+.pr{border-top-color:var(--bd)}
+.bar{background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid var(--bd);padding:10px 14px calc(10px + env(safe-area-inset-bottom))}
+.bar button{min-height:50px;border-radius:14px;font-size:15.5px;box-shadow:0 4px 14px color-mix(in srgb,var(--pri) 30%,transparent)}
+.bar button.dis{box-shadow:none}
+.msg{font-size:12.5px;margin-bottom:6px}
+.tile{border:0;background:var(--card);box-shadow:var(--sh);border-radius:16px;padding:10px 14px}
+@media (prefers-color-scheme:dark){.tile{border:1px solid var(--bd)}}
+details.dsec>summary{padding:14px 16px;gap:12px}
+details.dsec>summary>i:first-child{width:36px;height:36px;border-radius:11px;background:var(--chip);color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+details.dsec>.in{padding:0 16px 16px}
+.c2{background:var(--fill);border:0;border-radius:16px}
+.sec2{background:var(--card);border:0;border-radius:12px}
+.sech{background:transparent;color:var(--mut);padding:8px 10px 0;font-size:11px}
+.secb{padding:2px 6px 8px}
+dialog{border-radius:22px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,14,20,.55);backdrop-filter:blur(2px)}
+dialog h4{font-size:17px;font-weight:650;margin:0 0 6px}
+.toast{border-radius:14px;background:#1f2430;font-weight:500}
+.fr label,label.f{font-weight:500}
+.warnbar{border-radius:14px}
+.prow{border-radius:16px}
+.mut{color:var(--mut)}
+::-webkit-scrollbar{width:0;height:0}
+header{padding:0 max(0px,calc((100% - 640px)/2))}
+.fw .xc{width:28px;height:28px}
+.fw .xc::before,.irow .ib::before,.ib.sm::before{content:'';position:absolute;inset:-8px}
+.irow .ib,.ib.sm{position:relative}
+.ib.sm{width:36px;min-height:36px}
+.irow .ib{width:28px}
+.irow{grid-template-columns:64px minmax(0,1fr) 38px 82px 28px}
+#poPer .chip{padding:6px 12px;font-size:13.5px;min-height:36px}
+#poPer{gap:6px}
+.sumrow .tile b{font-size:15px!important}
+.prb{flex-wrap:wrap}
+.prp .mut{white-space:nowrap}
+label.sec{border:0!important;background:var(--chip)!important;color:var(--pri)!important;border-radius:12px!important;font-weight:600;min-height:44px!important}
+#tplDel{background:rgba(208,59,59,.12)!important;color:var(--err)!important;border:0!important}
+#poClear{background:rgba(208,59,59,.12)!important;color:var(--err)!important;border:0!important}
+#wipeAll{border-radius:12px}
 </style>
 </head>
 <body>
-<header><b aria-label="Outlook Cepat" title="Outlook Cepat"><i class="fa-regular fa-envelope"></i></b><button id="tOrder" class="on">Order</button><button id="tSph">SPH</button><button id="tSpon">Sponsor</button><button id="tPO" class="hide">PO</button><button id="tData">Data</button></header>
+<header>
+  <button id="tOrder" class="on"><i class="fa-solid fa-envelope-open-text"></i><span>Order</span></button>
+  <button id="tSph"><i class="fa-solid fa-file-invoice-dollar"></i><span>SPH</span></button>
+  <button id="tSpon"><i class="fa-solid fa-handshake"></i><span>Sponsor</span></button>
+  <button id="tPO" class="hide"><i class="fa-solid fa-chart-pie"></i><span>PO</span></button>
+  <button id="tData"><i class="fa-solid fa-sliders"></i><span>Data</span></button>
+</header>
 
 <!-- ================= ORDER ================= -->
 <div id="pvSp"></div>
-  <div class="card pv" id="pv"><div class="hd" id="pvHd"><h3 style="margin:0">Pratinjau</h3><div class="sj" id="pvSj"></div><span class="ar" id="pvAr"><i class="fa-solid fa-chevron-down"></i></span></div>
+  <div class="card pv" id="pv"><div class="hd" id="pvHd"><h3 style="margin:0"><i class="fa-regular fa-eye"></i> Pratinjau</h3><div class="sj" id="pvSj"></div><span class="ar" id="pvAr"><i class="fa-solid fa-chevron-down"></i></span></div>
     <div class="bd" id="pvBd"><div class="prev" id="prev"></div>
 </div></div>
 
 <main id="vOrder">
-  <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcpt"></div></div>
-  <div class="card"><h3>2 · Merk</h3><div class="chips" id="brands"></div></div>
-  <div class="card"><h3>3 · Barang &amp; Jumlah</h3>
+  <div class="card"><h3><i class="fa-solid fa-user-group"></i> Penerima</h3><div id="rcpt"></div></div>
+  <div class="card"><h3><i class="fa-solid fa-tag"></i> Merk</h3><div class="chips" id="brands"></div></div>
+  <div class="card"><h3><i class="fa-solid fa-box-open"></i> Barang &amp; Jumlah</h3>
     <div class="row" style="margin-bottom:8px"><span class="mut" style="flex:none">Tampil di email</span><div class="seg" id="itemMode" style="margin-left:auto"><button data-im="kode">Kode</button><button data-im="desk">Deskripsi</button><button data-im="semua">Semua</button></div></div>
     <div id="items"></div>
     <button class="sec add" id="addItem"><i class="fa-solid fa-plus"></i> Tambah Barang</button></div>
-  <div class="card" id="cJenis"><h3>4 · Jenis Order</h3><div class="chips" id="jenis"></div></div>
-  <div class="card" id="cRs"><h3>5 · Rumah Sakit / Instansi</h3><select id="rs"></select><div class="mut" style="margin-top:4px">Belum ada di daftar? Tambah di tab Data.</div></div>
-  <div class="card" id="cDate"><h3>6 · Tanggal</h3>
+  <div class="card" id="cJenis"><h3><i class="fa-solid fa-list-check"></i> Jenis Order</h3><div class="chips" id="jenis"></div></div>
+  <div class="card" id="cRs"><h3><i class="fa-solid fa-hospital"></i> Rumah Sakit</h3><select id="rs"></select></div>
+  <div class="card" id="cDate"><h3><i class="fa-solid fa-calendar-days"></i> Tanggal</h3>
     <div class="row"><input type="date" id="date" style="flex:1"><div id="dateTxt" style="font-weight:600;min-width:96px;text-align:right"></div></div></div>
-  <div class="card"><h3>Isi Email</h3>
+  <div class="card"><h3><i class="fa-solid fa-envelope"></i> Isi Email</h3>
     <div class="fr top" style="margin-top:0"><label>Salam</label><textarea data-o="greet" rows="1"></textarea></div>
     <div class="fr top"><label>Isi</label><textarea data-o="intro" rows="2"></textarea></div>
     <div class="fr top"><label>Penutup</label><textarea data-o="closing" rows="1"></textarea></div></div>
-  <div class="card"><h3>Lampiran (opsional)</h3><div id="files"></div>
+  <div class="card"><h3><i class="fa-solid fa-paperclip"></i> Lampiran</h3><div id="files"></div>
     <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah Gambar / PDF / File<input type="file" id="fileIn" multiple hidden></label>
     <div class="mut" id="fileNote" style="margin-top:6px"></div></div>
-  <div class="card"><h3>Catatan (opsional)</h3><textarea id="note"></textarea></div>
+  <div class="card"><h3><i class="fa-solid fa-note-sticky"></i> Catatan</h3><textarea id="note"></textarea></div>
   <button class="sec reset" id="resetOrder"><i class="fa-solid fa-rotate-left"></i> Kosongkan Form Order</button>
 </main>
 
@@ -285,16 +369,16 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
   <div class="card" style="padding:8px 10px"><div class="row" style="gap:6px"><div id="curBar" style="flex:1;min-width:0"></div>
     <button class="sec" id="btnList" style="padding:6px 10px"></button></div></div>
 
-  <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcptS"></div></div>
+  <div class="card"><h3><i class="fa-solid fa-user-group"></i> Penerima</h3><div id="rcptS"></div></div>
 
-  <div class="card"><h3>2 · Surat</h3>
+  <div class="card"><h3><i class="fa-solid fa-envelope-open-text"></i> Surat</h3>
     <label class="f" style="margin-top:0">Salam<textarea data-m="greet" rows="1"></textarea></label>
     <label class="f">Isi<textarea data-m="intro" rows="2"></textarea></label>
     <label class="f">Penutup<textarea data-m="closing" rows="1"></textarea></label>
     <label class="f">Tanggal<input type="date" id="sdate"></label>
     <label class="f">Subjek <span class="mut">(pakai {instansi} {produk} {versi} {tanggal})</span><input data-m="subj"></label></div>
 
-  <div class="card"><h3>3 · Data Penawaran</h3>
+  <div class="card"><h3><i class="fa-solid fa-building"></i> Data Penawaran</h3>
     <div class="fr top"><label>Nama Instansi</label><div class="sel"><select data-sel="instansi" aria-label="Nama Instansi"></select><div data-man="instansi" class="hide"><input data-f="instansi" autocomplete="off" aria-label="Nama Instansi isi manual"></div></div></div>
     <div class="fr"><label for="f_kepada">Kepada (UP)</label><input id="f_kepada" data-f="kepada"></div>
     <div class="fr top"><label for="f_alamat">Alamat</label><textarea id="f_alamat" data-f="alamat" rows="2"></textarea></div>
@@ -304,7 +388,7 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
     <div class="fr top"><label>Kategori Barang</label><div class="sel"><select data-sel="kategori" aria-label="Kategori Barang"></select><div data-man="kategori" class="hide"><input data-f="kategori" autocomplete="off" aria-label="Kategori Barang isi manual"></div></div></div>
     <div class="fr"><label for="f_discount">Discount</label><input id="f_discount" data-f="discount"></div></div>
 
-  <div class="card"><h3>4 · Kondisi penawaran</h3>
+  <div class="card"><h3><i class="fa-solid fa-list-check"></i> Kondisi Penawaran</h3>
     <div id="sKond"></div>
     <button class="sec add" data-sact="kAdd"><i class="fa-solid fa-plus"></i> Tambah Butir Kondisi</button>
     <div class="fr"><label for="f_p1">1. Harga Produk</label><input id="f_p1" data-f="p1"></div>
@@ -314,15 +398,15 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
     <div class="fr"><label for="f_p5">5. Stock Barang</label><input id="f_p5" data-f="p5"></div>
     <div class="fr"><label for="f_hc">Hardcopy Dikirim ke Alamat</label><input id="f_hc" data-f="hc"></div></div>
 
-  <div class="card" style="padding:10px 6px"><h3 style="padding-left:6px">5 · Daftar Item</h3>
+  <div class="card" style="padding:10px 6px"><h3 style="padding-left:6px"><i class="fa-solid fa-table-list"></i> Daftar Item</h3>
     <div id="sGroups"></div>
     <button class="add" data-sact="gAdd" style="margin-top:24px"><i class="fa-solid fa-table"></i> Tambah Tabel Penawaran</button></div>
 
-  <div class="card"><h3>Lampiran (Opsional)</h3><div id="filesS"></div>
+  <div class="card"><h3><i class="fa-solid fa-paperclip"></i> Lampiran</h3><div id="filesS"></div>
     <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah Gambar / PDF / File<input type="file" id="fileInS" multiple hidden></label>
-    <div class="mut" style="margin-top:6px">Lampiran paling lengkap lewat cara kirim File Email (.eml): penerima, subjek, tabel, dan lampiran ikut tersimpan di satu file.</div></div>
+    <div class="mut" style="margin-top:6px">Paling lengkap lewat File Email (.eml).</div></div>
 
-  <div class="card"><h3>Cara Kirim</h3>
+  <div class="card"><h3><i class="fa-solid fa-paper-plane"></i> Cara Kirim</h3>
     <div class="chips" id="trials"></div><div class="mut" id="trialTx" style="margin-top:8px"></div>
     </div>
   <div class="row" style="margin-top:4px"><button class="sec" id="resetSph" style="flex:1"><i class="fa-solid fa-rotate-left"></i> Reset Semua Kolom</button><button id="btnSave" data-sact="sSave" style="flex:1"></button></div>
@@ -330,42 +414,42 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
 
 <!-- ================= SPONSORSHIP ================= -->
 <main id="vSpon" class="hide">
-  <div class="card" id="tplCard"><h3>Template Excel</h3><div id="tplInfo"></div>
+  <div class="card" id="tplCard"><h3><i class="fa-solid fa-file-excel"></i> Template Excel</h3><div id="tplInfo"></div>
     <div class="fr hide" id="tplSheetRow"><label>Sheet</label><select id="tplSheet"></select></div>
     <div class="row" style="margin-top:8px"><label class="sec" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:40px;cursor:pointer;font-size:14px"><i class="fa-solid fa-file-excel"></i> <span id="tplBtnTx">Pilih File Template (.xlsx)</span><input type="file" id="tplIn" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></label>
       <button class="sec hide" id="tplDel" style="color:var(--err);border-color:var(--err)"><i class="fa-solid fa-trash"></i> Hapus</button></div></div>
 
-  <div class="card"><h3>1 · Penerima (To / CC)</h3><div id="rcptP"></div></div>
+  <div class="card"><h3><i class="fa-solid fa-user-group"></i> Penerima</h3><div id="rcptP"></div></div>
 
-  <div class="card"><h3>2 · Type &amp; Event Organizer</h3>
+  <div class="card"><h3><i class="fa-solid fa-shapes"></i> Type &amp; Organizer</h3>
     <div class="mut" style="margin-bottom:6px">Type</div>
     <div class="chips"><button class="chip" data-ty="exh">Exhibition</button><button class="chip" data-ty="ws">Workshop</button><button class="chip" data-ty="pres">Presentation / Talks</button><button class="chip" data-ty="third">3rd Party</button><button class="chip" data-ty="otherT">Others (Trial)</button></div>
     <div class="mut" style="margin:12px 0 6px">Event Organizer</div>
     <div class="chips"><button class="chip" data-og="trans">Transmedic</button><button class="chip" data-og="manu">Manufacturer</button><button class="chip" data-og="otherO">Others</button></div></div>
 
-  <div class="card"><h3>3 · Event</h3>
+  <div class="card"><h3><i class="fa-solid fa-calendar-check"></i> Event</h3>
     <div class="fr" style="margin-top:0"><label for="sp_name">Event Name</label><input id="sp_name" data-s="name" autocomplete="off"></div>
     <div class="fr"><label for="sp_date">Event Date</label><input id="sp_date" type="date" data-s="date"></div>
     <div class="fr"><label for="sp_loc">Event Location</label><input id="sp_loc" data-s="location" autocomplete="off"></div>
     <div class="fr top"><label>Manufacturer</label><div class="sel"><select id="sponMan" aria-label="Manufacturer"></select><div id="sponManBox" class="hide"><input data-s="manufacturer" autocomplete="off" aria-label="Manufacturer isi manual"></div></div></div>
     <div class="fr top"><label for="sp_obj">Objective of Event</label><textarea id="sp_obj" data-s="objective" rows="2"></textarea></div></div>
 
-  <div class="card"><h3>4 · Target Group</h3>
+  <div class="card"><h3><i class="fa-solid fa-bullseye"></i> Target Group</h3>
     <div class="chips"><button class="chip" data-tg="doctors">Doctors</button><button class="chip" data-tg="nurses">Nurses</button><button class="chip" data-tg="others">Others</button></div>
     <div class="fr" style="margin-top:10px"><label for="sp_part">No. of Participants</label><input id="sp_part" data-s="participants" inputmode="numeric" autocomplete="off"></div></div>
 
-  <div class="card"><h3>5 · Cost of Event</h3><div id="costStd"></div><div id="costCus"></div>
+  <div class="card"><h3><i class="fa-solid fa-coins"></i> Cost of Event</h3><div id="costStd"></div><div id="costCus"></div>
     <button class="sec add" id="costAdd"><i class="fa-solid fa-plus"></i> Tambah Biaya Lain</button>
     <div class="row" style="margin-top:10px;justify-content:flex-end"><b id="costTot"></b></div></div>
 
-  <div class="card"><h3>6 · Cost Sharing</h3>
+  <div class="card"><h3><i class="fa-solid fa-percent"></i> Cost Sharing</h3>
     <div class="mut" style="margin:0 0 4px"><b>Transmedic</b></div>
     <div class="row"><input data-sh="trans.pct" inputmode="numeric" placeholder="%" aria-label="Transmedic persen" style="flex:.5"><input data-sh="trans.idr" inputmode="numeric" placeholder="IDR" aria-label="Transmedic IDR"><input data-sh="trans.type" placeholder="Payment Type" aria-label="Transmedic payment type"></div>
     <div class="mut" style="margin:12px 0 4px"><b>Manufacturer / Participant</b></div>
     <div class="row"><input data-sh="manu.pct" inputmode="numeric" placeholder="%" aria-label="Manufacturer / Participant persen" style="flex:.5"><input data-sh="manu.idr" inputmode="numeric" placeholder="IDR" aria-label="Manufacturer / Participant IDR"><input data-sh="manu.type" placeholder="Payment Type" aria-label="Manufacturer / Participant payment type"></div>
   </div>
 
-  <div class="card"><h3>7 · Pembayaran</h3>
+  <div class="card"><h3><i class="fa-solid fa-credit-card"></i> Pembayaran</h3>
     <div class="fr" style="margin-top:0"><label for="sp_pay">Payable To</label><input id="sp_pay" data-s="payable" autocomplete="off"></div>
     <div class="fr"><label for="sp_bn">Bank Name</label><input id="sp_bn" data-b="name" autocomplete="off"></div>
     <div class="fr"><label for="sp_ba">Bank Account Name</label><input id="sp_ba" data-b="acc" autocomplete="off"></div>
@@ -373,30 +457,30 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
     <div class="fr"><label for="sp_due">Payment Due Date</label><input id="sp_due" type="date" data-s="due"></div>
     <div class="fr"><label>Budgeted Awal Tahun?</label><div class="chips"><button class="chip" data-bud="Yes">Yes</button><button class="chip" data-bud="No">No</button></div></div></div>
 
-  <div class="card"><h3>8 · For Tax Purpose (Recipient Data)</h3><div id="taxList"></div>
+  <div class="card"><h3><i class="fa-solid fa-file-invoice"></i> Tax Purpose</h3><div id="taxList"></div>
     <button class="sec add" id="taxAdd"><i class="fa-solid fa-plus"></i> Tambah Penerima</button></div>
 
-  <div class="card"><h3>9 · Tanggal di Bawah Tanda Tangan</h3>
+  <div class="card"><h3><i class="fa-solid fa-signature"></i> Tanggal &amp; Tanda Tangan</h3>
     <div class="fr" style="margin-top:0"><label for="sponSign">Tanggal</label><input id="sponSign" type="date"></div>
     <div class="mut" style="margin-top:6px">Tanda tangan ikut dari template.</div></div>
 
-  <div class="card"><h3>Email</h3>
+  <div class="card"><h3><i class="fa-solid fa-at"></i> Email</h3>
     <label class="f" style="margin-top:0">Subjek <span class="mut">({event} {manufacturer} {tanggal})</span><input data-sm="subj" autocomplete="off"></label>
     <label class="f">Salam<textarea data-sm="greet" rows="1"></textarea></label>
     <label class="f">Isi<textarea data-sm="intro" rows="2"></textarea></label>
     <label class="f">Penutup<textarea data-sm="closing" rows="1"></textarea></label></div>
 
-  <div class="card"><h3>Lampiran Tambahan (Opsional)</h3><div id="filesP"></div>
+  <div class="card"><h3><i class="fa-solid fa-paperclip"></i> Lampiran Tambahan</h3><div id="filesP"></div>
     <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah Gambar / PDF / File<input type="file" id="fileInP" multiple hidden></label></div>
 
-  <div class="card"><h3>Cara Kirim</h3><div class="chips" id="sponTrials"></div><div class="mut" id="sponTrialTx" style="margin-top:8px"></div></div>
+  <div class="card"><h3><i class="fa-solid fa-paper-plane"></i> Cara Kirim</h3><div class="chips" id="sponTrials"></div><div class="mut" id="sponTrialTx" style="margin-top:8px"></div></div>
   <button class="sec reset" id="resetSpon"><i class="fa-solid fa-rotate-left"></i> Reset Semua Kolom</button>
 </main>
 
 <!-- ================= DATA PO ================= -->
 <main id="vPO" class="hide">
   <div id="poHome">
-    <button class="add" id="poNew" style="margin:0 0 8px"><i class="fa-solid fa-plus"></i> Tambah PO Manual</button>
+    <button class="sec add" id="poNew" style="margin:0 0 12px"><i class="fa-solid fa-plus"></i> Tambah PO Manual</button>
     <div class="card" style="padding:10px">
       <input id="poq" placeholder="Cari RS, produk, atau kode" autocomplete="off" aria-label="Cari PO">
       <div class="chips" id="poPer" style="margin-top:8px"></div>
@@ -451,16 +535,16 @@ label.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;
     <button class="sec add" id="poClear" style="color:var(--err);border-color:var(--err)"><i class="fa-solid fa-trash"></i> Hapus Semua Riwayat PO</button></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-floppy-disk"></i> Cadangan Data <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
-    <div class="mut">Data tersimpan di HP ini saja. Salin sebagai cadangan, atau pindahkan ke HP lain.</div>
+    <div class="mut">Data tersimpan di HP ini saja.</div>
     <div class="row" style="margin-top:8px"><button class="sec" id="exp" style="flex:1">Salin Data</button><button class="sec" id="imp" style="flex:1">Tempel Data</button></div></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-circle-info"></i> Versi Aplikasi <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <div class="mut">Versi terpasang: <b id="appV"></b></div>
     <button class="sec add" id="appUpd"><i class="fa-solid fa-rotate"></i> Perbarui Aplikasi Sekarang</button>
-    <div class="mut" style="margin-top:6px">Mengambil versi terbaru dari internet. Data Anda tidak dihapus.</div></div></details>
+    <div class="mut" style="margin-top:6px">Data Anda tidak dihapus.</div></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-triangle-exclamation" style="color:var(--err)"></i> Hapus Semua Data <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
-    <div class="mut">Menghapus semua yang tersimpan di HP ini: kontak, merk, barang, RS, SPH tersimpan, template Excel, dan draf. Tidak bisa dibatalkan. Salin cadangan dulu kalau masih perlu.</div>
+    <div class="mut">Menghapus semua data di HP ini secara permanen.</div>
     <button class="add" id="wipeAll" style="background:var(--err);margin-top:10px"><i class="fa-solid fa-trash"></i> Hapus Semua Data</button></div></details>
 </main>
 
@@ -482,7 +566,7 @@ const seed=()=>({
   brands:[{name:'HAEMONETICS',items:['997CFE','BPF4BBS']},{name:'WEGO',items:['PL3VAE']}],
   rs:['RS SARDJITO','PMI KAB SLEMAN','RSA UGM'],
   jenis:['BELI PUTUS','ECAT','NON ECAT'],kats:['BHP','MESIN'],
-  contacts:['Doni Kurniawan','Niken Dyah Sintasari','TMID Blood Bank Ops','TMID Jogja Ops','TMID Solo Ops','Tmid Semarang Ops','TMID JKT Warehouse','TMID LDS Jakarta'].map(n=>({name:n,email:'',role:'to'})),
+  contacts:['Doni Kurniawan','Niken Dyah Sintasari','TMID Blood Bank Ops','TMID Jogja Ops','TMID Solo Ops','Tmid Semarang Ops','TMID JKT Warehouse','TMID LDS Jakarta'].map(n=>({name:n,email:'',role:'off'})),
   subj:{parts:defParts(),isep:'+',dfmt:'dMy2'},
   mail:{greet:'Dear Ops,',intro:'Please help me to prepare this order below',closing:'',itemMode:'kode'}
 });
@@ -525,7 +609,6 @@ const dateStr=v=>{if(!v)return'';const [y,m,d]=v.split('-'),f=D.subj.dfmt;return
 const brandObj=()=>D.brands.find(b=>b.name===F.brand);
 const validItems=()=>F.items.filter(i=>i.item&&+i.qty>0);
 const partOn=k=>D.subj.parts.some(p=>p.k===k&&p.on);
-const move=(a,i,d)=>{const j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]]};
 function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('hide');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add('hide'),2600)}
 const ib=(act,icon,title,at='',cls='')=>`<button class="ib ${cls}" data-act="${act}" ${at} title="${title}" aria-label="${title}"><i class="fa-solid fa-${icon}"></i></button>`;
 
@@ -575,7 +658,7 @@ function problems(){const p=[];
 function rcptGrid(key){
   const items=D.contacts.map((c,i)=>{if(!shown(c))return'';const st=c[key]||'off';
     return `<button class="rt s-${st}" data-i="${i}" aria-pressed="${st!=='off'}" aria-label="${esc(c.name)}: ${st==='off'?'tidak dipilih':st.toUpperCase()}"><span class="b">${st==='off'?'–':st.toUpperCase()}</span><span class="n">${esc(c.name)}</span></button>`}).join('');
-  return items?`<div class="mut" style="margin-bottom:6px">Ketuk nama untuk mengganti: kosong → <b>TO</b> → <b>CC</b> → kosong</div><div class="rg">${items}</div>`:'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Data.</span>'}
+  return items?`<div class="mut" style="margin-bottom:6px">Ketuk nama: <b>TO</b> → <b>CC</b> → kosong</div><div class="rg">${items}</div>`:'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Data.</span>'}
 function renderRcpt(){$('rcpt').innerHTML=rcptGrid('role')}
 const renderBrands=()=>$('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Data.</span>';
 const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis order. Tambah di tab Data.</span>';
@@ -743,7 +826,6 @@ $('exp').onclick=async()=>toast(await copy(JSON.stringify(D))?'Data tersalin. Si
 $('imp').onclick=()=>ask('Tempel Data',[{label:'Tempel hasil "Salin data"'}],v=>{try{const x=JSON.parse(v[0]);if(!x.brands||!x.rs||!x.contacts)throw 0;if(!confirm('Ganti semua data di HP ini?'))return'Dibatalkan';D=norm(x);upd()}catch(e){return'Data tidak valid'}});
 
 /* ---------- SPH ---------- */
-const fmtP=v=>{v=String(v||'').trim();return /^\d+$/.test(v)?Number(v).toLocaleString('id-ID'):v};
 const H=s=>esc(s||'').replace(/\n/g,'<br>');
 const sdate=()=>$('sdate').value||todayISO();
 function sphSubject(){const S=D.sph,f=S.form;
@@ -932,7 +1014,7 @@ async function addrSearch(q){
     const j=await r.json();
     if(!j.length){box.innerHTML='<div class="mut" style="margin-top:8px">Tidak ditemukan. Ubah kata kunci di atas lalu cari lagi.</div>';return}
     const clean=d=>d.display_name.split(', ').filter(x=>x!=='Indonesia');
-    box.innerHTML='<div class="mut" style="margin:8px 0 2px">Pilih yang paling sesuai, lalu periksa lagi. Data dari peta (OpenStreetMap), bisa kurang lengkap, misalnya nomor jalan.</div>'
+    box.innerHTML='<div class="mut" style="margin:8px 0 2px">Pilih yang sesuai, lalu periksa lagi (data OpenStreetMap).</div>'
       +j.map((x,i)=>{const p=clean(x);return `<button class="sec" style="display:block;width:100%;text-align:left;white-space:normal;margin-top:6px" data-ad="${i}"><b>${esc(p[0])}</b><br><span style="font-size:12px">${esc(p.slice(1).join(', '))}</span></button>`}).join('');
     box.onclick=ev=>{
       const b=ev.target.closest('[data-ad]');if(!b)return;
@@ -1012,7 +1094,7 @@ function listBody(){
       const sub=[f.produk,f.versi,it.snap.date?dateStr(it.snap.date):''].filter(Boolean).join(' · ');
       return `<div class="ct sv ${cur?'cur':''}"><button class="svb" data-sact="sOpen" data-id="${it.id}"><b>${esc(f.instansi||'(tanpa nama)')}</b>${cur?' <span class="tag">sedang diedit</span>':''}<small>${esc(sub||'—')}</small></button>
         <button class="ib del" data-sact="sDelSaved" data-id="${it.id}" title="Hapus SPH tersimpan" aria-label="Hapus SPH tersimpan"><i class="fa-solid fa-trash"></i></button></div>`}).join('')
-      ||'<div class="mut" style="padding:8px 0">Belum ada SPH tersimpan. Setelah membuat email, pilih Simpan, atau tekan tombol Simpan di atas.</div>')+'</div>'}
+      ||'<div class="mut" style="padding:8px 0">Belum ada SPH tersimpan.</div>')+'</div>'}
 function listClick(e){
   const t=e.target.closest('[data-sact]');if(!t)return;const a=t.dataset.sact,S=D.sph;
   if(a==='sNew'){if(sphDirty()&&!confirm('Form SPH saat ini belum disimpan. Tetap buat SPH baru?'))return;sphClear();$('dlg').close();scrollTo(0,0);toast('SPH baru')}
@@ -1080,17 +1162,6 @@ function jumpMissing(){
   card.classList.remove('hl');void card.offsetWidth;card.classList.add('hl');setTimeout(()=>card.classList.remove('hl'),2200);
   if(el.matches('input,textarea,select'))setTimeout(()=>el.focus({preventScroll:true}),450)}
 $('msg').onclick=jumpMissing;
-
-function pickList(title,opts,cb){
-  $('dTitle').textContent=title;$('dErr').textContent='';
-  $('dOk').style.display='none';$('dNo').textContent='Tutup';$('dNo').onclick=()=>$('dlg').close();
-  $('dBody').innerHTML=(opts.length?opts.map((o,i)=>`<button class="sec" style="display:block;width:100%;text-align:left;margin-top:6px" data-o="${i}">${esc(o)}</button>`).join(''):'<div class="mut" style="margin-top:8px">Belum ada data. Tambah di tab Data.</div>')
-    +'<div class="mut" style="margin-top:10px">Atau ketik sendiri di kolomnya.</div>';
-  $('dBody').onclick=e=>{const b=e.target.closest('[data-o]');if(!b)return;cb(opts[+b.dataset.o]);$('dlg').close()};
-  $('dlg').showModal()}
-$('vSph').addEventListener('click',e=>{
-  const b=e.target.closest('[data-combo]');if(!b)return;const k=b.dataset.combo;
-  pickList(k==='produk'?'Pilih Produk / Merk':'Pilih Versi Price List',k==='produk'?D.brands.map(x=>x.name):D.jenis,v=>{D.sph.form[k]=v;save();renderSph();renderPrev()})});
 
 /* ---------- tombol hapus isi (x) ---------- */
 function addClear(){
@@ -1490,7 +1561,7 @@ function renderSpon(){
     $('tplInfo').innerHTML=`<div class="ct"><div class="nm"><b>${esc(TPL.name)}</b><small>Tersimpan di HP ini · ${TPL.model.sheets.length} sheet</small></div></div>`;
     $('tplSheetRow').classList.toggle('hide',TPL.model.sheets.length<2);
     $('tplSheet').innerHTML=TPL.model.sheets.map(n=>`<option ${n===S.sheet?'selected':''}>${esc(n)}</option>`).join('')}
-  else{$('tplInfo').innerHTML='<div class="mut">Belum ada template. Pilih file Form Sponsorship (.xlsx) sekali saja; file disimpan di HP ini.</div>';$('tplSheetRow').classList.add('hide')}
+  else{$('tplInfo').innerHTML='<div class="mut">Pilih file Form Sponsorship (.xlsx) sekali saja.</div>';$('tplSheetRow').classList.add('hide')}
   $('tplBtnTx').textContent=TPL?'Ganti File Template':'Pilih File Template (.xlsx)';$('tplDel').classList.toggle('hide',!TPL);
   // manufacturer select
   const opts=D.brands.map(b=>b.name),sel=$('sponMan'),v=f.manufacturer||'';
@@ -1664,14 +1735,14 @@ const priceInput=(rs,code,ph)=>{const v=D.po.price[rs]&&D.po.price[rs][code];
   return `<input class="pin" data-price="${esc(encK(rs,code))}" inputmode="numeric" value="${v>0?nf(v):''}" placeholder="${ph>0?nf(ph):'Isi harga'}" aria-label="Harga satuan">`};
 const warnTag=t=>`<span class="warnb"><i class="fa-solid fa-triangle-exclamation"></i> ${t}</span>`;
 function nominalHtml(sales,noCount,allUnit){
-  if(!sales&&noCount)return warnTag('Belum ada harga');
+  if(!sales&&noCount)return warnTag('Isi harga');
   return `<b class="nom">${sales?rpf(sales):'—'}</b>`+(noCount?`<div>${warnTag(noCount+' '+allUnit+' belum berharga')}</div>`:'')}
 const tile=(l,v,w)=>`<div class="tile"><span>${l}</span><b>${v}</b>${w||''}</div>`;
 
 function poLineHtml(r,rsName){
   const dd=poD(r.date);let sub=0,no=0;
   const items=r.items.map(i=>{const p=poPrice(rsName,i.code),q=Number(i.qty)||0;sub+=p*q;if(!p)no++;
-    return `<div class="poi"><span class="poc">${esc(i.code)}</span><span class="pon">${i.name?esc(i.name)+' · ':''}×${nf(q)} ${esc(i.unit||'')}</span>${p?`<em class="pot2">${rpf(p*q)}</em>`:`<span class="warnb sm">Belum ada harga</span>`}</div>`}).join('');
+    return `<div class="poi"><span class="poc">${esc(i.code)}</span><span class="pon">${i.name?esc(i.name)+' · ':''}×${nf(q)} ${esc(i.unit||'')}</span>${p?`<em class="pot2">${rpf(p*q)}</em>`:`<span class="warnb sm">tanpa harga</span>`}</div>`}).join('');
   return `<div class="po2"><div class="pod"><b>${dd.d}</b><span>${dd.m}</span><small>${dd.y}</small></div>
     <div class="pob"><div class="pohd"><b>${dd.hari}, ${dd.long}</b>${sub?`<em class="pot2">${rpf(sub)}</em>`:''}</div>${items}</div>
     <div class="poa"><button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i></button></div></div>`}
@@ -1680,7 +1751,7 @@ function poLineHtml(r,rsName){
 function renderHome(rows,A){
   let qty=0,sales=0;Object.values(A.rs).forEach(g=>{qty+=g.qty;sales+=g.sales});
   const prods=Object.values(A.prod),noProd=prods.filter(p=>p.noRs.size>0).length;
-  $('poSum').innerHTML=tile('Total PO',rows.length)+tile('Total Qty',nf(qty))+tile('Total Nominal',sales?rpf(sales):'—',noProd?'<div class="warnb sm">Belum lengkap</div>':'');
+  $('poSum').innerHTML=tile('Total PO',rows.length)+tile('Total Qty',nf(qty))+tile('Nominal',sales?rpf(sales):'—',noProd?'<div class="warnb sm">Belum lengkap</div>':'');
   $('poWarn').innerHTML=noProd?`<div class="warnbar" data-nofilter><i class="fa-solid fa-triangle-exclamation"></i> <b>${noProd} produk</b> belum diberi harga, total nominal belum lengkap. <u>${PQ.onlyNo?'Tampilkan semua':'Tampilkan yang belum'}</u></div>`:'';
   document.querySelectorAll('#poView button').forEach(b=>b.classList.toggle('on',b.dataset.pv===PQ.tab));
   let h='';
@@ -1707,13 +1778,13 @@ function renderRsDetail(name,rows,A){
   const dts=g.rows.map(r=>r.date).sort(),noN=g.noPrice.size;
   let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</button>
     <div class="card"><div class="dtitle">${esc(g.rs)}</div><div class="mut">${g.rows.length} PO · pertama ${poD(dts[0]).full} · terakhir ${poD(dts[dts.length-1]).full}</div>
-    <div class="sumrow" style="margin:10px 0 0">${tile('Jumlah PO',g.rows.length)}${tile('Total Qty',nf(g.qty))}${tile('Total Nominal',g.sales?rpf(g.sales):'—')}</div>
+    <div class="sumrow" style="margin:10px 0 0">${tile('Jumlah PO',g.rows.length)}${tile('Total Qty',nf(g.qty))}${tile('Nominal',g.sales?rpf(g.sales):'—')}</div>
     ${noN?`<div class="warnbar" style="margin:10px 0 0"><i class="fa-solid fa-triangle-exclamation"></i> <b>${noN} produk</b> di RS ini belum diberi harga. Isi di kolom Harga di bawah.</div>`:''}</div>
     <div class="psec">Item yang Dipesan (${Object.keys(g.prod).length})</div><div class="card" style="padding:4px 12px">`;
   Object.values(g.prod).sort((a,b)=>b.qty-a.qty).forEach(p=>{
     const std=D.po.price['*']&&D.po.price['*'][p.code],noP=!poPrice(g.rs,p.code);
     h+=`<div class="pr2 ${noP?'nop2':''}"><div class="pr2h"><div style="min-width:0"><b>${esc(p.code)}</b>${p.name?`<div class="mut pnm">${esc(p.name)}</div>`:''}</div><div class="pq"><b>${nf(p.qty)}</b> qty</div></div>
-      <div class="pr2p"><span class="mut">Harga RS ini</span>${priceInput(g.rs,p.code,std)}${!(D.po.price[g.rs]&&D.po.price[g.rs][p.code])&&std>0?'<span class="stdtag">pakai harga standar</span>':''}<span class="tot">${p.sales?rpf(p.sales):warnTag('Belum ada harga')}</span></div></div>`});
+      <div class="pr2p"><span class="mut">Harga RS ini</span>${priceInput(g.rs,p.code,std)}<span class="tot">${p.sales?rpf(p.sales):warnTag('Isi harga')}</span></div></div>`});
   h+='</div><div class="psec">Riwayat PO (tanggal)</div>';
   let cur='';
   g.rows.forEach(r=>{const mk=r.date.slice(0,7);if(mk!==cur){cur=mk;const [y,m]=mk.split('-');h+=`<div class="pomh">${BLNF[+m-1]} ${y}</div>`}
@@ -1727,15 +1798,15 @@ function renderProdDetail(code,rows,A){
   const std=D.po.price['*']&&D.po.price['*'][code],noN=o.noRs.size;
   let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</button>
     <div class="card"><div class="dtitle">${esc(o.code)}</div>${o.name?`<div class="mut">${esc(o.name)}</div>`:''}
-    <div class="sumrow" style="margin:10px 0 0">${tile('Total Qty',nf(o.qty))}${tile('Jumlah RS',Object.keys(o.rs).length)}${tile('Total Nominal',o.sales?rpf(o.sales):'—')}</div>
+    <div class="sumrow" style="margin:10px 0 0">${tile('Total Qty',nf(o.qty))}${tile('Jumlah RS',Object.keys(o.rs).length)}${tile('Nominal',o.sales?rpf(o.sales):'—')}</div>
     <div class="pr2p" style="margin-top:12px"><span class="mut">Harga standar</span>${priceInput('*',code,0)}</div>
-    <div class="mut" style="margin-top:4px">Berlaku untuk semua RS, kecuali RS yang diberi harga sendiri di bawah.</div>
+    <div class="mut" style="margin-top:4px">Untuk semua RS tanpa harga sendiri.</div>
     ${noN?`<div class="warnbar" style="margin:10px 0 0"><i class="fa-solid fa-triangle-exclamation"></i> <b>${noN} RS</b> belum berharga untuk produk ini.</div>`:''}</div>
     <div class="psec">Per Rumah Sakit</div>`;
   Object.values(o.rs).sort((a,b)=>b.qty-a.qty).forEach(s=>{
     const ds=s.entries.slice().sort((a,b)=>b.date.localeCompare(a.date)),noP=!poPrice(s.rs,code);
     h+=`<div class="card ${noP?'nop':''}" style="padding:8px 12px"><div class="pr2h"><div style="min-width:0"><b class="lnk" data-go="rs:${esc(s.rs)}">${esc(s.rs)} <i class="fa-solid fa-chevron-right"></i></b></div><div class="pq"><b>${nf(s.qty)}</b> qty</div></div>
-      <div class="pr2p"><span class="mut">Harga RS ini</span>${priceInput(s.rs,code,std)}${!(D.po.price[s.rs]&&D.po.price[s.rs][code])&&std>0?'<span class="stdtag">pakai harga standar</span>':''}<span class="tot">${s.sales?rpf(s.sales):warnTag('Belum ada harga')}</span></div>
+      <div class="pr2p"><span class="mut">Harga RS ini</span>${priceInput(s.rs,code,std)}<span class="tot">${s.sales?rpf(s.sales):warnTag('Isi harga')}</span></div>
       <div class="dts">${ds.map(e=>`<span><b>${poD(e.date).full}</b> ×${nf(e.qty)}</span>`).join('')}</div></div>`});
   $('poDetail').innerHTML=h}
 
@@ -1806,12 +1877,12 @@ function renderNewPO(){
   if(!PQ.draft)PQ.draft=poNewDraft();
   const d=PQ.draft,cat=allCatalog(),manual=d.man||(d.rs&&!D.rs.includes(d.rs));
   let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Batal, kembali ke Beranda</button>
-    <div class="card"><h3>PO Manual</h3>
-    <div class="mut">Untuk PO yang dibuat di luar aplikasi ini, atau PO lama yang ingin dicatat.</div>
+    <div class="card"><h3><i class="fa-solid fa-pen-to-square"></i> PO Manual</h3>
+    <div class="mut">Catat PO di luar aplikasi atau PO lama.</div>
     <div class="fr"><label for="nd_date">Tanggal PO</label><input id="nd_date" type="date" data-nd="date" value="${esc(d.date)}"></div>
     <div class="fr"><label>Rumah Sakit</label><div class="sel"><select data-nd="rssel" aria-label="Rumah Sakit"><option value="">— Pilih —</option>${D.rs.map(r=>`<option value="${esc(r)}" ${!manual&&d.rs===r?'selected':''}>${esc(r)}</option>`).join('')}<option value="__m" ${manual?'selected':''}>Isi manual…</option></select>
       <div class="${manual?'':'hide'}"><input data-nd="rs" value="${esc(d.rs)}" autocomplete="off" aria-label="Nama RS manual"></div></div></div></div>
-    <div class="card"><h3>Barang &amp; Jumlah</h3>`;
+    <div class="card"><h3><i class="fa-solid fa-box-open"></i> Barang &amp; Jumlah</h3>`;
   h+=d.items.map((it,i)=>{const c=cat.find(x=>x.code===it.code);
     const label=it.code?`<span class="pbt"><b>${esc(it.code)}</b>${c&&c.name?`<span class="pbn">${esc(c.name)}</span>`:''}</span>`:'<span class="ph">Pilih barang</span>';
     return `<div class="item" data-ni="${i}"><div class="row"><button type="button" class="pickbtn" data-npick="${i}" aria-label="Pilih barang">${label}<i class="fa-solid fa-chevron-down"></i></button>${d.items.length>1?`<button class="ib del" data-nrm="${i}" title="Hapus baris" aria-label="Hapus baris"><i class="fa-solid fa-trash"></i></button>`:''}</div>
@@ -1869,7 +1940,7 @@ let impText='';
 function importItems(bi){
   const b=D.brands[bi];openB=bi;
   $('dTitle').textContent='Tempel Daftar Barang ('+b.name+')';$('dTitle').dataset.k='';$('dErr').textContent='';$('dBody').onclick=null;
-  $('dBody').innerHTML='<div class="mut" style="margin-top:8px">Tempel daftar produk, satu per baris. Kode diambil dari tanda kurung di ujung kanan, misalnya <b>Nama Produk (KODE)</b>.</div><textarea id="impTx" rows="8" style="margin-top:8px"></textarea>';
+  $('dBody').innerHTML='<div class="mut" style="margin-top:8px">Satu produk per baris, kode di dalam tanda kurung: <b>Nama Produk (KODE)</b></div><textarea id="impTx" rows="8" style="margin-top:8px"></textarea>';
   $('impTx').value=impText;
   $('dOk').style.display='';$('dOk').textContent='Tinjau';$('dNo').textContent='Batal';$('dNo').onclick=()=>$('dlg').close();
   $('dOk').onclick=()=>{impText=$('impTx').value;const all=parseItemLines(impText,b.name),list=all.filter(x=>x.code);if(!list.length){$('dErr').textContent='Tidak ada baris yang punya kode di dalam tanda kurung.';return}previewImport(bi,list,all.length-list.length)};
@@ -1893,7 +1964,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v49';
+const APPV='v50';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   toast('Memperbarui…');
