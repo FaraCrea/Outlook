@@ -528,8 +528,9 @@ function sphHtml(){
   const ul=a=>{a=a.filter(x=>x&&x.trim());return a.length?`<ul style="margin:0;padding-left:18px">${a.map(x=>`<li>${H(x)}</li>`).join('')}</ul>`:''};
   const tbl=`<table border="1" cellspacing="0" cellpadding="4" style="border-collapse:collapse;width:100%;max-width:640px;${ff}">`;
   let h=`<div style="${ff}">`;
-  if(S.greet)h+=`<p style="margin:0 0 10px">${H(S.greet)}</p>`;
-  if(S.intro)h+=`<p style="margin:0 0 10px">${H(S.intro)}</p>`;
+  const GAP='<p style="margin:0">&nbsp;</p>';
+  if(S.greet)h+=`<p style="margin:0">${H(S.greet)}</p>`+GAP;
+  if(S.intro)h+=`<p style="margin:0">${H(S.intro)}</p>`+GAP;
   h+=tbl+row('Nama Instansi',H(f.instansi))+row('Kepada (UP yg dituju)',H(f.kepada))+row('Alamat',H(f.alamat))
     +row('Produk Yang ditawarkan<br>(sebutkan merk dagang, misalnya Haemonetics/Boston)',H(f.produk))
     +row('Versi Price List yang ditawarkan',H(f.versi))+row('Kategori barang yang ditawarkan',H(f.kategori))+row('Discount',H(f.discount))
@@ -543,13 +544,13 @@ function sphHtml(){
     gn++;let n=0;
     const {multi,showU}=sphCols(its.concat(acc)),cols=showU?6:5;
     const heads=['No','Item Code','Nama Item','Unit'].concat(showU?['Harga Satuan (Rp)','Total Harga (Rp)']:[multi?'Total Harga Nett + PPN (Rp)':'Harga Nett + PPN per unit (Rp)']);
-    h+=(g.title?`<p style="margin:14px 0 4px"><b>${gn}. ${H(g.title)}</b></p>`:'<p style="margin:10px 0 0"></p>')+tbl+'<tr>'+heads.map(t=>`<th style="${B}text-align:center">${t}</th>`).join('')+'</tr>';
+    h+=GAP+(g.title?`<p style="margin:0 0 4px"><b>${gn}. ${H(g.title)}</b></p>`:'')+tbl+'<tr>'+heads.map(t=>`<th style="${B}text-align:center${t==='No'||t==='Unit'?';white-space:nowrap':''}">${t}</th>`).join('')+'</tr>';
     let sum=0;
     const rowHtml=i=>{
       n++;const q=qtyOf(i.unit),pr=parsePrice(i.price),tot=q*pr;sum+=tot;
       const raw=String(i.price||'').trim(),R=`<td style="${B}text-align:right">`;
       const money=v=>v>0?sphMoney(v):(raw&&pr===0?H(raw):'');
-      let c=`<td style="${B}text-align:center">${n}</td><td style="${B}">${H(i.code)}</td><td style="${B}">${H(i.name)}</td><td style="${B}text-align:center">${H(i.unit)}</td>`;
+      let c=`<td style="${B}text-align:center;white-space:nowrap">${n}</td><td style="${B}">${H(i.code)}</td><td style="${B}">${H(i.name)}</td><td style="${B}text-align:center;white-space:nowrap">${H(i.unit)}</td>`;
       if(showU)c+=R+((q===1||i.u)?money(pr):'')+'</td>'+R+money(tot)+'</td>';
       else c+=R+money(tot)+'</td>';
       return '<tr>'+c+'</tr>'};
@@ -557,9 +558,9 @@ function sphHtml(){
     if(acc.length){h+=`<tr><td colspan="${cols}" style="${B}"><b><u>Include Accessories</u></b></td></tr>`;acc.forEach(i=>{h+=rowHtml(i)})}
     if(sum>0)h+=`<tr><td colspan="${cols-1}" style="${B}text-align:right"><b>Total</b></td><td style="${B}text-align:right"><b>${sum.toLocaleString('id-ID')}</b></td></tr>`;
     h+='</table>';
-    const nt=ul(g.notes);if(nt)h+=`<p style="margin:8px 0 2px"><b>Kondisi Penawaran:</b></p>`+nt;
+    const nt=ul(g.notes);if(nt)h+=GAP+`<p style="margin:0 0 2px"><b>Kondisi Penawaran:</b></p>`+nt;
   });
-  if(S.closing)h+=`<p style="margin:14px 0 0">${H(S.closing)}</p>`;
+  if(S.closing)h+=GAP+`<p style="margin:0">${H(S.closing)}</p>`;
   return h+'</div>'}
 
 function sphText(){
