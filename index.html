@@ -430,6 +430,13 @@ button.acc.on{box-shadow:0 0 0 2.5px var(--c)}
 .fbl.grid .fbr .fm{width:100%}
 .fbl.grid .fbr .fm b{font-size:13.5px}
 .fbl.grid .fbmsg,.fbl.grid>button{grid-column:1/-1}
+.pgb{height:10px;border-radius:99px;background:var(--fill);overflow:hidden}
+.pgb i{display:block;height:100%;width:0;border-radius:99px;background:var(--pri);transition:width .2s}
+.pgt{display:flex;justify-content:space-between;margin-top:6px;font-size:13px;font-weight:650}
+@keyframes slL{from{opacity:.2;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes slR{from{opacity:.2;transform:translateX(-28px)}to{opacity:1;transform:none}}
+main.slL{animation:slL .22s ease-out}
+main.slR{animation:slR .22s ease-out}
 </style>
 <script>
 (function(){
@@ -647,7 +654,9 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
     <div class="mut">Tema</div>
     <div class="thm" id="thmSeg"><button data-th="auto"><i class="fa-solid fa-circle-half-stroke"></i><span>Otomatis</span></button><button data-th="light"><i class="fa-solid fa-sun"></i><span>Terang</span></button><button data-th="dark"><i class="fa-solid fa-moon"></i><span>Gelap</span></button></div>
     <div class="mut" style="margin-top:16px">Warna aksen <b id="accName" style="color:var(--tx)"></b></div>
-    <div class="accrow" id="accRow"></div></div></details>
+    <div class="accrow" id="accRow"></div>
+    <label class="tg" style="margin-top:18px"><span>Geser layar untuk pindah menu</span><span class="sw"><input type="checkbox" id="swipeOn" role="switch" aria-label="Geser layar untuk pindah menu"><i></i></span></label>
+    <div class="mut" style="margin-top:8px">Aktif: geser layar ke kiri atau kanan untuk pindah menu, atau ketuk tombol menu di atas. Nonaktif: hanya lewat tombol menu, berguna kalau sering tergeser tanpa sengaja.</div></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-language"></i> Bahasa <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
     <select id="langSel" aria-label="Language"><option value="id">Bahasa Indonesia</option><option value="en">English</option></select></div></details>
@@ -2339,7 +2348,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v55';
+const APPV='v56';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   toast('Memperbarui…');
@@ -2392,7 +2401,7 @@ const EN={
 'Format Subjek':'Subject Format','Kalimat Isi Email':'Email Texts','Kontak Penerima':'Recipient Contacts','Merk & Barang':'Brands & Items','Kategori Barang':'Item Categories','Cadangan Data':'Data Backup','Hapus Semua Data':'Delete All Data',
 'Bahasa':'Language','Tentang':'About','Dibuat oleh':'Made by','For personal purpose only.':'For personal purpose only.','Versi':'Version','Perbarui Aplikasi Sekarang':'Update App Now','Data Anda tidak dihapus.':'Your data is not deleted.',
 'Aktifkan integrasi Data PO':'Enable PO Data integration','Hapus Semua Riwayat PO':'Delete All PO History','halaman PO muncul dan setiap order yang dibuat (tombol OK di tab Order) otomatis tercatat.':'the PO page appears and every order you create (OK button in the Order tab) is recorded automatically.',
-'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.':'Data is stored on this phone only. A backup is a single file (including the Excel template) saved to the Download folder, which you can then share right away, e.g. to WhatsApp.','Cek Pembaruan APK':'Check for APK Update','Pembaruan Tersedia':'Update Available','Nanti':'Later','Perbarui':'Update','Mengunduh…':'Downloading…','Ikuti layar pemasangan Android, lalu buka Fastlook lagi.':'Follow the Android install screen, then open Fastlook again.','Izinkan Fastlook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Perbarui lagi.':'Allow Fastlook to install apps on the settings screen that opened, come back here, then tap Update again.','Versi aplikasi tidak terbaca':'App version could not be read','Tampilan':'Appearance','Tema':'Theme','Otomatis':'Automatic','Terang':'Light','Gelap':'Dark','Warna aksen':'Accent color','Biru':'Blue','Hijau lembut':'Soft green','Tampilan daftar':'List view','Tampilan kisi':'Grid view','Ukuran':'Size','Lampiran siap. Subjek terisi dan nama penerima disalin otomatis: tempel di kolom To/CC. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. The subject is filled in and the recipient names were copied: paste them into To/CC. Tap Share to open Outlook.','Tekan sekali lagi untuk keluar':'Press again to exit','Simpan Cadangan':'Save Backup','File':'Files','Folder Lampiran':'Attachment Folder','Saat menambah lampiran, pemilih file langsung terbuka di folder default ini. Folder lain yang sering dipakai diatur di menu File.':'When you add an attachment, the file picker opens directly in this default folder. Other frequently used folders are managed in the Files menu.','Pilih Folder Default':'Choose Default Folder','Hapus Default':'Clear Default','Fitur ini hanya ada di aplikasi Android (APK).':'This feature is only available in the Android app (APK).','Belum ada folder default. Pemilih file akan terbuka di lokasi terakhir.':'No default folder yet. The file picker opens at its last location.','Folder default lampiran':'Default attachment folder','Menu File membaca folder di HP dan hanya tersedia di aplikasi Android (APK) Fastlook.':'The Files menu reads folders on this phone and is only available in the Fastlook Android app (APK).','Belum ada folder':'No folders yet','Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, atau dikirim lewat WhatsApp dan Email.':'Add the folders you use often, e.g. Download or an SPH folder. Their files can be searched, sorted, filtered, opened, or sent via WhatsApp and Email.','Pilih Folder':'Choose Folder','Cari nama file':'Search file name','Cari file':'Search files','Hapus pencarian':'Clear search','Urutkan':'Sort','Nama':'Name','Tipe':'Type','Tanggal':'Date','Ukuran':'Size','Muat ulang':'Reload','Urut naik':'Ascending','Urut turun':'Descending','Arah urutan':'Sort direction','Naik satu folder':'Up one folder','Gambar':'Images','Lainnya':'Other','Folder':'Folder','Membaca folder…':'Reading folder…','Coba lagi':'Try again','Pilih ulang folder':'Choose folder again','Folder ini kosong.':'This folder is empty.','Tidak ada file yang cocok.':'No matching files.','Kelola Folder':'Manage Folders','Kelola folder':'Manage folders','Tambah folder':'Add folder','Jadikan default':'Make default','Default':'Default','Belum ada folder.':'No folders yet.','Menghapus hanya melepas folder dari daftar, isi file tidak dihapus.':'Removing only detaches the folder from the list; the files are not deleted.','Hapus folder':'Remove folder','Hapus folder dari daftar':'Remove folder from list','Buka':'Open','Kirim via WhatsApp':'Send via WhatsApp','Kirim via Email (Outlook)':'Send via Email (Outlook)','Bagikan ke aplikasi lain':'Share to another app','Membaca file…':'Reading file…','Folder default dihapus':'Default folder cleared','Fitur folder hanya ada di aplikasi Android':'Folder features are only available in the Android app','Tampilan menu':'Menu','Menu':'Menu','Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. Recipients and subject are filled in. Tap Share to open Outlook.','Pulihkan dari File':'Restore from File','Cara lain tanpa file:':'Other way, no file:','File cadangan tidak valid':'Invalid backup file','Pulihkan Cadangan':'Restore Backup','Pulihkan':'Restore','Data dipulihkan':'Data restored','Gagal menyimpan data':'Failed to save data','Salin Data':'Copy Data','Tempel Data':'Paste Data',
+'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.':'Data is stored on this phone only. A backup is a single file (including the Excel template) saved to the Download folder, which you can then share right away, e.g. to WhatsApp.','Cek Pembaruan APK':'Check for APK Update','Pembaruan Tersedia':'Update Available','Nanti':'Later','Perbarui':'Update','Mengunduh…':'Downloading…','Ikuti layar pemasangan Android, lalu buka Fastlook lagi.':'Follow the Android install screen, then open Fastlook again.','Izinkan Fastlook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Perbarui lagi.':'Allow Fastlook to install apps on the settings screen that opened, come back here, then tap Update again.','Versi aplikasi tidak terbaca':'App version could not be read','Tampilan':'Appearance','Tema':'Theme','Otomatis':'Automatic','Terang':'Light','Gelap':'Dark','Warna aksen':'Accent color','Biru':'Blue','Hijau lembut':'Soft green','Tampilan daftar':'List view','Tampilan kisi':'Grid view','Ukuran':'Size','Lampiran siap. Subjek terisi dan nama penerima disalin otomatis: tempel di kolom To/CC. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. The subject is filled in and the recipient names were copied: paste them into To/CC. Tap Share to open Outlook.','Tekan sekali lagi untuk keluar':'Press again to exit','Pasang':'Install','Coba lagi':'Try again','Izinkan Fastlook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Pasang.':'Allow Fastlook to install apps on the settings screen that opened, come back here, then tap Install.','Geser layar untuk pindah menu':'Swipe to switch menus','Aktif: geser layar ke kiri atau kanan untuk pindah menu, atau ketuk tombol menu di atas. Nonaktif: hanya lewat tombol menu, berguna kalau sering tergeser tanpa sengaja.':'On: swipe left or right to switch menus, or tap the menu buttons above. Off: menu buttons only, useful if you swipe by accident.','Geser layar aktif':'Swipe is on','Geser layar nonaktif, pakai tombol menu':'Swipe is off, use the menu buttons','Simpan Cadangan':'Save Backup','File':'Files','Folder Lampiran':'Attachment Folder','Saat menambah lampiran, pemilih file langsung terbuka di folder default ini. Folder lain yang sering dipakai diatur di menu File.':'When you add an attachment, the file picker opens directly in this default folder. Other frequently used folders are managed in the Files menu.','Pilih Folder Default':'Choose Default Folder','Hapus Default':'Clear Default','Fitur ini hanya ada di aplikasi Android (APK).':'This feature is only available in the Android app (APK).','Belum ada folder default. Pemilih file akan terbuka di lokasi terakhir.':'No default folder yet. The file picker opens at its last location.','Folder default lampiran':'Default attachment folder','Menu File membaca folder di HP dan hanya tersedia di aplikasi Android (APK) Fastlook.':'The Files menu reads folders on this phone and is only available in the Fastlook Android app (APK).','Belum ada folder':'No folders yet','Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, atau dikirim lewat WhatsApp dan Email.':'Add the folders you use often, e.g. Download or an SPH folder. Their files can be searched, sorted, filtered, opened, or sent via WhatsApp and Email.','Pilih Folder':'Choose Folder','Cari nama file':'Search file name','Cari file':'Search files','Hapus pencarian':'Clear search','Urutkan':'Sort','Nama':'Name','Tipe':'Type','Tanggal':'Date','Ukuran':'Size','Muat ulang':'Reload','Urut naik':'Ascending','Urut turun':'Descending','Arah urutan':'Sort direction','Naik satu folder':'Up one folder','Gambar':'Images','Lainnya':'Other','Folder':'Folder','Membaca folder…':'Reading folder…','Coba lagi':'Try again','Pilih ulang folder':'Choose folder again','Folder ini kosong.':'This folder is empty.','Tidak ada file yang cocok.':'No matching files.','Kelola Folder':'Manage Folders','Kelola folder':'Manage folders','Tambah folder':'Add folder','Jadikan default':'Make default','Default':'Default','Belum ada folder.':'No folders yet.','Menghapus hanya melepas folder dari daftar, isi file tidak dihapus.':'Removing only detaches the folder from the list; the files are not deleted.','Hapus folder':'Remove folder','Hapus folder dari daftar':'Remove folder from list','Buka':'Open','Kirim via WhatsApp':'Send via WhatsApp','Kirim via Email (Outlook)':'Send via Email (Outlook)','Bagikan ke aplikasi lain':'Share to another app','Membaca file…':'Reading file…','Folder default dihapus':'Default folder cleared','Fitur folder hanya ada di aplikasi Android':'Folder features are only available in the Android app','Tampilan menu':'Menu','Menu':'Menu','Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. Recipients and subject are filled in. Tap Share to open Outlook.','Pulihkan dari File':'Restore from File','Cara lain tanpa file:':'Other way, no file:','File cadangan tidak valid':'Invalid backup file','Pulihkan Cadangan':'Restore Backup','Pulihkan':'Restore','Data dipulihkan':'Data restored','Gagal menyimpan data':'Failed to save data','Salin Data':'Copy Data','Tempel Data':'Paste Data',
 'Menghapus semua data di HP ini secara permanen.':'Permanently deletes all data on this phone.','Tambah Teks Tetap':'Add Fixed Text','Pemisah Antar Barang':'Item Separator','Email Order':'Order Email','Email SPH':'SPH Email',
 'Tambah Kontak':'Add Contact','Tambah Merk':'Add Brand','Tambah Jenis':'Add Type','Tambah Kategori':'Add Category','Tambah RS':'Add Hospital','Tempel Daftar Barang':'Paste Item List','Ubah':'Edit','Hapus barang':'Delete item',
 'tanpa email (ditulis nama)':'no email (name is used)','Tampil di halaman Order (ketuk untuk sembunyikan)':'Shown on the Order page (tap to hide)','Disembunyikan (ketuk untuk tampilkan)':'Hidden (tap to show)',
@@ -2521,24 +2530,41 @@ async function apkCheck(manual){
     const best=(await r.json()).filter(x=>!x.draft&&!x.prerelease&&/^apk-v\d+(\.\d+){0,2}$/.test(x.tag_name)).map(x=>({v:x.tag_name.slice(5),rel:x})).sort((a,b)=>vcmp(b.v,a.v))[0];
     const asset=best&&best.rel.assets.find(a=>/\.apk$/i.test(a.name));
     if(!best||!asset||vcmp(best.v,cur.versionName)<=0){if(manual)toast('Aplikasi sudah versi terbaru ('+cur.versionName+')');return}
+    if(!manual){let sk='';try{sk=localStorage.getItem('oc.apkskip')||''}catch(e){}const [sv,st]=sk.split('|');if(sv===best.v&&Date.now()-(+st||0)<6*3600*1000)return}
     apkPrompt(best,asset,cur)}
   catch(e){if(manual)toast('Gagal cek pembaruan: '+(e&&e.message||e))}}
 function apkPrompt(best,asset,cur){
   const body=String(best.rel.body||''),m=body.match(/SHA-256:\s*([0-9a-f]{64})/i),notes=body.replace(/\s*SHA-256:\s*[0-9a-f]{64}/i,'').trim().slice(0,400);
   $('dTitle').textContent='Pembaruan Tersedia';$('dTitle').dataset.k='';$('dErr').textContent='';$('dBody').onclick=null;
-  $('dBody').innerHTML=`<div style="margin-top:8px;font-size:14px;line-height:1.45">Fastlook ${esc(best.v)} tersedia (terpasang: ${esc(cur.versionName)}). Ukuran ${fsize(asset.size||0)}.</div>${notes?`<div class="mut" style="margin-top:8px;font-size:13px;white-space:pre-wrap">${esc(notes)}</div>`:''}<div id="apkSt" class="mut" style="margin-top:10px"></div>`;
-  $('dOk').style.display='';$('dOk').disabled=false;$('dOk').textContent='Perbarui';$('dNo').textContent='Nanti';$('dNo').onclick=()=>$('dlg').close();
-  $('dOk').onclick=async()=>{
-    $('dErr').textContent='';$('dOk').disabled=true;$('apkSt').innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Mengunduh…';
-    try{await NATIVE.downloadInstall({url:asset.browser_download_url,sha256:m?m[1].toLowerCase():''});$('apkSt').textContent='Ikuti layar pemasangan Android, lalu buka Fastlook lagi.';$('dOk').disabled=false}
-    catch(e){$('dOk').disabled=false;$('apkSt').textContent='';const t=nativeErr(e);
-      $('dErr').textContent=t==='need_permission'?'Izinkan Fastlook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Perbarui lagi.':t}};
+  $('dBody').innerHTML=`<div style="margin-top:8px;font-size:14px;line-height:1.45">Fastlook ${esc(best.v)} tersedia (terpasang: ${esc(cur.versionName)}). Ukuran ${fsize(asset.size||0)}.</div>${notes?`<div class="mut" style="margin-top:8px;font-size:13px;white-space:pre-wrap">${esc(notes)}</div>`:''}<div id="apkPg" class="hide" style="margin-top:14px"><div class="pgb"><i id="apkBar"></i></div><div class="pgt"><span id="apkPct">0%</span><span id="apkSz" class="mut"></span></div></div><div id="apkSt" class="mut" style="margin-top:8px"></div>`;
+  $('dOk').style.display='';$('dOk').disabled=false;$('dOk').textContent='Perbarui';$('dNo').textContent='Nanti';
+  let polling=false;
+  $('dNo').onclick=()=>{$('dlg').close();try{localStorage.setItem('oc.apkskip',best.v+'|'+Date.now())}catch(e){}};
+  const install=async()=>{
+    $('dErr').textContent='';$('dOk').disabled=true;
+    try{await NATIVE.installDownloaded();$('apkSt').textContent='Ikuti layar pemasangan Android, lalu buka Fastlook lagi.';$('dOk').textContent='Pasang';$('dOk').disabled=false;$('dOk').onclick=install}
+    catch(e){const t=nativeErr(e);$('dOk').textContent='Pasang';$('dOk').disabled=false;$('dOk').onclick=install;
+      $('dErr').textContent=t==='need_permission'?'Izinkan Fastlook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Pasang.':t}};
+  const start=async()=>{
+    $('dErr').textContent='';$('dOk').disabled=true;$('apkPg').classList.remove('hide');$('apkSt').textContent='';
+    try{await NATIVE.startDownload({url:asset.browser_download_url,sha256:m?m[1].toLowerCase():''})}catch(e){$('dErr').textContent=nativeErr(e);$('dOk').disabled=false;return}
+    polling=true;
+    while(polling&&$('dlg').open){
+      let st;try{st=await NATIVE.downloadStatus()}catch(e){break}
+      const pct=st.pct||0;$('apkBar').style.width=pct+'%';$('apkPct').textContent=(st.state==='ready'?100:pct)+'%';
+      $('apkSz').textContent=st.total?fsize(st.done)+' / '+fsize(st.total):fsize(st.done||0);
+      if(st.state==='ready'){$('apkBar').style.width='100%';polling=false;await install();return}
+      if(st.state==='error'){polling=false;$('dErr').textContent=st.msg||'Unduhan gagal';$('dOk').textContent='Coba lagi';$('dOk').disabled=false;$('dOk').onclick=start;return}
+      await new Promise(r=>setTimeout(r,250))}};
+  $('dOk').onclick=start;
   $('dlg').showModal()}
 $('apkUpd').onclick=()=>apkCheck(true);
 $('apkRow').classList.toggle('hide',!NATIVE);$('apkUpd').classList.toggle('hide',!NATIVE);
 if(NATIVE){try{NATIVE.getVersion().then(v=>{$('apkV').textContent=v.versionName}).catch(()=>{})}catch(e){}
-  let last=0;try{last=+localStorage.getItem('oc.apkchk')||0}catch(e){}
-  if(Date.now()-last>6*3600*1000)setTimeout(()=>{try{localStorage.setItem('oc.apkchk',String(Date.now()))}catch(e){}apkCheck(false)},4000)}
+  let lastChk=0;
+  const autoChk=()=>{if(Date.now()-lastChk<10*60*1000||($('dlg')&&$('dlg').open))return;lastChk=Date.now();apkCheck(false)};
+  setTimeout(autoChk,2500);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoChk()})}
 
 /* ---------- appearance ---------- */
 const ACCN={blue:'Biru',teal:'Teal',sage:'Hijau lembut',lavender:'Lavender',rose:'Rose',peach:'Peach'};
@@ -2559,12 +2585,39 @@ window.__back=()=>{
   if(MODE!=='o'){tab('o');return true}
   return false};
 
+/* ---------- swipe between menus ---------- */
+if(D.swipe===undefined)D.swipe=true;
+$('swipeOn').checked=!!D.swipe;
+$('swipeOn').onchange=e=>{D.swipe=e.target.checked;save();toast(D.swipe?'Geser layar aktif':'Geser layar nonaktif, pakai tombol menu')};
+const TABS=[['o','tOrder'],['s','tSph'],['p','tSpon'],['q','tPO'],['f','tFile'],['d','tData']];
+const visTabs=()=>TABS.filter(([k,id])=>!$(id).classList.contains('hide')).map(t=>t[0]);
+function hScrollable(el){
+  for(;el&&el!==document.body;el=el.parentElement){
+    if(/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)||el.isContentEditable)return true;
+    if(el.classList&&(el.classList.contains('grip')||el.classList.contains('hv')))return true;
+    if(el.scrollWidth>el.clientWidth+2){const o=getComputedStyle(el).overflowX;if(o==='auto'||o==='scroll')return true}}
+  return false}
+let SW=null;
+document.addEventListener('touchstart',e=>{
+  SW=null;if(!D.swipe||e.touches.length!==1||($('dlg')&&$('dlg').open))return;
+  if(hScrollable(e.target))return;
+  const t=e.touches[0];SW={x:t.clientX,y:t.clientY,t:Date.now()}},{passive:true});
+document.addEventListener('touchend',e=>{
+  const st=SW;SW=null;if(!st||!D.swipe||($('dlg')&&$('dlg').open))return;
+  const t=e.changedTouches[0],dx=t.clientX-st.x,dy=t.clientY-st.y;
+  if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.8||Date.now()-st.t>700)return;
+  if(MODE==='q'&&PQ.screen!=='home')return;
+  const v=visTabs(),i=v.indexOf(MODE),n=i+(dx<0?1:-1);
+  if(i<0||n<0||n>=v.length)return;
+  tab(v[n],dx<0?'l':'r')},{passive:true});
+
 /* ---------- tabs ---------- */
-const tab=t=>{if(t==='f'&&'osp'.includes(MODE))FB.ctx=MODE;MODE=t;
+const tab=(t,dir)=>{if(t==='f'&&'osp'.includes(MODE))FB.ctx=MODE;MODE=t;
   [['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vFile','f'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
   [['tOrder','o'],['tSph','s'],['tSpon','p'],['tPO','q'],['tFile','f'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
   const nb=t==='d'||t==='q'||t==='f';document.querySelector('.bar').classList.toggle('hide',nb);$('pv').classList.toggle('hide',nb);$('pvSp').classList.toggle('hide',nb);
   scrollTo(0,0);
+  if(dir){const m=document.querySelector('main:not(.hide)');if(m){m.classList.remove('slL','slR');void m.offsetWidth;m.classList.add(dir==='l'?'slL':'slR');setTimeout(()=>m.classList.remove('slL','slR'),260)}}
   if(t==='d')renderData();else if(t==='f')renderFileTab();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
   if(t!=='d'&&t!=='q'&&t!=='f'){syncSp();growAll()}
   refreshClear()};
