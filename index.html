@@ -1052,7 +1052,7 @@ $('go').onclick=async()=>{
   if(FILES.length){
     const data={files:FILES,title:subject(),text:body(),to:rcpt('to'),cc:rcpt('cc')};
     if(navigator.canShare&&navigator.canShare(data)){
-      if(NATIVE)shareDialog(data,rcpt('to').concat(rcpt('cc')).some(x=>!x.includes('@'))?'Lampiran siap. Ada kontak tanpa email, jadi To/CC tidak akan terisi di Outlook; nama disalin ke clipboard. Isi email di Setting → Kontak Penerima. Ketuk Bagikan untuk membuka Outlook.':'Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.');
+      if(NATIVE){navigator.share(data).catch(e=>{if(!(e&&e.name==='AbortError'))toast('Gagal membuka Outlook: '+nativeErr(e))})}
       else{await copy(rcpt('to').join('; '));shareDialog(data,'Lampiran siap. Daftar penerima (To) sudah disalin: tempel di kolom To. Ketuk Bagikan, lalu pilih Outlook.')}
       return}
     if(!confirm('HP/browser ini tidak bisa membagikan lampiran. Buka email tanpa lampiran?'))return}
@@ -2302,6 +2302,7 @@ $('resetSpon').onclick=()=>confirmBox('Reset Semua Kolom Sponsorship','Semua kol
   const z=sponSeed(),S=D.spon;S.form=z.form;['subj','greet','intro','closing'].forEach(k=>{S[k]=z[k]});sponManual=false;FILES3=[];
   D.contacts.forEach(c=>{c.sp='off'});save();renderSpon();renderPrev();scrollTo(0,0);toast('Semua kolom sponsorship direset')});
 function shareDialog(data,note){
+  if(NATIVE&&data&&data.files&&data.files.length&&/Outlook/.test(note||'')){navigator.share(data).catch(e=>{if(!(e&&e.name==='AbortError'))toast('Gagal membuka Outlook: '+nativeErr(e))});return}
   $('dTitle').textContent='Siap Dibagikan';$('dTitle').dataset.k='';$('dErr').textContent='';$('dBody').onclick=null;
   $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">'+esc(note)+'</div><div id="shFb"></div>';
   $('dOk').style.display='';$('dOk').textContent='Bagikan';$('dNo').textContent='Tutup';
@@ -2600,7 +2601,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2.0';
+const APPV='v2.0.1';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
