@@ -2604,7 +2604,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2.0.2';
+const APPV='v2.0.3';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -2929,7 +2929,7 @@ function renderBeranda(){
     rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2((f.instansi||'SPH')+(f.produk?' · '+f.produk:''))}</b><small><span class="v2-tag">SPH</span>${(it.snap.groups||[]).reduce((n,x)=>n+(x.items||[]).length,0)} item</small></span><button class="v2-btn v2-t" data-spc="${esc2(it.id)}">${fa('copy')}Salin</button></div>`});
   D.events.slice(0,2).forEach(ev=>{rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(ev.name)}</b><small><span class="v2-tag">Sponsor</span>${esc2(ev.form.manufacturer||'event tersimpan')}</small></span><button class="v2-btn v2-t" data-evc="${esc2(ev.id)}">${fa('copy')}Salin</button></div>`});
   const quick=rows?`<div class="v2-list">${rows}</div>`:`<div class="v2-list"><div class="v2-empty">${fa('send')}<b>Belum ada pintasan</b><p>Buat satu order, lalu simpan sebagai pintasan agar berikutnya cukup 2 ketukan.</p><button class="v2-btn v2-p" data-go="o">Buat Order</button></div></div>`;
-  const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button><button class="v2-btn v2-x" data-dd="1" aria-label="Hapus draf">${fa('trash')}</button></div>`:'';
+  const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button></div>`:'';
   const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('clock')}Riwayat</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
   el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}${window.__BETA?'<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>':''}`}
 window.renderBeranda=renderBeranda;
