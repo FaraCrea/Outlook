@@ -566,6 +566,9 @@ button.pk,.sepi,#isep{min-height:44px!important}
 .v2g>.in{padding:0}
 #bkSave,#bkLoad{min-height:44px!important}
 
+.v2-strip{touch-action:pan-y}
+.v2-strip .v2-x{min-width:48px;padding:0 12px}
+
 </style>
 <script>
 (function(){
@@ -2601,7 +2604,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2.0.1';
+const APPV='v2.0.2';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -2875,7 +2878,7 @@ const tab=(t,dir)=>{if(t==='f'&&'osp'.includes(MODE))FB.ctx=MODE;MODE=t;
   $('hBack').classList.toggle('hide',t==='h');document.body.classList.toggle('inwork',t!=='h');
   scrollTo(0,0);
   if(dir){const m=document.querySelector('main:not(.hide)');if(m){m.classList.remove('slL','slR');void m.offsetWidth;m.classList.add(dir==='l'?'slL':'slR');setTimeout(()=>m.classList.remove('slL','slR'),260)}}
-  if(t==='h')renderHome();else if(t==='d')renderData();else if(t==='f')renderFileTab();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
+  if(t==='h')renderBeranda();else if(t==='d')renderData();else if(t==='f')renderFileTab();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
   if(t!=='h'&&t!=='d'&&t!=='q'&&t!=='f'){syncSp();growAll()}
   refreshClear()};
 $('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tSpon').onclick=()=>tab('p');$('tPO').onclick=()=>{if(MODE==='q'&&PQ.screen!=='home'){poBack();return}tab('q')};$('tData').onclick=()=>tab('d');$('tFile').onclick=()=>tab('f');$('tFile').classList.toggle('hide',!NATIVE);
@@ -2890,7 +2893,7 @@ loadDraft();setPv();renderAll();syncSp();restoreTab();applyPOVisibility();$('hVe
 /* InLook v2 beta: Beranda, pintasan, lembar kirim (+ pilihan PO), pilih penerima, gaya. Dibuat tools/mkbeta.py */
 (function(){
 const g=id=>document.getElementById(id);
-const IC={mail:'envelope-open-text',doc:'file-invoice-dollar',cal:'handshake',send:'paper-plane',clock:'clock-rotate-left',folder:'folder-open',dl:'floppy-disk',copy:'copy',warn:'triangle-exclamation',plus:'plus'};
+const IC={trash:'trash-can',mail:'envelope-open-text',doc:'file-invoice-dollar',cal:'handshake',send:'paper-plane',clock:'clock-rotate-left',folder:'folder-open',dl:'floppy-disk',copy:'copy',warn:'triangle-exclamation',plus:'plus'};
 const fa=n=>`<i class="fa-solid fa-${IC[n]||n}"></i>`;
 
 D.shortcuts=Array.isArray(D.shortcuts)?D.shortcuts:[];D.groups=Array.isArray(D.groups)?D.groups:[];D.events=Array.isArray(D.events)?D.events:[];
@@ -2915,7 +2918,7 @@ const subjOrder=()=>{try{return subject()}catch(e){return''}};
 
 /* ---------- Beranda ---------- */
 function scLabel(s){return [s.brand,s.jenis,s.rs].filter(Boolean).join(' · ')||s.name}
-function renderHome(){
+function renderBeranda(){
   const el=g('vHome');
   const sph=(D.sph.saved||[]).slice().sort((a,b)=>b.ts-a.ts).slice(0,2);
   let rows='';
@@ -2926,15 +2929,16 @@ function renderHome(){
     rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2((f.instansi||'SPH')+(f.produk?' · '+f.produk:''))}</b><small><span class="v2-tag">SPH</span>${(it.snap.groups||[]).reduce((n,x)=>n+(x.items||[]).length,0)} item</small></span><button class="v2-btn v2-t" data-spc="${esc2(it.id)}">${fa('copy')}Salin</button></div>`});
   D.events.slice(0,2).forEach(ev=>{rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(ev.name)}</b><small><span class="v2-tag">Sponsor</span>${esc2(ev.form.manufacturer||'event tersimpan')}</small></span><button class="v2-btn v2-t" data-evc="${esc2(ev.id)}">${fa('copy')}Salin</button></div>`});
   const quick=rows?`<div class="v2-list">${rows}</div>`:`<div class="v2-list"><div class="v2-empty">${fa('send')}<b>Belum ada pintasan</b><p>Buat satu order, lalu simpan sebagai pintasan agar berikutnya cukup 2 ketukan.</p><button class="v2-btn v2-p" data-go="o">Buat Order</button></div></div>`;
-  const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button></div>`:'';
+  const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button><button class="v2-btn v2-x" data-dd="1" aria-label="Hapus draf">${fa('trash')}</button></div>`:'';
   const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('clock')}Riwayat</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
   el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}${window.__BETA?'<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>':''}`}
-window.renderHome=renderHome;
+window.renderBeranda=renderBeranda;
 
 g('vHome').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
   if(b.dataset.sc)return runShortcut(b.dataset.sc);
   if(b.dataset.spc){sphOpen(b.dataset.spc);if(D.sph.cur===b.dataset.spc){D.sph.cur=null;save();renderCurBar();tab('s')}return}
+  if(b.dataset.dd)return askClearDraft();
   if(b.dataset.evc)return runEvent(b.dataset.evc);
   if(b.dataset.go)tab(b.dataset.go)});
 g('hBack').onclick=()=>tab('h');
@@ -3069,6 +3073,25 @@ function runEvent(id){
 window.saveSponEvent=saveSponEvent;window.runEvent=runEvent;
 const _ss=window.sponSend;
 if(typeof _ss==='function')window.sponSend=function(){const r=_ss.apply(this,arguments);Promise.resolve(r).then(()=>{try{if(!sponProblems().length)saveSponEvent()}catch(e){}});return r};
+
+
+/* ---------- hapus draf (tombol atau geser) ---------- */
+function clearDraft(){
+  F.brand=null;F.jenis=null;F.rs='';F.items=[{item:'',qty:'',unit:'ea'}];FILES=[];
+  g('note').value='';g('date').value=todayISO();renderAll();saveDraft();renderBeranda();toast('Draf dihapus')}
+function askClearDraft(){
+  confirmBox('Hapus draf Order?','Isian order yang belum dikirim (merk, jenis, RS, barang, jumlah, catatan, lampiran) dikosongkan. Pilihan penerima tidak berubah.','Hapus',clearDraft)}
+(function(){
+  const host=g('vHome');let sx=0,sy=0,el=null,dx=0,moving=false;
+  host.addEventListener('touchstart',e=>{el=e.target.closest('.v2-strip');if(!el)return;const t=e.touches[0];sx=t.clientX;sy=t.clientY;dx=0;moving=false},{passive:true});
+  host.addEventListener('touchmove',e=>{if(!el)return;const t=e.touches[0];dx=t.clientX-sx;const dy=t.clientY-sy;
+    if(!moving&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.5)moving=true;
+    if(moving){el.style.transition='none';el.style.transform=`translateX(${dx}px)`;el.style.opacity=String(Math.max(.35,1-Math.abs(dx)/360))}},{passive:true});
+  host.addEventListener('touchend',()=>{if(!el)return;const s2=el;el=null;
+    s2.style.transition='transform .15s,opacity .15s';s2.style.transform='';s2.style.opacity='';
+    if(moving&&Math.abs(dx)>100)askClearDraft();moving=false});
+})();
+window.clearDraft=clearDraft;
 
 /* ---------- Pengaturan: 6 bagian ---------- */
 (function(){
