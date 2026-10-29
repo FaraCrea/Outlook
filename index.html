@@ -464,10 +464,112 @@ body.noscroll{overflow:hidden}
 html[data-bg=white] body{background:#fff}
 html[data-bg=white] .card{box-shadow:0 1px 2px rgba(16,24,40,.06),0 2px 8px rgba(16,24,40,.04)}
 .nm{margin-top:10px;font-size:14px;color:var(--err)}
+/* ===== InLook v2 beta: token arah C (Padat) + gaya Tenang. Dibuat tools/mkbeta.py ===== */
+:root{--hh:60px;--v2-acc:#0a7a5a;--v2-tint:#e3f4ee}
+nav.tb{display:none!important}
+header{height:var(--hh)!important;box-shadow:none!important}
+header .hb{height:var(--hh)!important}
+header .brand b{font-size:20px}
+#hBack{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 12px 0 4px;margin-left:-8px;font-size:17px;font-weight:700;color:var(--tx);cursor:pointer;border-radius:12px}
+#hBack.hide{display:none}
+body.inwork header .brand{display:none}
+.v2b{font-size:14px;color:var(--mut);margin-left:8px}
+/* ukuran nyaman (SPEK A9/A10) untuk layar lama */
+body{font-size:16px}
+.mut,small,.hint,.fbhint,.fm small{font-size:14px!important}
+h3{font-size:16px}
+input,select,textarea{font-size:16px!important;min-height:48px}
+button,.chip,.rt,.seg button,.thm button{min-height:44px}
+.chip{min-height:44px;font-size:16px;padding:8px 16px}
+.ib{min-width:44px;min-height:44px}
+.xc{width:44px!important;height:44px!important}
+.seg button{font-size:15px;padding:8px 12px}
+summary{min-height:56px}
+.rt{min-height:56px}
+.rt .n{font-size:16px}
+.acc{width:44px;height:44px}
+header .ver{font-size:14px}
+/* komponen Beranda v2 */
+.v2-h3{margin:24px 0 8px;font-size:14px;color:var(--mut);font-weight:700;letter-spacing:.06em;text-transform:uppercase;display:block}
+.v2-list{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
+.v2-row{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;min-height:68px}
+.v2-row+.v2-row{border-top:1px solid var(--bd)}
+.v2-l{flex:1;min-width:0}.v2-l b{display:block;font-size:16px}.v2-l small{font-size:14px;color:var(--mut)}
+.v2-tag{display:inline-block;font-size:14px;font-weight:700;color:var(--pri);background:var(--chip);border-radius:6px;padding:0 8px;margin-right:6px}
+.v2-btn{min-height:48px;padding:0 16px;border-radius:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;white-space:nowrap;border:0;font-size:16px}
+.v2-p{background:var(--pri);color:#fff}
+.v2-s{background:var(--card);color:var(--tx);border:1px solid var(--bd)}
+.v2-t{background:var(--chip);color:var(--pri)}
+.v2-w{width:100%}
+.v2-strip{display:flex;align-items:center;gap:8px;background:#fff1d6;color:#6a4300;border-radius:12px;padding:8px 8px 8px 16px;min-height:56px;margin-bottom:8px}
+.v2-strip span{flex:1;font-size:14px}.v2-strip strong{display:block;font-size:16px}
+.v2-strip .v2-btn{background:none;color:#6a4300}
+@media (prefers-color-scheme:dark){.v2-strip{background:#3a2d10;color:#f2d28a}.v2-strip .v2-btn{color:#f2d28a}}
+.v2-new{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.v2-new button{background:var(--card);border:1px solid var(--bd);border-radius:16px;min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-weight:700;color:var(--tx);font-size:16px}
+.v2-new i{font-size:26px;color:var(--pri)}
+.v2-foot{display:flex;justify-content:space-between;margin-top:24px;border-top:1px solid var(--bd);padding-top:8px}
+.v2-foot button{min-height:48px;min-width:96px;background:none;color:var(--mut);font-weight:500;font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px}
+.v2-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:24px 16px}
+.v2-empty b{font-size:18px}.v2-empty p{margin:0 0 8px;color:var(--mut);font-size:14px}
+/* lembar kirim + pilih penerima */
+.v2-dim{position:fixed;inset:0;z-index:30;background:rgba(16,20,24,.5);display:flex;flex-direction:column;justify-content:flex-end}
+.v2-dim.hide{display:none}
+.v2-sheet{background:var(--card);border-radius:20px 20px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;max-width:640px;width:100%;margin:0 auto}
+.v2-sheet h4{margin:8px 0;font-size:20px}
+.v2-grab{width:40px;height:4px;border-radius:2px;background:var(--bd);margin:4px auto 8px}
+.v2-sum{display:grid;grid-template-columns:72px 1fr;gap:4px 8px;padding:8px 0;border-top:1px solid var(--bd);font-size:16px}
+.v2-sum:first-of-type{border-top:0}
+.v2-sum dt{color:var(--mut);font-size:14px;padding-top:2px}.v2-sum dd{margin:0;min-width:0;word-break:break-word}
+.v2-q{display:flex;align-items:center;gap:8px;margin-bottom:6px}.v2-q b{flex:1}.v2-q input{width:96px;text-align:right}
+.v2-err{display:flex;gap:8px;background:#fdecea;color:#b42318;border:1px solid #b42318;border-radius:12px;padding:8px 12px;margin:8px 0;font-size:14px}
+@media (prefers-color-scheme:dark){.v2-err{background:#3b1b18;color:#ff8b7e;border-color:#ff8b7e}}
+.v2-two{display:flex;gap:8px;margin-top:12px}.v2-two .v2-btn{flex:1}
+.v2-rc{position:fixed;inset:0;z-index:31;background:var(--bg);overflow:auto}
+.v2-rc.hide{display:none}
+.v2-rcin{max-width:640px;margin:0 auto;padding:0 16px 96px}
+.v2-rctop{display:flex;align-items:center;gap:8px;min-height:60px}.v2-rctop b{font-size:20px}
+.v2-seg{display:flex;gap:4px}.v2-seg button{min-width:48px;min-height:44px;border-radius:99px;background:var(--card);border:1px solid var(--bd);color:var(--tx);padding:0 8px;font-weight:600}
+.v2-seg button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.v2-seg button.on.n{background:var(--card);color:var(--tx);border:2px solid var(--mut)}
+.v2-rcbar{position:fixed;left:0;right:0;bottom:0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--bd)}
+.v2-rcbar .v2-btn{width:100%;min-height:56px;font-size:18px;max-width:640px;display:flex;margin:0 auto}
+/* gaya */
+html[data-gaya=tenang] .card,html[data-gaya=tenang] .v2-list,html[data-gaya=tenang] .v2-new button{box-shadow:0 1px 2px rgba(16,24,40,.06),0 2px 8px rgba(16,24,40,.05)}
+html[data-gaya=padat] .card{box-shadow:none;border:1px solid var(--bd)}
+html[data-gaya=padat]{--bg:#f4f5f6}
+html[data-gaya=padat][data-bg=white] body{background:#fff}
+@media (prefers-color-scheme:dark){html[data-gaya=padat]{--bg:#121417}}
+.nm{margin-top:10px;font-size:14px;color:var(--err)}
+/* perapian ukuran layar lama (hasil ukur) */
+.rt .b,#vOrder label,#vSph label,#vSpon label,label.f,.sech,#curBar span,#sGroups span,#sGroups button.pk,.thm span,.ex{font-size:14px!important}
+.rt .b{min-width:34px}
+.acc{width:44px!important;height:44px!important}
+#sGroups input,#sGroups textarea,#sGroups .ib{min-height:44px!important}
+#sGroups input{min-width:44px}
+button.pk,.sepi,#isep{min-height:44px!important}
+.tg{min-height:56px}.sw{min-width:56px;min-height:44px}.sw input{min-height:44px!important;min-width:56px}
+.ib.bx,.ib.sm,.dfs,#dBrands select{min-height:44px!important}
+
+/* SPH: item jadi kartu (label terlihat) */
+.irow.ih{display:none!important}
+.irow{display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-areas:"c q" "n n" "p d";gap:8px!important;align-items:start}
+.v2f{display:block;min-width:0}.v2f span{display:block;font-size:14px;color:var(--mut);margin-bottom:2px}
+.v2f.c{grid-area:c}.v2f.q{grid-area:q}.v2f.n{grid-area:n}.v2f.p{grid-area:p}
+.irow .ib.del{grid-area:d;align-self:end;justify-self:end}
+/* grup penerima, Pengaturan bertingkat */
+.v2-grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.v2-gc{display:inline-flex;background:var(--card);border:1px solid var(--bd);border-radius:99px;overflow:hidden}
+.v2-gc button{min-height:44px;padding:0 14px;background:none;border:0;color:var(--tx);font-size:16px}
+.v2-gc button+button{padding:0 14px;color:var(--mut);border-left:1px solid var(--bd)}
+.v2g .dsec{margin:0;border:0!important;border-top:1px solid var(--bd)!important;border-radius:0!important;box-shadow:none!important;background:transparent}
+.v2g>.in{padding:0}
+#bkSave,#bkLoad{min-height:44px!important}
+
 </style>
 <script>
 (function(){
-var ACC={blue:null,teal:{l:['#1f918d','#e1f3f2'],d:['#4cc9c2','#12302f']},sage:{l:['#4a9468','#e5f2ea'],d:['#6cc48a','#15301f']},lavender:{l:['#7e66d0','#eeeafa'],d:['#a894f0','#251e40']},rose:{l:['#d2627f','#fbe9ee'],d:['#f08aa6','#3a1c27']},peach:{l:['#cf7a30','#fcefdf'],d:['#f0a45a','#3a2812']}};
+var ACC={blue:null,padat:{l:['#0a7a5a','#e3f4ee'],d:['#4fd1a5','#15332a']},teal:{l:['#1f918d','#e1f3f2'],d:['#4cc9c2','#12302f']},sage:{l:['#4a9468','#e5f2ea'],d:['#6cc48a','#15301f']},lavender:{l:['#7e66d0','#eeeafa'],d:['#a894f0','#251e40']},rose:{l:['#d2627f','#fbe9ee'],d:['#f08aa6','#3a1c27']},peach:{l:['#cf7a30','#fcefdf'],d:['#f0a45a','#3a2812']}};
 window.ACC=ACC;
 window.applyTheme=function(theme,acc,bg){
   theme=theme==='dark'||theme==='light'?theme:'auto';bg=bg==='white'?'white':'soft';window.__th=[theme,acc,bg];
@@ -483,14 +585,14 @@ window.applyTheme=function(theme,acc,bg){
   var a=ACC[acc];
   if(a){root.style.setProperty('--pri',a[dark?'d':'l'][0]);root.style.setProperty('--chip',a[dark?'d':'l'][1])}
   else{root.style.removeProperty('--pri');root.style.removeProperty('--chip')}};
-try{var j=JSON.parse(localStorage.getItem('outlookcepat.order.v1')||'null')||{};window.applyTheme(j.theme,j.accent,j.bg)}catch(e){window.applyTheme('auto','blue')}
+try{var j=JSON.parse(localStorage.getItem('outlookcepat.order.v1')||'null')||{};window.applyTheme(j.theme,j.gaya?j.accent:'padat',j.bg)}catch(e){window.applyTheme('auto','blue')}
 try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){window.applyTheme(window.__th[0],window.__th[1],window.__th[2])})}catch(e){}
 })();
 </script>
 </head>
 <body>
 <header>
-  <div class="hb"><div class="brand"><img src="icon.svg" alt=""><b>InLook</b></div><span class="ver" id="hVer"></span></div>
+  <div class="hb"><span id="hBack" class="hide" role="button" tabindex="0"><i class="fa-solid fa-chevron-left"></i> Beranda</span><div class="brand"><img src="icon.svg" alt=""><b>InLook</b></div><span class="ver" id="hVer"></span></div>
   <nav class="tb" aria-label="Menu">
     <button id="tOrder" class="on"><i class="fa-solid fa-envelope-open-text"></i><span>Order</span></button>
     <button id="tSph"><i class="fa-solid fa-file-invoice-dollar"></i><span>SPH</span></button>
@@ -507,7 +609,8 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
     <div class="bd" id="pvBd"><div class="prev" id="prev"></div>
 </div></div>
 
-<main id="vOrder">
+<main id="vHome"></main>
+<main id="vOrder" class="hide">
   <div class="card"><h3><i class="fa-solid fa-user-group"></i> Penerima</h3><div id="rcpt"></div></div>
   <div class="card"><h3><i class="fa-solid fa-tag"></i> Merk</h3><div class="chips" id="brands"></div></div>
   <div class="card"><h3><i class="fa-solid fa-box-open"></i> Barang &amp; Jumlah</h3>
@@ -943,7 +1046,9 @@ $('go').onclick=async()=>{
   if(MODE==='s')return sphSend();
   if(MODE==='p')return sponSend();
   if(problems().length)return jumpMissing();
-  poRecord();
+  if(!window.__sheetOk&&D.po.on)return openSheet();
+  window.__sheetOk=false;
+  if(window.__poYes!==false)poRecord();window.__poYes=undefined;
   if(FILES.length){
     const data={files:FILES,title:subject(),text:body(),to:rcpt('to'),cc:rcpt('cc')};
     if(navigator.canShare&&navigator.canShare(data)){
@@ -1448,10 +1553,10 @@ function itemHead(){return '<div class="irow ih"><span>Item Code</span><span>Nam
 function itemRow(kind,gi,ii,it){
   const q=qtyOf(it.unit),tot=q*parsePrice(it.price),hasCat=catOptions().length>0;
   return `<div class="itx" data-g="${gi}" data-kd="${kind}" data-i="${ii}"><div class="irow">
-    <input data-ik="code" value="${esc(it.code)}" aria-label="Item Code" autocapitalize="characters" spellcheck="false">
-    <textarea data-ik="name" rows="1" aria-label="Nama Item">${esc(it.name)}</textarea>
-    <input data-ik="unit" inputmode="numeric" value="${esc(it.unit)}" aria-label="Qty">
-    <input data-ik="price" inputmode="numeric" value="${esc(it.price)}" aria-label="Harga Satuan">
+    <label class="v2f c"><span>Kode</span><input data-ik="code" value="${esc(it.code)}" aria-label="Item Code" autocapitalize="characters" spellcheck="false"></label>
+    <label class="v2f n"><span>Nama item</span><textarea data-ik="name" rows="1" aria-label="Nama Item">${esc(it.name)}</textarea></label>
+    <label class="v2f q"><span>Jumlah</span><input data-ik="unit" inputmode="numeric" value="${esc(it.unit)}" aria-label="Qty"></label>
+    <label class="v2f p"><span>Harga satuan</span><input data-ik="price" inputmode="numeric" value="${esc(it.price)}" aria-label="Harga Satuan"></label>
     <button class="ib del" data-sact="iDel" data-g="${gi}" data-kd="${kind}" data-i="${ii}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="isub"><button type="button" class="pk ${hasCat?'':'hide'}" data-sact="pick"><i class="fa-solid fa-list"></i> Pilih dari daftar</button><label class="isub2 ${q>1?'':'hide'}"><input type="checkbox" data-ik="u" ${it.u?'checked':''}> Tampilkan harga satuan</label><span class="itot">${tot>0?'Total: '+tot.toLocaleString('id-ID'):''}</span></div></div>`}
 function updRow(r,o){
@@ -2495,7 +2600,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v63';
+const APPV='v2.0';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -2713,8 +2818,8 @@ if(NATIVE){try{NATIVE.getVersion().then(v=>{$('appV').textContent=v.versionName+
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoChk()})}
 
 /* ---------- appearance ---------- */
-const ACCN={blue:'Biru',teal:'Teal',sage:'Hijau lembut',lavender:'Lavender',rose:'Rose',peach:'Peach'};
-const ACCS={blue:'#1766d6',teal:'#1f918d',sage:'#4a9468',lavender:'#7e66d0',rose:'#d2627f',peach:'#cf7a30'};
+const ACCN={padat:'Hijau tegas',blue:'Biru',teal:'Teal',sage:'Hijau lembut',lavender:'Lavender',rose:'Rose',peach:'Peach'};
+const ACCS={padat:'#0a7a5a',blue:'#1766d6',teal:'#1f918d',sage:'#4a9468',lavender:'#7e66d0',rose:'#d2627f',peach:'#cf7a30'};
 if(!ACCN[D.accent])D.accent='blue';if(!['auto','light','dark'].includes(D.theme))D.theme='auto';
 function renderLook(){
   $('thmSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.th===D.theme));
@@ -2727,15 +2832,16 @@ $('bgSeg').onclick=e=>{const b=e.target.closest('[data-bgv]');if(!b)return;D.bg=
 renderLook();
 /* hardware back (APK): close/return one level, else double-press to exit */
 window.__back=()=>{
+  if(window.v2Back&&window.v2Back())return true;
   const dl=$('dlg');if(dl&&dl.open){dl.close();return true}
   if(pvIsOpen()){pvClose();return true}
   if(MODE==='q'&&PQ.screen!=='home'){poBack();return true}
   if(MODE==='f'&&FB.stack.length){FB.stack.pop();fbLoad();return true}
-  if(MODE!=='o'){tab('o');return true}
+  if(MODE!=='h'){tab('h');return true}
   return false};
 
 /* ---------- swipe between menus ---------- */
-if(D.swipe===undefined)D.swipe=true;
+if(D.swipe===undefined)D.swipe=false;
 $('swipeOn').checked=!!D.swipe;
 $('swipeOn').onchange=e=>{D.swipe=e.target.checked;save();toast(D.swipe?'Geser layar aktif':'Geser layar nonaktif, pakai tombol menu')};
 const TABS=[['o','tOrder'],['s','tSph'],['p','tSpon'],['q','tPO'],['f','tFile'],['d','tData']];
@@ -2762,13 +2868,14 @@ document.addEventListener('touchend',e=>{
 
 /* ---------- tabs ---------- */
 const tab=(t,dir)=>{if(t==='f'&&'osp'.includes(MODE))FB.ctx=MODE;MODE=t;
-  [['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vFile','f'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
+  [['vHome','h'],['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vFile','f'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
   [['tOrder','o'],['tSph','s'],['tSpon','p'],['tPO','q'],['tFile','f'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
-  const nb=t==='d'||t==='q'||t==='f';document.querySelector('.bar').classList.toggle('hide',nb);$('pv').classList.toggle('hide',nb);$('pvSp').classList.toggle('hide',nb);
+  const nb=t==='h'||t==='d'||t==='q'||t==='f';document.querySelector('.bar').classList.toggle('hide',nb);$('pv').classList.toggle('hide',nb);$('pvSp').classList.toggle('hide',nb);
+  $('hBack').classList.toggle('hide',t==='h');document.body.classList.toggle('inwork',t!=='h');
   scrollTo(0,0);
   if(dir){const m=document.querySelector('main:not(.hide)');if(m){m.classList.remove('slL','slR');void m.offsetWidth;m.classList.add(dir==='l'?'slL':'slR');setTimeout(()=>m.classList.remove('slL','slR'),260)}}
-  if(t==='d')renderData();else if(t==='f')renderFileTab();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
-  if(t!=='d'&&t!=='q'&&t!=='f'){syncSp();growAll()}
+  if(t==='h')renderHome();else if(t==='d')renderData();else if(t==='f')renderFileTab();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
+  if(t!=='h'&&t!=='d'&&t!=='q'&&t!=='f'){syncSp();growAll()}
   refreshClear()};
 $('tOrder').onclick=()=>tab('o');$('tSph').onclick=()=>tab('s');$('tSpon').onclick=()=>tab('p');$('tPO').onclick=()=>{if(MODE==='q'&&PQ.screen!=='home'){poBack();return}tab('q')};$('tData').onclick=()=>tab('d');$('tFile').onclick=()=>tab('f');$('tFile').classList.toggle('hide',!NATIVE);
 
@@ -2777,6 +2884,214 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
 const syncSp=()=>{$('pvSp').style.height=($('pv').offsetHeight+10)+'px'};
 new ResizeObserver(syncSp).observe($('pv'));
 loadDraft();setPv();renderAll();syncSp();restoreTab();applyPOVisibility();$('hVer').textContent=APPV;trNode(document.body);
+</script>
+<script>
+/* InLook v2 beta: Beranda, pintasan, lembar kirim (+ pilihan PO), pilih penerima, gaya. Dibuat tools/mkbeta.py */
+(function(){
+const g=id=>document.getElementById(id);
+const IC={mail:'envelope-open-text',doc:'file-invoice-dollar',cal:'handshake',send:'paper-plane',clock:'clock-rotate-left',folder:'folder-open',dl:'floppy-disk',copy:'copy',warn:'triangle-exclamation',plus:'plus'};
+const fa=n=>`<i class="fa-solid fa-${IC[n]||n}"></i>`;
+
+D.shortcuts=Array.isArray(D.shortcuts)?D.shortcuts:[];D.groups=Array.isArray(D.groups)?D.groups:[];D.events=Array.isArray(D.events)?D.events:[];
+if(!D.gaya){D.gaya='padat';D.accent='padat'}
+document.documentElement.setAttribute('data-gaya',D.gaya);
+
+/* ---------- migrasi template Excel (IndexedDB lama -> beta), baca saja ---------- */
+(async()=>{try{
+  if(await idbGet('tpl'))return;
+  const old=await new Promise((ok,no)=>{const r=indexedDB.open('outlookcepat2');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);r.onupgradeneeded=()=>{r.transaction.abort()}});
+  if(!old.objectStoreNames.contains('kv')){old.close();return}
+  const v=await new Promise(ok=>{const q=old.transaction('kv').objectStore('kv').get('tpl');q.onsuccess=()=>ok(q.result);q.onerror=()=>ok(null)});
+  old.close();
+  if(v){await idbSet('tpl',v);TPL=v;if(MODE==='p')renderSpon()}
+}catch(e){}})();
+
+const esc2=s=>esc(String(s==null?'':s));
+const nm=s=>(s||'').trim();
+const hasMail=c=>/@/.test(c.email||'');
+const draftFilled=()=>!!(F.brand||F.items.some(i=>i.item||i.qty));
+const subjOrder=()=>{try{return subject()}catch(e){return''}};
+
+/* ---------- Beranda ---------- */
+function scLabel(s){return [s.brand,s.jenis,s.rs].filter(Boolean).join(' · ')||s.name}
+function renderHome(){
+  const el=g('vHome');
+  const sph=(D.sph.saved||[]).slice().sort((a,b)=>b.ts-a.ts).slice(0,2);
+  let rows='';
+  D.shortcuts.slice(0,5).forEach(s=>{
+    const items=(s.items||[]).map(i=>i.item+(i.qty?' ×'+i.qty:'')).join(', ');
+    rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(s.name||scLabel(s))}</b><small><span class="v2-tag">Order</span>${esc2(items||'tanpa barang')}</small></span><button class="v2-btn v2-p" data-sc="${esc2(s.id)}">${fa('send')}Kirim</button></div>`});
+  sph.forEach(it=>{const f=it.snap.form||{};
+    rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2((f.instansi||'SPH')+(f.produk?' · '+f.produk:''))}</b><small><span class="v2-tag">SPH</span>${(it.snap.groups||[]).reduce((n,x)=>n+(x.items||[]).length,0)} item</small></span><button class="v2-btn v2-t" data-spc="${esc2(it.id)}">${fa('copy')}Salin</button></div>`});
+  D.events.slice(0,2).forEach(ev=>{rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(ev.name)}</b><small><span class="v2-tag">Sponsor</span>${esc2(ev.form.manufacturer||'event tersimpan')}</small></span><button class="v2-btn v2-t" data-evc="${esc2(ev.id)}">${fa('copy')}Salin</button></div>`});
+  const quick=rows?`<div class="v2-list">${rows}</div>`:`<div class="v2-list"><div class="v2-empty">${fa('send')}<b>Belum ada pintasan</b><p>Buat satu order, lalu simpan sebagai pintasan agar berikutnya cukup 2 ketukan.</p><button class="v2-btn v2-p" data-go="o">Buat Order</button></div></div>`;
+  const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button></div>`:'';
+  const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('clock')}Riwayat</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
+  el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}${window.__BETA?'<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>':''}`}
+window.renderHome=renderHome;
+
+g('vHome').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.sc)return runShortcut(b.dataset.sc);
+  if(b.dataset.spc){sphOpen(b.dataset.spc);if(D.sph.cur===b.dataset.spc){D.sph.cur=null;save();renderCurBar();tab('s')}return}
+  if(b.dataset.evc)return runEvent(b.dataset.evc);
+  if(b.dataset.go)tab(b.dataset.go)});
+g('hBack').onclick=()=>tab('h');
+
+function runShortcut(id){
+  const s=D.shortcuts.find(x=>x.id===id);if(!s)return;
+  F.brand=s.brand||null;F.jenis=s.jenis||null;F.rs=s.rs||'';
+  F.items=(s.items&&s.items.length?s.items:[{item:'',qty:'',unit:'ea'}]).map(i=>({item:i.item,qty:i.qty,unit:i.unit||'ea'}));
+  D.contacts.forEach(c=>{c.role=(s.to||[]).includes(c.name)?'to':((s.cc||[]).includes(c.name)?'cc':'off')});
+  g('date').value=todayISO();save();tab('o');renderAll();g('go').click()}
+
+function saveShortcut(){
+  const items=validItems().map(i=>({item:i.item,qty:i.qty,unit:i.unit||'ea'}));
+  const to=D.contacts.filter(c=>(c.role||'off')==='to').map(c=>c.name),cc=D.contacts.filter(c=>c.role==='cc').map(c=>c.name);
+  const name=[F.brand,F.jenis,F.rs].filter(Boolean).join(' · ')||'Order';
+  const sig=JSON.stringify([F.brand,F.jenis,F.rs,items,to,cc]);
+  const dup=D.shortcuts.find(s=>JSON.stringify([s.brand,s.jenis,s.rs,s.items,s.to,s.cc])===sig);
+  if(dup){toast('Pintasan ini sudah ada');return}
+  D.shortcuts.unshift({id:'p'+Math.random().toString(36).slice(2,8),name,brand:F.brand,jenis:F.jenis,rs:F.rs,items,to,cc});
+  D.shortcuts=D.shortcuts.slice(0,20);save();toast('Disimpan sebagai pintasan')}
+
+/* ---------- lembar kirim (ringkasan + pilihan PO) ---------- */
+const sheet=document.createElement('div');sheet.id='v2sheet';sheet.className='v2-dim hide';document.body.appendChild(sheet);
+function openSheet(){
+  const to=rcpt('to'),cc=rcpt('cc'),bad=to.concat(cc).filter(x=>!x.includes('@'));
+  const items=F.items.map((i,n)=>i.item?`<div class="v2-q"><b>${esc2(i.item)}</b><input inputmode="numeric" data-q="${n}" value="${esc2(i.qty)}" aria-label="Jumlah ${esc2(i.item)}"><span>${esc2(i.unit||'ea')}</span></div>`:'').join('')||'<span class="mut">Belum ada barang</span>';
+  const files=FILES.length?FILES.map(f=>esc2(f.name)).join(', '):'<span class="mut">Tidak ada</span>';
+  sheet.innerHTML=`<div class="v2-sheet" role="dialog" aria-modal="true" aria-label="Kirim order ke Outlook"><div class="v2-grab"></div><h4>Kirim order ke Outlook</h4>
+    ${bad.length?`<div class="v2-err" role="alert">${fa('warn')}<div>Belum ada email: ${esc2(bad.join(', '))}. To/CC tidak akan terisi di Outlook. Isi di Pengaturan → Kontak Penerima.</div></div>`:''}
+    <dl style="margin:0"><div class="v2-sum"><dt>To</dt><dd>${to.length?esc2(to.join(', ')):'<span class="mut">Kosong</span>'}</dd></div>
+    <div class="v2-sum"><dt>CC</dt><dd>${cc.length?esc2(cc.join(', ')):'<span class="mut">Kosong</span>'}</dd></div>
+    <div class="v2-sum"><dt>Subjek</dt><dd>${esc2(subjOrder())}</dd></div>
+    <div class="v2-sum"><dt>Barang</dt><dd>${items}</dd></div>
+    <div class="v2-sum"><dt>Lampiran</dt><dd><div id="v2att">${files}</div><div id="v2recent" class="chips" style="margin-top:8px"></div></dd></div></dl>
+    <div class="v2-two"><button class="v2-btn v2-s" data-sh="no">Kirim saja</button><button class="v2-btn v2-p" style="flex:1.4" data-sh="yes">${fa('send')}Kirim &amp; catat PO</button></div>
+    <div class="v2-two"><button class="v2-btn v2-t" data-sh="sc">Simpan sebagai pintasan</button><button class="v2-btn v2-s" data-sh="x">Batal</button></div></div>`;
+  sheet.classList.remove('hide');loadRecent()}
+window.openSheet=openSheet;
+function closeSheet(){sheet.classList.add('hide')}
+sheet.addEventListener('input',e=>{const n=e.target.dataset.q;if(n===undefined)return;F.items[+n].qty=e.target.value.replace(/[^0-9.,]/g,'')});
+sheet.addEventListener('click',e=>{
+  if(e.target===sheet)return closeSheet();
+  const b=e.target.closest('[data-sh]');if(!b)return;const k=b.dataset.sh;
+  if(k==='x')return closeSheet();
+  if(k==='sc'){saveShortcut();return}
+  renderItems();renderPrev();closeSheet();
+  window.__sheetOk=true;window.__poYes=(k==='yes');
+  g('go').click();window.__sheetOk=false});
+
+
+async function loadRecent(){
+  const box=g('v2recent');if(!NATIVE||!box)return;
+  const d=fdDef();if(!d)return;
+  try{
+    const r=await NATIVE.listFolder({tree:d.tree,docId:''});
+    const items=(r.items||[]).filter(x=>!x.dir).sort((a,b)=>(b.mod||0)-(a.mod||0)).slice(0,3);
+    window.__recent=items;
+    box.innerHTML=items.map((x,i)=>`<button class="chip${FILES.some(f=>f.name===x.name)?' on':''}" data-rf="${i}">${esc2(x.name)}</button>`).join('')+'<button class="chip" data-rmore="1">'+fa('plus')+' Pilih lainnya</button>'
+  }catch(e){}}
+sheet.addEventListener('click',async e=>{
+  const more=e.target.closest('[data-rmore]');
+  if(more){closeSheet();try{nativePick(g('fileIn'))}catch(er){}return}
+  const b=e.target.closest('[data-rf]');if(!b)return;
+  const x=(window.__recent||[])[+b.dataset.rf];if(!x)return;
+  const at=FILES.findIndex(f=>f.name===x.name);
+  if(at>=0){FILES.splice(at,1);b.classList.remove('on')}
+  else{try{const y=await NATIVE.readUri({uri:x.uri});FILES.push(new File([b64ToAb(y.b64)],x.name,{type:x.mime==='application/octet-stream'?(MIMEX[fext(x.name)]||''):x.mime}));b.classList.add('on')}catch(er){toast(nativeErr(er));return}}
+  renderFiles();renderPrev();const a=g('v2att');if(a)a.innerHTML=FILES.length?FILES.map(f=>esc2(f.name)).join(', '):'<span class="mut">Tidak ada</span>'});
+
+/* ---------- pilih penerima ---------- */
+const rc=document.createElement('div');rc.id='v2rc';rc.className='v2-rc hide';document.body.appendChild(rc);
+let rcKey='role',rcQ='';
+function rcRender(){
+  const q=rcQ.trim().toLowerCase();
+  const rows=D.contacts.map((c,i)=>({c,i})).filter(x=>shown(x.c)&&(!q||x.c.name.toLowerCase().includes(q)||(x.c.email||'').toLowerCase().includes(q))).map(({c,i})=>{
+    const st=c[rcKey]||'off';
+    return `<div class="v2-row" style="padding-right:8px"><span class="v2-l"><b>${esc2(c.name)}</b>${hasMail(c)?'':'<small style="color:var(--err)">tanpa email</small>'}</span><span class="v2-seg" data-i="${i}"><button class="${st==='to'?'on':''}" data-st="to">To</button><button class="${st==='cc'?'on':''}" data-st="cc">CC</button><button class="${st==='off'?'on n':''}" data-st="off" aria-label="Bukan penerima">–</button></span></div>`}).join('');
+  const nTo=D.contacts.filter(c=>shown(c)&&c[rcKey]==='to').length,nCc=D.contacts.filter(c=>shown(c)&&c[rcKey]==='cc').length;
+  rc.innerHTML=`<div class="v2-rcin"><div class="v2-rctop"><b>Penerima</b></div><input id="v2rcq" placeholder="Cari kontak" autocomplete="off" value="${esc2(rcQ)}" aria-label="Cari kontak"><span class="v2-h3">Grup</span>${groupChips()}<div class="v2-list" style="margin-top:12px">${rows||'<div class="v2-empty"><p>Tidak ada kontak.</p></div>'}</div></div><div class="v2-rcbar"><button class="v2-btn v2-p" data-done="1">Selesai: ${nTo} To, ${nCc} CC</button></div>`;
+  const inp=g('v2rcq');inp.oninput=()=>{rcQ=inp.value;const pos=inp.selectionStart;rcRender();const n=g('v2rcq');n.focus();n.setSelectionRange(pos,pos)}}
+function openRc(){rcKey=RK();rcQ='';rcRender();rc.classList.remove('hide')}
+function closeRc(){
+  rc.classList.add('hide');save();
+  if(MODE==='s')g('rcptS').innerHTML=rcptGrid('rs');else if(MODE==='p')g('rcptP').innerHTML=rcptGrid('sp');else renderRcpt();
+  renderPrev()}
+rc.addEventListener('click',e=>{
+  if(e.target.closest('[data-done]'))return closeRc();
+  const gp=e.target.closest('[data-gp]');
+  if(gp){const gr=D.groups.find(x=>x.id===gp.dataset.gp);if(gr){D.contacts.forEach(c=>{if(gr.names.includes(c.name))c[rcKey]='to'});rcRender()}return}
+  const gx=e.target.closest('[data-gx]');
+  if(gx){D.groups=D.groups.filter(x=>x.id!==gx.dataset.gx);save();rcRender();return}
+  if(e.target.closest('[data-gnew]')){
+    const sel=D.contacts.filter(c=>(c[rcKey]||'off')!=='off').map(c=>c.name);
+    if(!sel.length){toast('Pilih kontak dulu, lalu simpan sebagai grup');return}
+    ask('Simpan grup',[{label:'Nama grup'}],v=>{if(!v[0])return'Isi nama grup';D.groups.push({id:'g'+Math.random().toString(36).slice(2,7),name:v[0],names:sel});save();rcRender()});return}
+  const b=e.target.closest('[data-st]');if(!b)return;
+  const c=D.contacts[+b.parentElement.dataset.i];c[rcKey]=b.dataset.st;rcRender()});
+[['rcpt'],['rcptS'],['rcptP']].forEach(([id])=>{const host=g(id);if(!host)return;
+  const b=document.createElement('button');b.className='v2-btn v2-t v2-w';b.style.marginTop='8px';b.textContent='Cari / ubah penerima';b.onclick=openRc;host.insertAdjacentElement('afterend',b)});
+window.v2Back=()=>{if(!rc.classList.contains('hide')){closeRc();return true}if(!sheet.classList.contains('hide')){closeSheet();return true}return false};
+
+/* ---------- gaya (Padat / Tenang) di Pengaturan -> Tampilan ---------- */
+(function(){
+  const bg=g('bgSeg');if(!bg)return;
+  const lab=bg.previousElementSibling;
+  const wrap=document.createElement('div');
+  wrap.innerHTML='<div class="mut" style="margin-top:16px">Gaya</div><div class="thm" id="gayaSeg"><button data-g="padat"><span>Padat</span></button><button data-g="tenang"><span>Tenang</span></button></div>';
+  lab.parentNode.insertBefore(wrap,lab);
+  const paint=()=>wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.g===D.gaya));
+  paint();
+  wrap.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;
+    D.gaya=b.dataset.g;D.accent=D.gaya==='padat'?'padat':'blue';document.documentElement.setAttribute('data-gaya',D.gaya);
+    save();window.applyTheme(D.theme,D.accent,D.bg);renderLook();paint()})
+})();
+window.applyTheme(D.theme,D.accent,D.bg);
+
+
+/* ---------- event Sponsor tersimpan ---------- */
+const jclone=o=>JSON.parse(JSON.stringify(o));
+function saveSponEvent(){
+  const f=D.spon.form;if(!f||!f.name)return;
+  const rcp={};D.contacts.forEach(c=>{if((c.sp||'off')!=='off')rcp[c.name]=c.sp});
+  const ev={id:'e'+Math.random().toString(36).slice(2,8),ts:Date.now(),name:f.name,form:jclone(f),rcp};
+  const i=D.events.findIndex(x=>x.name===f.name);
+  if(i>=0){ev.id=D.events[i].id;D.events.splice(i,1)}
+  D.events.unshift(ev);D.events=D.events.slice(0,10);save()}
+function runEvent(id){
+  const ev=D.events.find(x=>x.id===id);if(!ev)return;
+  D.spon.form=Object.assign({},sponSeed().form,jclone(ev.form));D.spon.form.date='';D.spon.form.signDate='';
+  D.contacts.forEach(c=>{c.sp=(ev.rcp&&ev.rcp[c.name])||'off'});
+  save();tab('p');renderSpon();renderPrev();toast('Salinan dari '+ev.name+'. Ubah nama dan tanggal.')}
+window.saveSponEvent=saveSponEvent;window.runEvent=runEvent;
+const _ss=window.sponSend;
+if(typeof _ss==='function')window.sponSend=function(){const r=_ss.apply(this,arguments);Promise.resolve(r).then(()=>{try{if(!sponProblems().length)saveSponEvent()}catch(e){}});return r};
+
+/* ---------- Pengaturan: 6 bagian ---------- */
+(function(){
+  const root=g('vData');if(!root)return;
+  const ds=[...root.querySelectorAll(':scope > details.dsec')];
+  const by=t=>ds.find(d=>d.querySelector('summary').textContent.trim().startsWith(t));
+  const plan=[['Tampilan','palette',['Tampilan','Bahasa']],['Data kerja','database',['Kontak Penerima','Merk','Jenis Order','Kategori Barang','Rumah Sakit','Format Subjek','Kalimat Isi Email']],['Pengiriman','paper-plane',['Data PO','Folder Lampiran']]];
+  plan.forEach(([title,icon,names])=>{
+    const parts=names.map(by).filter(Boolean);if(parts.length<2)return;
+    const w=document.createElement('details');w.className='card dsec v2g';
+    w.innerHTML=`<summary><i class="fa-solid fa-${icon}"></i> ${title} <i class="fa-solid fa-chevron-down c"></i></summary><div class="in"></div>`;
+    parts[0].parentNode.insertBefore(w,parts[0]);
+    parts.forEach(d=>w.querySelector('.in').appendChild(d))});
+})();
+
+/* ---------- grup penerima ---------- */
+function groupChips(){
+  const gs=D.groups.map(gr=>`<span class="v2-gc"><button data-gp="${esc2(gr.id)}">${esc2(gr.name)}</button><button data-gx="${esc2(gr.id)}" aria-label="Hapus grup ${esc2(gr.name)}">×</button></span>`).join('');
+  return `<div class="v2-grp">${gs}<button class="v2-btn v2-t" data-gnew="1">${fa('plus')}Simpan grup</button></div>`}
+
+/* mulai di Beranda (kecuali habis perbarui ke Pengaturan) */
+if(MODE!=='d')tab('h');
+})();
+
 </script>
 </body>
 </html>
