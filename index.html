@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#161b23" media="(prefers-color-scheme: dark)">
-<title>INLook</title>
+<title>InLook</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -461,13 +461,15 @@ body.noscroll{overflow:hidden}
 .pvpdf canvas{background:#fff;border-radius:4px;box-shadow:0 2px 10px #0008}
 .pvtx{margin:0;padding:14px;font:12.5px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:#e6e9ef}
 .fbhint{text-align:center;color:var(--mut);font-size:12px;padding:10px 0 4px}
+html[data-bg=white] body{background:#fff}
+html[data-bg=white] .card{box-shadow:0 1px 2px rgba(16,24,40,.06),0 2px 8px rgba(16,24,40,.04)}
 </style>
 <script>
 (function(){
 var ACC={blue:null,teal:{l:['#1f918d','#e1f3f2'],d:['#4cc9c2','#12302f']},sage:{l:['#4a9468','#e5f2ea'],d:['#6cc48a','#15301f']},lavender:{l:['#7e66d0','#eeeafa'],d:['#a894f0','#251e40']},rose:{l:['#d2627f','#fbe9ee'],d:['#f08aa6','#3a1c27']},peach:{l:['#cf7a30','#fcefdf'],d:['#f0a45a','#3a2812']}};
 window.ACC=ACC;
-window.applyTheme=function(theme,acc){
-  theme=theme==='dark'||theme==='light'?theme:'auto';window.__th=[theme,acc];
+window.applyTheme=function(theme,acc,bg){
+  theme=theme==='dark'||theme==='light'?theme:'auto';bg=bg==='white'?'white':'soft';window.__th=[theme,acc,bg];
   var root=document.documentElement;
   try{if(!window.__mr){window.__mr=[];for(var i=0;i<document.styleSheets.length;i++){var rules;try{rules=document.styleSheets[i].cssRules}catch(e){continue}
       for(var j=0;j<rules.length;j++){var q=rules[j];if(q.type===4&&/prefers-color-scheme/.test(q.media.mediaText))window.__mr.push([q,q.media.mediaText])}}}
@@ -476,17 +478,18 @@ window.applyTheme=function(theme,acc){
   root.style.colorScheme=theme==='auto'?'':theme;
   var m=document.querySelectorAll('meta[name=theme-color]');
   for(var k=0;k<m.length;k++){if(m[k].__o===undefined)m[k].__o=m[k].getAttribute('content');m[k].setAttribute('content',theme==='auto'?m[k].__o:(dark?'#161b23':'#ffffff'))}
+  if(bg==='white'&&!dark)root.setAttribute('data-bg','white');else root.removeAttribute('data-bg');
   var a=ACC[acc];
   if(a){root.style.setProperty('--pri',a[dark?'d':'l'][0]);root.style.setProperty('--chip',a[dark?'d':'l'][1])}
   else{root.style.removeProperty('--pri');root.style.removeProperty('--chip')}};
-try{var j=JSON.parse(localStorage.getItem('outlookcepat.order.v1')||'null')||{};window.applyTheme(j.theme,j.accent)}catch(e){window.applyTheme('auto','blue')}
-try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){window.applyTheme(window.__th[0],window.__th[1])})}catch(e){}
+try{var j=JSON.parse(localStorage.getItem('outlookcepat.order.v1')||'null')||{};window.applyTheme(j.theme,j.accent,j.bg)}catch(e){window.applyTheme('auto','blue')}
+try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){window.applyTheme(window.__th[0],window.__th[1],window.__th[2])})}catch(e){}
 })();
 </script>
 </head>
 <body>
 <header>
-  <div class="hb"><div class="brand"><img src="icon.svg" alt=""><b>INLook</b></div><span class="ver" id="hVer"></span></div>
+  <div class="hb"><div class="brand"><img src="icon.svg" alt=""><b>InLook</b></div><span class="ver" id="hVer"></span></div>
   <nav class="tb" aria-label="Menu">
     <button id="tOrder" class="on"><i class="fa-solid fa-envelope-open-text"></i><span>Order</span></button>
     <button id="tSph"><i class="fa-solid fa-file-invoice-dollar"></i><span>SPH</span></button>
@@ -657,7 +660,7 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
 
 <!-- ================= DATA ================= -->
 <main id="vFile" class="hide">
-  <div class="card hide" id="fbNo"><h3><i class="fa-solid fa-folder-open"></i> File</h3><div class="mut">Menu File membaca folder di HP dan hanya tersedia di aplikasi Android (APK) INLook.</div></div>
+  <div class="card hide" id="fbNo"><h3><i class="fa-solid fa-folder-open"></i> File</h3><div class="mut">Menu File membaca folder di HP dan hanya tersedia di aplikasi Android (APK) InLook.</div></div>
   <div id="fbMain">
     <div class="fchips" id="fbFolders"></div>
     <div class="card hide" id="fbEmpty"><h3><i class="fa-solid fa-folder-plus"></i> Belum ada folder</h3><div class="mut">Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, diganti namanya, atau dikirim lewat WhatsApp dan Email. Android tidak mengizinkan memilih folder Download itu sendiri; pilih subfolder di dalamnya atau folder lain.</div><button class="add" id="fbAdd"><i class="fa-solid fa-folder-plus"></i> Pilih Folder</button></div>
@@ -679,6 +682,8 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
     <div class="thm" id="thmSeg"><button data-th="auto"><i class="fa-solid fa-circle-half-stroke"></i><span>Otomatis</span></button><button data-th="light"><i class="fa-solid fa-sun"></i><span>Terang</span></button><button data-th="dark"><i class="fa-solid fa-moon"></i><span>Gelap</span></button></div>
     <div class="mut" style="margin-top:16px">Warna aksen <b id="accName" style="color:var(--tx)"></b></div>
     <div class="accrow" id="accRow"></div>
+    <div class="mut" style="margin-top:16px">Latar</div>
+    <div class="thm" id="bgSeg"><button data-bgv="soft"><span>Abu lembut</span></button><button data-bgv="white"><span>Putih tenang</span></button></div>
     <label class="tg" style="margin-top:18px"><span>Geser layar untuk pindah menu</span><span class="sw"><input type="checkbox" id="swipeOn" role="switch" aria-label="Geser layar untuk pindah menu"><i></i></span></label>
     <div class="mut" style="margin-top:8px">Aktif: geser layar ke kiri atau kanan untuk pindah menu, atau ketuk tombol menu di atas. Nonaktif: hanya lewat tombol menu, berguna kalau sering tergeser tanpa sengaja.</div></div></details>
 
@@ -736,7 +741,7 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
     <div class="row" style="margin-top:6px"><button class="sec" id="exp" style="flex:1">Salin Data</button><button class="sec" id="imp" style="flex:1">Tempel Data</button></div></div></details>
 
   <details class="card dsec"><summary><i class="fa-solid fa-circle-info"></i> Tentang <i class="fa-solid fa-chevron-down c"></i></summary><div class="in">
-    <div class="about"><img src="icon-192.png" alt=""><div><b>INLook</b><div class="mut">Versi <span id="appV"></span></div></div></div>
+    <div class="about"><img src="icon-192.png" alt=""><div><b>InLook</b><div class="mut">Versi <span id="appV"></span></div></div></div>
     <div class="mut" style="margin-top:12px">Dibuat oleh <b>TMS-127</b></div>
     <div class="mut">For personal purpose only.</div>
     <button class="sec add" id="appUpd"><i class="fa-solid fa-rotate"></i> Cek Pembaruan</button></div></details>
@@ -1042,19 +1047,19 @@ const abToB64=ab=>{const u=new Uint8Array(ab);let s='';for(let i=0;i<u.length;i+
 const b64ToAb=b=>{const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u.buffer};
 $('bkSave').onclick=async()=>{
   const pad=n=>String(n).padStart(2,'0'),t=new Date(),stamp=t.getFullYear()+pad(t.getMonth()+1)+pad(t.getDate())+'-'+pad(t.getHours())+pad(t.getMinutes());
-  const pack={app:'INLook',v:1,at:t.toISOString(),data:D};
+  const pack={app:'InLook',v:1,at:t.toISOString(),data:D};
   try{if(TPL&&TPL.buf)pack.tpl={name:TPL.name,sheet:TPL.sheet,b64:abToB64(TPL.buf)}}catch(e){}
-  const name='INLook-backup-'+stamp+'.json',txt=JSON.stringify(pack);
+  const name='InLook-backup-'+stamp+'.json',txt=JSON.stringify(pack);
   let file=new File([txt],name,{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;document.body.appendChild(a);a.click();a.remove();
-  let sh={files:[file],title:'Cadangan INLook'};
-  if(!(navigator.canShare&&navigator.canShare(sh))){file=new File([txt],name+'.txt',{type:'text/plain'});sh={files:[file],title:'Cadangan INLook'}}
+  let sh={files:[file],title:'Cadangan InLook'};
+  if(!(navigator.canShare&&navigator.canShare(sh))){file=new File([txt],name+'.txt',{type:'text/plain'});sh={files:[file],title:'Cadangan InLook'}}
   if(navigator.canShare&&navigator.canShare(sh))shareDialog(sh,'Cadangan tersimpan di folder Download: '+name+'. Ketuk Bagikan, lalu pilih WhatsApp (atau aplikasi lain) untuk menyimpannya di tempat aman.');
   else toast('Cadangan tersimpan di folder Download: '+name)};
 $('bkLoad').onclick=()=>$('bkIn').click();
 $('bkIn').onchange=async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
-  let pack;try{pack=JSON.parse(await f.text());if(!(pack&&(pack.app==='INLook'||pack.app==='Fastlook')&&pack.data)){if(pack&&pack.brands&&pack.rs)pack={data:pack};else throw 0}if(!pack.data.brands||!pack.data.rs||!pack.data.contacts)throw 0}catch(err){return toast('File cadangan tidak valid')}
+  let pack;try{pack=JSON.parse(await f.text());if(!(pack&&(pack.app==='INLook'||pack.app==='InLook'||pack.app==='Fastlook')&&pack.data)){if(pack&&pack.brands&&pack.rs)pack={data:pack};else throw 0}if(!pack.data.brands||!pack.data.rs||!pack.data.contacts)throw 0}catch(err){return toast('File cadangan tidak valid')}
   confirmBox('Pulihkan Cadangan','Semua data di HP ini diganti dengan isi file "'+f.name+'"'+(pack.at?' (dibuat '+new Date(pack.at).toLocaleString('id-ID')+')':'')+'. Tidak bisa dibatalkan.','Pulihkan',async()=>{
     window.__wipe=true;
     try{localStorage.setItem(KEY,JSON.stringify(norm(pack.data)));localStorage.removeItem('outlookcepat.draft.v1')}catch(err){window.__wipe=false;return toast('Gagal menyimpan data')}
@@ -1224,7 +1229,7 @@ function fbRename(it){
     try{await NATIVE.renameUri({uri:it.uri,name:nn});$('dlg').close();toast('Nama diubah: '+nn);fbLoad()}
     catch(e){const m=nativeErr(e);$('dOk').disabled=false;
       if(m==='need_write'){
-        $('rnNote').textContent='INLook perlu izin mengubah isi folder ini. Ketuk Beri izin, pilih folder yang sama, lalu ketuk Gunakan folder ini.';
+        $('rnNote').textContent='InLook perlu izin mengubah isi folder ini. Ketuk Beri izin, pilih folder yang sama, lalu ketuk Gunakan folder ini.';
         $('dOk').textContent='Beri izin';
         $('dOk').onclick=async()=>{const st=FB.stack.slice(),fi=FB.fi;const f=await fdAdd(false);FB.fi=fi;FB.stack=st;if(f){$('dOk').textContent='Simpan';$('dOk').onclick=save;save()}}}
       else if(/not implemented|unimplemented|undefined/i.test(m))$('dErr').textContent='Perbarui APK ke versi terbaru dulu (Setting → Tentang → Cek Pembaruan).';
@@ -2487,7 +2492,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v61';
+const APPV='v62';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -2541,7 +2546,7 @@ const EN={
 'Format Subjek':'Subject Format','Kalimat Isi Email':'Email Texts','Kontak Penerima':'Recipient Contacts','Merk & Barang':'Brands & Items','Kategori Barang':'Item Categories','Cadangan Data':'Data Backup','Hapus Semua Data':'Delete All Data',
 'Bahasa':'Language','Tentang':'About','Dibuat oleh':'Made by','For personal purpose only.':'For personal purpose only.','Versi':'Version','Perbarui Aplikasi Sekarang':'Update App Now','Data Anda tidak dihapus.':'Your data is not deleted.',
 'Aktifkan integrasi Data PO':'Enable PO Data integration','Hapus Semua Riwayat PO':'Delete All PO History','halaman PO muncul dan setiap order yang dibuat (tombol OK di tab Order) otomatis tercatat.':'the PO page appears and every order you create (OK button in the Order tab) is recorded automatically.',
-'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.':'Data is stored on this phone only. A backup is a single file (including the Excel template) saved to the Download folder, which you can then share right away, e.g. to WhatsApp.','Cek Pembaruan':'Check for Updates','Memeriksa pembaruan…':'Checking for updates…','Pembaruan Tersedia':'Update Available','Nanti':'Later','Perbarui':'Update','Mengunduh…':'Downloading…','Ikuti layar pemasangan Android, lalu buka INLook lagi.':'Follow the Android install screen, then open INLook again.','Izinkan INLook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Perbarui lagi.':'Allow INLook to install apps on the settings screen that opened, come back here, then tap Update again.','Versi aplikasi tidak terbaca':'App version could not be read','Tampilan':'Appearance','Tema':'Theme','Otomatis':'Automatic','Terang':'Light','Gelap':'Dark','Warna aksen':'Accent color','Biru':'Blue','Hijau lembut':'Soft green','Tampilan daftar':'List view','Tampilan kisi':'Grid view','Ukuran':'Size','Lampiran siap. Subjek terisi dan nama penerima disalin otomatis: tempel di kolom To/CC. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. The subject is filled in and the recipient names were copied: paste them into To/CC. Tap Share to open Outlook.','Tekan sekali lagi untuk keluar':'Press again to exit','Pasang':'Install','Coba lagi':'Try again','Izinkan INLook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Pasang.':'Allow INLook to install apps on the settings screen that opened, come back here, then tap Install.','Geser layar untuk pindah menu':'Swipe to switch menus','Aktif: geser layar ke kiri atau kanan untuk pindah menu, atau ketuk tombol menu di atas. Nonaktif: hanya lewat tombol menu, berguna kalau sering tergeser tanpa sengaja.':'On: swipe left or right to switch menus, or tap the menu buttons above. Off: menu buttons only, useful if you swipe by accident.','Geser layar aktif':'Swipe is on','Geser layar nonaktif, pakai tombol menu':'Swipe is off, use the menu buttons','Ubah nama':'Rename','Ubah Nama':'Rename','Nama file':'File name','Nama tidak boleh kosong':'Name cannot be empty','Beri izin':'Grant access','INLook perlu izin mengubah isi folder ini. Ketuk Beri izin, pilih folder yang sama, lalu ketuk Gunakan folder ini.':'INLook needs permission to modify this folder. Tap Grant access, choose the same folder, then tap Use this folder.','Perbarui APK ke versi terbaru dulu (Setting → Tentang → Cek Pembaruan).':'Update the APK to the latest version first (Setting → About → Check for Updates).','Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, diganti namanya, atau dikirim lewat WhatsApp dan Email. Android tidak mengizinkan memilih folder Download itu sendiri; pilih subfolder di dalamnya atau folder lain.':'Add the folders you use often, e.g. an SPH folder. Their files can be searched, sorted, filtered, opened, renamed, or sent via WhatsApp and Email. Android does not allow choosing the Download folder itself; pick a subfolder inside it or another folder.','Opsi':'Options','Pratinjau belum tersedia untuk tipe file ini.':'Preview is not available for this file type.','Buka dengan aplikasi lain':'Open with another app','Butuh internet untuk memuat penampil PDF':'Internet is needed to load the PDF viewer','Tahan file untuk pratinjau, ketuk untuk opsi':'Press and hold a file to preview, tap for options','Simpan Cadangan':'Save Backup','File':'Files','Folder Lampiran':'Attachment Folder','Saat menambah lampiran, pemilih file langsung terbuka di folder default ini. Folder lain yang sering dipakai diatur di menu File.':'When you add an attachment, the file picker opens directly in this default folder. Other frequently used folders are managed in the Files menu.','Pilih Folder Default':'Choose Default Folder','Hapus Default':'Clear Default','Fitur ini hanya ada di aplikasi Android (APK).':'This feature is only available in the Android app (APK).','Belum ada folder default. Pemilih file akan terbuka di lokasi terakhir.':'No default folder yet. The file picker opens at its last location.','Folder default lampiran':'Default attachment folder','Menu File membaca folder di HP dan hanya tersedia di aplikasi Android (APK) INLook.':'The Files menu reads folders on this phone and is only available in the INLook Android app (APK).','Belum ada folder':'No folders yet','Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, atau dikirim lewat WhatsApp dan Email.':'Add the folders you use often, e.g. Download or an SPH folder. Their files can be searched, sorted, filtered, opened, or sent via WhatsApp and Email.','Pilih Folder':'Choose Folder','Cari nama file':'Search file name','Cari file':'Search files','Hapus pencarian':'Clear search','Urutkan':'Sort','Nama':'Name','Tipe':'Type','Tanggal':'Date','Ukuran':'Size','Muat ulang':'Reload','Urut naik':'Ascending','Urut turun':'Descending','Arah urutan':'Sort direction','Naik satu folder':'Up one folder','Gambar':'Images','Lainnya':'Other','Folder':'Folder','Membaca folder…':'Reading folder…','Coba lagi':'Try again','Pilih ulang folder':'Choose folder again','Folder ini kosong.':'This folder is empty.','Tidak ada file yang cocok.':'No matching files.','Kelola Folder':'Manage Folders','Kelola folder':'Manage folders','Tambah folder':'Add folder','Jadikan default':'Make default','Default':'Default','Belum ada folder.':'No folders yet.','Menghapus hanya melepas folder dari daftar, isi file tidak dihapus.':'Removing only detaches the folder from the list; the files are not deleted.','Hapus folder':'Remove folder','Hapus folder dari daftar':'Remove folder from list','Buka':'Open','Kirim via WhatsApp':'Send via WhatsApp','Kirim via Email (Outlook)':'Send via Email (Outlook)','Bagikan ke aplikasi lain':'Share to another app','Membaca file…':'Reading file…','Folder default dihapus':'Default folder cleared','Fitur folder hanya ada di aplikasi Android':'Folder features are only available in the Android app','Tampilan menu':'Menu','Menu':'Menu','Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. Recipients and subject are filled in. Tap Share to open Outlook.','Pulihkan dari File':'Restore from File','Cara lain tanpa file:':'Other way, no file:','File cadangan tidak valid':'Invalid backup file','Pulihkan Cadangan':'Restore Backup','Pulihkan':'Restore','Data dipulihkan':'Data restored','Gagal menyimpan data':'Failed to save data','Salin Data':'Copy Data','Tempel Data':'Paste Data',
+'halaman PO disembunyikan dan order tidak dicatat. Riwayat lama tidak dihapus.':'the PO page is hidden and orders are not recorded. Old history is kept.','Data tersimpan di HP ini saja.':'Data is stored on this phone only.','Data tersimpan di HP ini saja. Cadangan berupa satu file (termasuk template Excel) yang disimpan ke folder Download, lalu bisa langsung dibagikan, mis. ke WhatsApp.':'Data is stored on this phone only. A backup is a single file (including the Excel template) saved to the Download folder, which you can then share right away, e.g. to WhatsApp.','Cek Pembaruan':'Check for Updates','Memeriksa pembaruan…':'Checking for updates…','Pembaruan Tersedia':'Update Available','Nanti':'Later','Perbarui':'Update','Mengunduh…':'Downloading…','Ikuti layar pemasangan Android, lalu buka InLook lagi.':'Follow the Android install screen, then open InLook again.','Izinkan InLook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Perbarui lagi.':'Allow InLook to install apps on the settings screen that opened, come back here, then tap Update again.','Versi aplikasi tidak terbaca':'App version could not be read','Tampilan':'Appearance','Tema':'Theme','Otomatis':'Automatic','Terang':'Light','Gelap':'Dark','Warna aksen':'Accent color','Biru':'Blue','Hijau lembut':'Soft green','Tampilan daftar':'List view','Tampilan kisi':'Grid view','Ukuran':'Size','Lampiran siap. Subjek terisi dan nama penerima disalin otomatis: tempel di kolom To/CC. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. The subject is filled in and the recipient names were copied: paste them into To/CC. Tap Share to open Outlook.','Tekan sekali lagi untuk keluar':'Press again to exit','Pasang':'Install','Coba lagi':'Try again','Izinkan InLook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Pasang.':'Allow InLook to install apps on the settings screen that opened, come back here, then tap Install.','Geser layar untuk pindah menu':'Swipe to switch menus','Aktif: geser layar ke kiri atau kanan untuk pindah menu, atau ketuk tombol menu di atas. Nonaktif: hanya lewat tombol menu, berguna kalau sering tergeser tanpa sengaja.':'On: swipe left or right to switch menus, or tap the menu buttons above. Off: menu buttons only, useful if you swipe by accident.','Geser layar aktif':'Swipe is on','Geser layar nonaktif, pakai tombol menu':'Swipe is off, use the menu buttons','Ubah nama':'Rename','Ubah Nama':'Rename','Nama file':'File name','Nama tidak boleh kosong':'Name cannot be empty','Beri izin':'Grant access','InLook perlu izin mengubah isi folder ini. Ketuk Beri izin, pilih folder yang sama, lalu ketuk Gunakan folder ini.':'InLook needs permission to modify this folder. Tap Grant access, choose the same folder, then tap Use this folder.','Perbarui APK ke versi terbaru dulu (Setting → Tentang → Cek Pembaruan).':'Update the APK to the latest version first (Setting → About → Check for Updates).','Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, diganti namanya, atau dikirim lewat WhatsApp dan Email. Android tidak mengizinkan memilih folder Download itu sendiri; pilih subfolder di dalamnya atau folder lain.':'Add the folders you use often, e.g. an SPH folder. Their files can be searched, sorted, filtered, opened, renamed, or sent via WhatsApp and Email. Android does not allow choosing the Download folder itself; pick a subfolder inside it or another folder.','Opsi':'Options','Pratinjau belum tersedia untuk tipe file ini.':'Preview is not available for this file type.','Buka dengan aplikasi lain':'Open with another app','Butuh internet untuk memuat penampil PDF':'Internet is needed to load the PDF viewer','Tahan file untuk pratinjau, ketuk untuk opsi':'Press and hold a file to preview, tap for options','Latar':'Background','Abu lembut':'Soft gray','Putih tenang':'Calm white','Simpan Cadangan':'Save Backup','File':'Files','Folder Lampiran':'Attachment Folder','Saat menambah lampiran, pemilih file langsung terbuka di folder default ini. Folder lain yang sering dipakai diatur di menu File.':'When you add an attachment, the file picker opens directly in this default folder. Other frequently used folders are managed in the Files menu.','Pilih Folder Default':'Choose Default Folder','Hapus Default':'Clear Default','Fitur ini hanya ada di aplikasi Android (APK).':'This feature is only available in the Android app (APK).','Belum ada folder default. Pemilih file akan terbuka di lokasi terakhir.':'No default folder yet. The file picker opens at its last location.','Folder default lampiran':'Default attachment folder','Menu File membaca folder di HP dan hanya tersedia di aplikasi Android (APK) InLook.':'The Files menu reads folders on this phone and is only available in the InLook Android app (APK).','Belum ada folder':'No folders yet','Tambahkan folder yang sering dipakai, mis. Download atau folder SPH. File di dalamnya bisa dicari, diurutkan, disaring, dibuka, atau dikirim lewat WhatsApp dan Email.':'Add the folders you use often, e.g. Download or an SPH folder. Their files can be searched, sorted, filtered, opened, or sent via WhatsApp and Email.','Pilih Folder':'Choose Folder','Cari nama file':'Search file name','Cari file':'Search files','Hapus pencarian':'Clear search','Urutkan':'Sort','Nama':'Name','Tipe':'Type','Tanggal':'Date','Ukuran':'Size','Muat ulang':'Reload','Urut naik':'Ascending','Urut turun':'Descending','Arah urutan':'Sort direction','Naik satu folder':'Up one folder','Gambar':'Images','Lainnya':'Other','Folder':'Folder','Membaca folder…':'Reading folder…','Coba lagi':'Try again','Pilih ulang folder':'Choose folder again','Folder ini kosong.':'This folder is empty.','Tidak ada file yang cocok.':'No matching files.','Kelola Folder':'Manage Folders','Kelola folder':'Manage folders','Tambah folder':'Add folder','Jadikan default':'Make default','Default':'Default','Belum ada folder.':'No folders yet.','Menghapus hanya melepas folder dari daftar, isi file tidak dihapus.':'Removing only detaches the folder from the list; the files are not deleted.','Hapus folder':'Remove folder','Hapus folder dari daftar':'Remove folder from list','Buka':'Open','Kirim via WhatsApp':'Send via WhatsApp','Kirim via Email (Outlook)':'Send via Email (Outlook)','Bagikan ke aplikasi lain':'Share to another app','Membaca file…':'Reading file…','Folder default dihapus':'Default folder cleared','Fitur folder hanya ada di aplikasi Android':'Folder features are only available in the Android app','Tampilan menu':'Menu','Menu':'Menu','Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.':'Attachments ready. Recipients and subject are filled in. Tap Share to open Outlook.','Pulihkan dari File':'Restore from File','Cara lain tanpa file:':'Other way, no file:','File cadangan tidak valid':'Invalid backup file','Pulihkan Cadangan':'Restore Backup','Pulihkan':'Restore','Data dipulihkan':'Data restored','Gagal menyimpan data':'Failed to save data','Salin Data':'Copy Data','Tempel Data':'Paste Data',
 'Menghapus semua data di HP ini secara permanen.':'Permanently deletes all data on this phone.','Tambah Teks Tetap':'Add Fixed Text','Pemisah Antar Barang':'Item Separator','Email Order':'Order Email','Email SPH':'SPH Email',
 'Tambah Kontak':'Add Contact','Tambah Merk':'Add Brand','Tambah Jenis':'Add Type','Tambah Kategori':'Add Category','Tambah RS':'Add Hospital','Tempel Daftar Barang':'Paste Item List','Ubah':'Edit','Hapus barang':'Delete item',
 'tanpa email (ditulis nama)':'no email (name is used)','Tampil di halaman Order (ketuk untuk sembunyikan)':'Shown on the Order page (tap to hide)','Disembunyikan (ketuk untuk tampilkan)':'Hidden (tap to show)',
@@ -2587,7 +2592,7 @@ const EN={
 'Pemisah antar barang':'Item separator','Sheet':'Sheet','Isi manual':'Enter manually','Penerima To belum punya email':'The To recipient has no email',
 };
 const ENP=[
-[/^INLook (.+) tersedia \(terpasang: (.+)\)\. Ukuran (.+)\.$/,'INLook $1 is available (installed: $2). Size $3.'],[/^Aplikasi sudah versi terbaru \((.+)\)$/,'The app is up to date ($1)'],[/^Gagal cek pembaruan: (.+)$/,'Update check failed: $1'],
+[/^InLook (.+) tersedia \(terpasang: (.+)\)\. Ukuran (.+)\.$/,'InLook $1 is available (installed: $2). Size $3.'],[/^Aplikasi sudah versi terbaru \((.+)\)$/,'The app is up to date ($1)'],[/^Gagal cek pembaruan: (.+)$/,'Update check failed: $1'],
 [/^Lampirkan ke (.+)$/,'Attach to $1'],[/^Pratinjau gagal: (.+)$/,'Preview failed: $1'],[/^Menampilkan (\\d+) dari (\\d+) halaman$/,'Showing $1 of $2 pages'],[/^Nama diubah: (.+)$/,'Renamed: $1'],[/^Dilampirkan ke (.+?): (.+)$/,'Attached to $1: $2'],[/^Tampilkan lebih banyak \((\d+)\)$/,'Show more ($1)'],
 [/^(\d+) file$/,'$1 files'],[/^(\d+) file · (\d+) folder$/,'$1 files · $2 folders'],[/^(\d+) file( · \d+ folder)? \(hasil saring\)$/,'$1 files$2 (filtered)'],
 [/^Cadangan tersimpan di folder Download: (.+)\. Ketuk Bagikan, lalu pilih WhatsApp \(atau aplikasi lain\) untuk menyimpannya di tempat aman\.$/,'Backup saved to the Download folder: $1. Tap Share, then choose WhatsApp (or another app) to keep it somewhere safe.'],
@@ -2676,15 +2681,15 @@ async function apkCheck(manual,quiet){
 function apkPrompt(best,asset,cur){
   const body=String(best.rel.body||''),m=body.match(/SHA-256:\s*([0-9a-f]{64})/i),notes=body.replace(/\s*SHA-256:\s*[0-9a-f]{64}/i,'').trim().slice(0,400);
   $('dTitle').textContent='Pembaruan Tersedia';$('dTitle').dataset.k='';$('dErr').textContent='';$('dBody').onclick=null;
-  $('dBody').innerHTML=`<div style="margin-top:8px;font-size:14px;line-height:1.45">INLook ${esc(best.v)} tersedia (terpasang: ${esc(cur.versionName)}). Ukuran ${fsize(asset.size||0)}.</div>${notes?`<div class="mut" style="margin-top:8px;font-size:13px;white-space:pre-wrap">${esc(notes)}</div>`:''}<div id="apkPg" class="hide" style="margin-top:14px"><div class="pgb"><i id="apkBar"></i></div><div class="pgt"><span id="apkPct">0%</span><span id="apkSz" class="mut"></span></div></div><div id="apkSt" class="mut" style="margin-top:8px"></div>`;
+  $('dBody').innerHTML=`<div style="margin-top:8px;font-size:14px;line-height:1.45">InLook ${esc(best.v)} tersedia (terpasang: ${esc(cur.versionName)}). Ukuran ${fsize(asset.size||0)}.</div>${notes?`<div class="mut" style="margin-top:8px;font-size:13px;white-space:pre-wrap">${esc(notes)}</div>`:''}<div id="apkPg" class="hide" style="margin-top:14px"><div class="pgb"><i id="apkBar"></i></div><div class="pgt"><span id="apkPct">0%</span><span id="apkSz" class="mut"></span></div></div><div id="apkSt" class="mut" style="margin-top:8px"></div>`;
   $('dOk').style.display='';$('dOk').disabled=false;$('dOk').textContent='Perbarui';$('dNo').textContent='Nanti';
   let polling=false;
   $('dNo').onclick=()=>{$('dlg').close();try{localStorage.setItem('oc.apkskip',best.v+'|'+Date.now())}catch(e){}};
   const install=async()=>{
     $('dErr').textContent='';$('dOk').disabled=true;
-    try{await NATIVE.installDownloaded();$('apkSt').textContent='Ikuti layar pemasangan Android, lalu buka INLook lagi.';$('dOk').textContent='Pasang';$('dOk').disabled=false;$('dOk').onclick=install}
+    try{await NATIVE.installDownloaded();$('apkSt').textContent='Ikuti layar pemasangan Android, lalu buka InLook lagi.';$('dOk').textContent='Pasang';$('dOk').disabled=false;$('dOk').onclick=install}
     catch(e){const t=nativeErr(e);$('dOk').textContent='Pasang';$('dOk').disabled=false;$('dOk').onclick=install;
-      $('dErr').textContent=t==='need_permission'?'Izinkan INLook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Pasang.':t}};
+      $('dErr').textContent=t==='need_permission'?'Izinkan InLook memasang aplikasi di layar pengaturan yang terbuka, kembali ke sini, lalu ketuk Pasang.':t}};
   const start=async()=>{
     $('dErr').textContent='';$('dOk').disabled=true;$('apkPg').classList.remove('hide');$('apkSt').textContent='';
     try{await NATIVE.startDownload({url:asset.browser_download_url,sha256:m?m[1].toLowerCase():''})}catch(e){$('dErr').textContent=nativeErr(e);$('dOk').disabled=false;return}
@@ -2711,9 +2716,11 @@ if(!ACCN[D.accent])D.accent='blue';if(!['auto','light','dark'].includes(D.theme)
 function renderLook(){
   $('thmSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.th===D.theme));
   $('accRow').innerHTML=Object.keys(ACCN).map(k=>`<button class="acc${D.accent===k?' on':''}" data-ac="${k}" style="--c:${ACCS[k]}" aria-label="${ACCN[k]}" title="${ACCN[k]}">${D.accent===k?'<i class="fa-solid fa-check"></i>':''}</button>`).join('');
-  $('accName').textContent='· '+ACCN[D.accent]}
-$('thmSeg').onclick=e=>{const b=e.target.closest('[data-th]');if(!b)return;D.theme=b.dataset.th;save();window.applyTheme(D.theme,D.accent);renderLook()};
-$('accRow').onclick=e=>{const b=e.target.closest('[data-ac]');if(!b)return;D.accent=b.dataset.ac;save();window.applyTheme(D.theme,D.accent);renderLook()};
+  $('accName').textContent='· '+ACCN[D.accent];
+  $('bgSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.bgv===(D.bg==='white'?'white':'soft')))}
+$('thmSeg').onclick=e=>{const b=e.target.closest('[data-th]');if(!b)return;D.theme=b.dataset.th;save();window.applyTheme(D.theme,D.accent,D.bg);renderLook()};
+$('accRow').onclick=e=>{const b=e.target.closest('[data-ac]');if(!b)return;D.accent=b.dataset.ac;save();window.applyTheme(D.theme,D.accent,D.bg);renderLook()};
+$('bgSeg').onclick=e=>{const b=e.target.closest('[data-bgv]');if(!b)return;D.bg=b.dataset.bgv;save();window.applyTheme(D.theme,D.accent,D.bg);renderLook()};
 renderLook();
 /* hardware back (APK): close/return one level, else double-press to exit */
 window.__back=()=>{
