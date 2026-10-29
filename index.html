@@ -463,6 +463,7 @@ body.noscroll{overflow:hidden}
 .fbhint{text-align:center;color:var(--mut);font-size:12px;padding:10px 0 4px}
 html[data-bg=white] body{background:#fff}
 html[data-bg=white] .card{box-shadow:0 1px 2px rgba(16,24,40,.06),0 2px 8px rgba(16,24,40,.04)}
+.nm{margin-top:10px;font-size:14px;color:var(--err)}
 </style>
 <script>
 (function(){
@@ -875,10 +876,12 @@ function problems(){const p=[];
   return p}
 
 /* ---------- render order ---------- */
+function noMailWarn(key){const l=D.contacts.filter(c=>shown(c)&&['to','cc'].includes(c[key]||'off')&&!/@/.test(c.email||'')).map(c=>c.name);
+  return l.length?`<div class="nm" role="alert"><i class="fa-solid fa-triangle-exclamation"></i> Belum ada email: ${esc(l.join(', '))}. To/CC tidak akan terisi di Outlook. Isi di Setting → Kontak Penerima.</div>`:''}
 function rcptGrid(key){
   const items=D.contacts.map((c,i)=>{if(!shown(c))return'';const st=c[key]||'off';
     return `<button class="rt s-${st}" data-i="${i}" aria-pressed="${st!=='off'}" aria-label="${esc(c.name)}: ${st==='off'?'tidak dipilih':st.toUpperCase()}"><span class="b">${st==='off'?'–':st.toUpperCase()}</span><span class="n">${esc(c.name)}</span></button>`}).join('');
-  return items?`<div class="mut" style="margin-bottom:6px">Ketuk nama: <b>TO</b> → <b>CC</b> → kosong</div><div class="rg">${items}</div>`:'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Setting.</span>'}
+  return (items?`<div class="mut" style="margin-bottom:6px">Ketuk nama: <b>TO</b> → <b>CC</b> → kosong</div><div class="rg">${items}</div>`:'<span class="mut">Belum ada kontak yang ditampilkan. Atur di tab Setting.</span>')+noMailWarn(key)}
 function renderRcpt(){$('rcpt').innerHTML=rcptGrid('role')}
 const renderBrands=()=>$('brands').innerHTML=D.brands.map(b=>`<button class="chip ${F.brand===b.name?'on':''}" data-b="${esc(b.name)}">${esc(b.name)}</button>`).join('')||'<span class="mut">Belum ada merk. Tambah di tab Setting.</span>';
 const renderJenis=()=>$('jenis').innerHTML=D.jenis.map(j=>`<button class="chip ${F.jenis===j?'on':''}" data-j="${esc(j)}">${esc(j)}</button>`).join('')||'<span class="mut">Belum ada jenis order. Tambah di tab Setting.</span>';
@@ -896,7 +899,7 @@ function renderItems(){
 function renderFiles(){
   $('files').innerHTML=FILES.map((f,i)=>`<div class="fl"><i class="fa-solid ${f.type.startsWith('image/')?'fa-image':f.type==='application/pdf'?'fa-file-pdf':'fa-file'}" style="color:var(--mut)"></i><span>${esc(f.name)}</span><small class="mut">${f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'}</small>
     <button class="ib del" data-fd="${i}" title="Hapus lampiran" aria-label="Hapus lampiran"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
-  $('fileNote').textContent=FILES.length?'Dengan lampiran, email dibuka lewat menu Bagikan HP. Penerima tidak otomatis terisi: To disalin ke clipboard, tempel di kolom To.':'';
+  $('fileNote').textContent=FILES.length?(NATIVE?'Dengan lampiran, email dibuka lewat menu Bagikan HP. To dan CC terisi otomatis bila kontak punya email.':'Dengan lampiran, email dibuka lewat menu Bagikan HP. Penerima tidak otomatis terisi: To disalin ke clipboard, tempel di kolom To.'):'';
   $('goTx').textContent=FILES.length?'OK → Bagikan ke Outlook (+ lampiran)':'OK → Buka Outlook'}
 function renderPrev(){
   saveDraft();
@@ -944,7 +947,7 @@ $('go').onclick=async()=>{
   if(FILES.length){
     const data={files:FILES,title:subject(),text:body(),to:rcpt('to'),cc:rcpt('cc')};
     if(navigator.canShare&&navigator.canShare(data)){
-      if(NATIVE)shareDialog(data,rcpt('to').concat(rcpt('cc')).some(x=>!x.includes('@'))?'Lampiran siap. Subjek terisi dan nama penerima disalin otomatis: tempel di kolom To/CC. Ketuk Bagikan untuk membuka Outlook.':'Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.');
+      if(NATIVE)shareDialog(data,rcpt('to').concat(rcpt('cc')).some(x=>!x.includes('@'))?'Lampiran siap. Ada kontak tanpa email, jadi To/CC tidak akan terisi di Outlook; nama disalin ke clipboard. Isi email di Setting → Kontak Penerima. Ketuk Bagikan untuk membuka Outlook.':'Lampiran siap. Penerima dan subjek sudah terisi. Ketuk Bagikan untuk membuka Outlook.');
       else{await copy(rcpt('to').join('; '));shareDialog(data,'Lampiran siap. Daftar penerima (To) sudah disalin: tempel di kolom To. Ketuk Bagikan, lalu pilih Outlook.')}
       return}
     if(!confirm('HP/browser ini tidak bisa membagikan lampiran. Buka email tanpa lampiran?'))return}
@@ -2492,7 +2495,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v62';
+const APPV='v63';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
