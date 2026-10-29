@@ -551,6 +551,21 @@ button.pk,.sepi,#isep{min-height:44px!important}
 .tg{min-height:56px}.sw{min-width:56px;min-height:44px}.sw input{min-height:44px!important;min-width:56px}
 .ib.bx,.ib.sm,.dfs,#dBrands select{min-height:44px!important}
 
+/* SPH: item jadi kartu (label terlihat) */
+.irow.ih{display:none!important}
+.irow{display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-areas:"c q" "n n" "p d";gap:8px!important;align-items:start}
+.v2f{display:block;min-width:0}.v2f span{display:block;font-size:14px;color:var(--mut);margin-bottom:2px}
+.v2f.c{grid-area:c}.v2f.q{grid-area:q}.v2f.n{grid-area:n}.v2f.p{grid-area:p}
+.irow .ib.del{grid-area:d;align-self:end;justify-self:end}
+/* grup penerima, Pengaturan bertingkat */
+.v2-grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.v2-gc{display:inline-flex;background:var(--card);border:1px solid var(--bd);border-radius:99px;overflow:hidden}
+.v2-gc button{min-height:44px;padding:0 14px;background:none;border:0;color:var(--tx);font-size:16px}
+.v2-gc button+button{padding:0 14px;color:var(--mut);border-left:1px solid var(--bd)}
+.v2g .dsec{margin:0;border:0!important;border-top:1px solid var(--bd)!important;border-radius:0!important;box-shadow:none!important;background:transparent}
+.v2g>.in{padding:0}
+#bkSave,#bkLoad{min-height:44px!important}
+
 </style>
 <script>
 (function(){
@@ -1539,10 +1554,10 @@ function itemHead(){return '<div class="irow ih"><span>Item Code</span><span>Nam
 function itemRow(kind,gi,ii,it){
   const q=qtyOf(it.unit),tot=q*parsePrice(it.price),hasCat=catOptions().length>0;
   return `<div class="itx" data-g="${gi}" data-kd="${kind}" data-i="${ii}"><div class="irow">
-    <input data-ik="code" value="${esc(it.code)}" aria-label="Item Code" autocapitalize="characters" spellcheck="false">
-    <textarea data-ik="name" rows="1" aria-label="Nama Item">${esc(it.name)}</textarea>
-    <input data-ik="unit" inputmode="numeric" value="${esc(it.unit)}" aria-label="Qty">
-    <input data-ik="price" inputmode="numeric" value="${esc(it.price)}" aria-label="Harga Satuan">
+    <label class="v2f c"><span>Kode</span><input data-ik="code" value="${esc(it.code)}" aria-label="Item Code" autocapitalize="characters" spellcheck="false"></label>
+    <label class="v2f n"><span>Nama item</span><textarea data-ik="name" rows="1" aria-label="Nama Item">${esc(it.name)}</textarea></label>
+    <label class="v2f q"><span>Jumlah</span><input data-ik="unit" inputmode="numeric" value="${esc(it.unit)}" aria-label="Qty"></label>
+    <label class="v2f p"><span>Harga satuan</span><input data-ik="price" inputmode="numeric" value="${esc(it.price)}" aria-label="Harga Satuan"></label>
     <button class="ib del" data-sact="iDel" data-g="${gi}" data-kd="${kind}" data-i="${ii}" title="Hapus" aria-label="Hapus"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="isub"><button type="button" class="pk ${hasCat?'':'hide'}" data-sact="pick"><i class="fa-solid fa-list"></i> Pilih dari daftar</button><label class="isub2 ${q>1?'':'hide'}"><input type="checkbox" data-ik="u" ${it.u?'checked':''}> Tampilkan harga satuan</label><span class="itot">${tot>0?'Total: '+tot.toLocaleString('id-ID'):''}</span></div></div>`}
 function updRow(r,o){
@@ -2586,7 +2601,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 1';
+const APPV='v2 beta 2';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -2872,13 +2887,14 @@ new ResizeObserver(syncSp).observe($('pv'));
 loadDraft();setPv();renderAll();syncSp();restoreTab();applyPOVisibility();$('hVer').textContent=APPV;trNode(document.body);
 </script>
 <script>
+window.__BETA=true;
 /* InLook v2 beta: Beranda, pintasan, lembar kirim (+ pilihan PO), pilih penerima, gaya. Dibuat tools/mkbeta.py */
 (function(){
 const g=id=>document.getElementById(id);
 const IC={mail:'envelope-open-text',doc:'file-invoice-dollar',cal:'handshake',send:'paper-plane',clock:'clock-rotate-left',folder:'folder-open',dl:'floppy-disk',copy:'copy',warn:'triangle-exclamation',plus:'plus'};
 const fa=n=>`<i class="fa-solid fa-${IC[n]||n}"></i>`;
 
-D.shortcuts=Array.isArray(D.shortcuts)?D.shortcuts:[];
+D.shortcuts=Array.isArray(D.shortcuts)?D.shortcuts:[];D.groups=Array.isArray(D.groups)?D.groups:[];D.events=Array.isArray(D.events)?D.events:[];
 if(!D.gaya){D.gaya='padat';D.accent='padat'}
 document.documentElement.setAttribute('data-gaya',D.gaya);
 
@@ -2909,18 +2925,18 @@ function renderHome(){
     rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(s.name||scLabel(s))}</b><small><span class="v2-tag">Order</span>${esc2(items||'tanpa barang')}</small></span><button class="v2-btn v2-p" data-sc="${esc2(s.id)}">${fa('send')}Kirim</button></div>`});
   sph.forEach(it=>{const f=it.snap.form||{};
     rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2((f.instansi||'SPH')+(f.produk?' · '+f.produk:''))}</b><small><span class="v2-tag">SPH</span>${(it.snap.groups||[]).reduce((n,x)=>n+(x.items||[]).length,0)} item</small></span><button class="v2-btn v2-t" data-spc="${esc2(it.id)}">${fa('copy')}Salin</button></div>`});
-  const sf=D.spon&&D.spon.form;
-  if(sf&&sf.name)rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(sf.name)}</b><small><span class="v2-tag">Sponsor</span>event terakhir</small></span><button class="v2-btn v2-t" data-go="p">Buka</button></div>`;
+  D.events.slice(0,2).forEach(ev=>{rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(ev.name)}</b><small><span class="v2-tag">Sponsor</span>${esc2(ev.form.manufacturer||'event tersimpan')}</small></span><button class="v2-btn v2-t" data-evc="${esc2(ev.id)}">${fa('copy')}Salin</button></div>`});
   const quick=rows?`<div class="v2-list">${rows}</div>`:`<div class="v2-list"><div class="v2-empty">${fa('send')}<b>Belum ada pintasan</b><p>Buat satu order, lalu simpan sebagai pintasan agar berikutnya cukup 2 ketukan.</p><button class="v2-btn v2-p" data-go="o">Buat Order</button></div></div>`;
   const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button></div>`:'';
   const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('clock')}Riwayat</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
-  el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>`}
+  el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}${window.__BETA?'<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>':''}`}
 window.renderHome=renderHome;
 
 g('vHome').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
   if(b.dataset.sc)return runShortcut(b.dataset.sc);
   if(b.dataset.spc){sphOpen(b.dataset.spc);if(D.sph.cur===b.dataset.spc){D.sph.cur=null;save();renderCurBar();tab('s')}return}
+  if(b.dataset.evc)return runEvent(b.dataset.evc);
   if(b.dataset.go)tab(b.dataset.go)});
 g('hBack').onclick=()=>tab('h');
 
@@ -2953,10 +2969,10 @@ function openSheet(){
     <div class="v2-sum"><dt>CC</dt><dd>${cc.length?esc2(cc.join(', ')):'<span class="mut">Kosong</span>'}</dd></div>
     <div class="v2-sum"><dt>Subjek</dt><dd>${esc2(subjOrder())}</dd></div>
     <div class="v2-sum"><dt>Barang</dt><dd>${items}</dd></div>
-    <div class="v2-sum"><dt>Lampiran</dt><dd>${files}</dd></div></dl>
+    <div class="v2-sum"><dt>Lampiran</dt><dd><div id="v2att">${files}</div><div id="v2recent" class="chips" style="margin-top:8px"></div></dd></div></dl>
     <div class="v2-two"><button class="v2-btn v2-s" data-sh="no">Kirim saja</button><button class="v2-btn v2-p" style="flex:1.4" data-sh="yes">${fa('send')}Kirim &amp; catat PO</button></div>
     <div class="v2-two"><button class="v2-btn v2-t" data-sh="sc">Simpan sebagai pintasan</button><button class="v2-btn v2-s" data-sh="x">Batal</button></div></div>`;
-  sheet.classList.remove('hide')}
+  sheet.classList.remove('hide');loadRecent()}
 window.openSheet=openSheet;
 function closeSheet(){sheet.classList.add('hide')}
 sheet.addEventListener('input',e=>{const n=e.target.dataset.q;if(n===undefined)return;F.items[+n].qty=e.target.value.replace(/[^0-9.,]/g,'')});
@@ -2969,6 +2985,26 @@ sheet.addEventListener('click',e=>{
   window.__sheetOk=true;window.__poYes=(k==='yes');
   g('go').click();window.__sheetOk=false});
 
+
+async function loadRecent(){
+  const box=g('v2recent');if(!NATIVE||!box)return;
+  const d=fdDef();if(!d)return;
+  try{
+    const r=await NATIVE.listFolder({tree:d.tree,docId:''});
+    const items=(r.items||[]).filter(x=>!x.dir).sort((a,b)=>(b.mod||0)-(a.mod||0)).slice(0,3);
+    window.__recent=items;
+    box.innerHTML=items.map((x,i)=>`<button class="chip${FILES.some(f=>f.name===x.name)?' on':''}" data-rf="${i}">${esc2(x.name)}</button>`).join('')+'<button class="chip" data-rmore="1">'+fa('plus')+' Pilih lainnya</button>'
+  }catch(e){}}
+sheet.addEventListener('click',async e=>{
+  const more=e.target.closest('[data-rmore]');
+  if(more){closeSheet();try{nativePick(g('fileIn'))}catch(er){}return}
+  const b=e.target.closest('[data-rf]');if(!b)return;
+  const x=(window.__recent||[])[+b.dataset.rf];if(!x)return;
+  const at=FILES.findIndex(f=>f.name===x.name);
+  if(at>=0){FILES.splice(at,1);b.classList.remove('on')}
+  else{try{const y=await NATIVE.readUri({uri:x.uri});FILES.push(new File([b64ToAb(y.b64)],x.name,{type:x.mime==='application/octet-stream'?(MIMEX[fext(x.name)]||''):x.mime}));b.classList.add('on')}catch(er){toast(nativeErr(er));return}}
+  renderFiles();renderPrev();const a=g('v2att');if(a)a.innerHTML=FILES.length?FILES.map(f=>esc2(f.name)).join(', '):'<span class="mut">Tidak ada</span>'});
+
 /* ---------- pilih penerima ---------- */
 const rc=document.createElement('div');rc.id='v2rc';rc.className='v2-rc hide';document.body.appendChild(rc);
 let rcKey='role',rcQ='';
@@ -2978,7 +3014,7 @@ function rcRender(){
     const st=c[rcKey]||'off';
     return `<div class="v2-row" style="padding-right:8px"><span class="v2-l"><b>${esc2(c.name)}</b>${hasMail(c)?'':'<small style="color:var(--err)">tanpa email</small>'}</span><span class="v2-seg" data-i="${i}"><button class="${st==='to'?'on':''}" data-st="to">To</button><button class="${st==='cc'?'on':''}" data-st="cc">CC</button><button class="${st==='off'?'on n':''}" data-st="off" aria-label="Bukan penerima">–</button></span></div>`}).join('');
   const nTo=D.contacts.filter(c=>shown(c)&&c[rcKey]==='to').length,nCc=D.contacts.filter(c=>shown(c)&&c[rcKey]==='cc').length;
-  rc.innerHTML=`<div class="v2-rcin"><div class="v2-rctop"><b>Penerima</b></div><input id="v2rcq" placeholder="Cari kontak" autocomplete="off" value="${esc2(rcQ)}" aria-label="Cari kontak"><div class="v2-list" style="margin-top:12px">${rows||'<div class="v2-empty"><p>Tidak ada kontak.</p></div>'}</div></div><div class="v2-rcbar"><button class="v2-btn v2-p" data-done="1">Selesai: ${nTo} To, ${nCc} CC</button></div>`;
+  rc.innerHTML=`<div class="v2-rcin"><div class="v2-rctop"><b>Penerima</b></div><input id="v2rcq" placeholder="Cari kontak" autocomplete="off" value="${esc2(rcQ)}" aria-label="Cari kontak"><span class="v2-h3">Grup</span>${groupChips()}<div class="v2-list" style="margin-top:12px">${rows||'<div class="v2-empty"><p>Tidak ada kontak.</p></div>'}</div></div><div class="v2-rcbar"><button class="v2-btn v2-p" data-done="1">Selesai: ${nTo} To, ${nCc} CC</button></div>`;
   const inp=g('v2rcq');inp.oninput=()=>{rcQ=inp.value;const pos=inp.selectionStart;rcRender();const n=g('v2rcq');n.focus();n.setSelectionRange(pos,pos)}}
 function openRc(){rcKey=RK();rcQ='';rcRender();rc.classList.remove('hide')}
 function closeRc(){
@@ -2987,6 +3023,14 @@ function closeRc(){
   renderPrev()}
 rc.addEventListener('click',e=>{
   if(e.target.closest('[data-done]'))return closeRc();
+  const gp=e.target.closest('[data-gp]');
+  if(gp){const gr=D.groups.find(x=>x.id===gp.dataset.gp);if(gr){D.contacts.forEach(c=>{if(gr.names.includes(c.name))c[rcKey]='to'});rcRender()}return}
+  const gx=e.target.closest('[data-gx]');
+  if(gx){D.groups=D.groups.filter(x=>x.id!==gx.dataset.gx);save();rcRender();return}
+  if(e.target.closest('[data-gnew]')){
+    const sel=D.contacts.filter(c=>(c[rcKey]||'off')!=='off').map(c=>c.name);
+    if(!sel.length){toast('Pilih kontak dulu, lalu simpan sebagai grup');return}
+    ask('Simpan grup',[{label:'Nama grup'}],v=>{if(!v[0])return'Isi nama grup';D.groups.push({id:'g'+Math.random().toString(36).slice(2,7),name:v[0],names:sel});save();rcRender()});return}
   const b=e.target.closest('[data-st]');if(!b)return;
   const c=D.contacts[+b.parentElement.dataset.i];c[rcKey]=b.dataset.st;rcRender()});
 [['rcpt'],['rcptS'],['rcptP']].forEach(([id])=>{const host=g(id);if(!host)return;
@@ -3007,6 +3051,44 @@ window.v2Back=()=>{if(!rc.classList.contains('hide')){closeRc();return true}if(!
     save();window.applyTheme(D.theme,D.accent,D.bg);renderLook();paint()})
 })();
 window.applyTheme(D.theme,D.accent,D.bg);
+
+
+/* ---------- event Sponsor tersimpan ---------- */
+const jclone=o=>JSON.parse(JSON.stringify(o));
+function saveSponEvent(){
+  const f=D.spon.form;if(!f||!f.name)return;
+  const rcp={};D.contacts.forEach(c=>{if((c.sp||'off')!=='off')rcp[c.name]=c.sp});
+  const ev={id:'e'+Math.random().toString(36).slice(2,8),ts:Date.now(),name:f.name,form:jclone(f),rcp};
+  const i=D.events.findIndex(x=>x.name===f.name);
+  if(i>=0){ev.id=D.events[i].id;D.events.splice(i,1)}
+  D.events.unshift(ev);D.events=D.events.slice(0,10);save()}
+function runEvent(id){
+  const ev=D.events.find(x=>x.id===id);if(!ev)return;
+  D.spon.form=Object.assign({},sponSeed().form,jclone(ev.form));D.spon.form.date='';D.spon.form.signDate='';
+  D.contacts.forEach(c=>{c.sp=(ev.rcp&&ev.rcp[c.name])||'off'});
+  save();tab('p');renderSpon();renderPrev();toast('Salinan dari '+ev.name+'. Ubah nama dan tanggal.')}
+window.saveSponEvent=saveSponEvent;window.runEvent=runEvent;
+const _ss=window.sponSend;
+if(typeof _ss==='function')window.sponSend=function(){const r=_ss.apply(this,arguments);Promise.resolve(r).then(()=>{try{if(!sponProblems().length)saveSponEvent()}catch(e){}});return r};
+
+/* ---------- Pengaturan: 6 bagian ---------- */
+(function(){
+  const root=g('vData');if(!root)return;
+  const ds=[...root.querySelectorAll(':scope > details.dsec')];
+  const by=t=>ds.find(d=>d.querySelector('summary').textContent.trim().startsWith(t));
+  const plan=[['Tampilan','palette',['Tampilan','Bahasa']],['Data kerja','database',['Kontak Penerima','Merk','Jenis Order','Kategori Barang','Rumah Sakit','Format Subjek','Kalimat Isi Email']],['Pengiriman','paper-plane',['Data PO','Folder Lampiran']]];
+  plan.forEach(([title,icon,names])=>{
+    const parts=names.map(by).filter(Boolean);if(parts.length<2)return;
+    const w=document.createElement('details');w.className='card dsec v2g';
+    w.innerHTML=`<summary><i class="fa-solid fa-${icon}"></i> ${title} <i class="fa-solid fa-chevron-down c"></i></summary><div class="in"></div>`;
+    parts[0].parentNode.insertBefore(w,parts[0]);
+    parts.forEach(d=>w.querySelector('.in').appendChild(d))});
+})();
+
+/* ---------- grup penerima ---------- */
+function groupChips(){
+  const gs=D.groups.map(gr=>`<span class="v2-gc"><button data-gp="${esc2(gr.id)}">${esc2(gr.name)}</button><button data-gx="${esc2(gr.id)}" aria-label="Hapus grup ${esc2(gr.name)}">×</button></span>`).join('');
+  return `<div class="v2-grp">${gs}<button class="v2-btn v2-t" data-gnew="1">${fa('plus')}Simpan grup</button></div>`}
 
 /* mulai di Beranda (kecuali habis perbarui ke Pengaturan) */
 if(MODE!=='d')tab('h');
