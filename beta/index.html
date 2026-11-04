@@ -619,22 +619,41 @@ dialog button.sec,dialog #dNo{background:#e8ecf3!important;color:#161a22!importa
 #vHome{padding-bottom:96px}
 #toast{top:72px!important;bottom:auto!important}
 
+/* ===== tema Redup: terang tapi tidak silau (luminansi kartu 0,86 vs putih 1,0) ===== */
+#thmSeg{grid-template-columns:repeat(4,1fr)!important}
+html[data-theme=dim]{--err:#b3261e;--bg:#e2dfd6;--card:#f1eee7;--tx:#272b32;--mut:#575d68;--bd:#c9c5b8;--fill:#e6e3d9;--sh:0 1px 2px rgba(40,35,20,.12)}
+html[data-theme=dim] body{background:#e2dfd6}
+html[data-theme=dim] header,html[data-theme=dim] .bar,html[data-theme=dim] .pv{background:#f1eee7}
+html[data-theme=dim] input,html[data-theme=dim] select,html[data-theme=dim] textarea{background:#e6e3d9;color:#272b32}
+html[data-theme=dim] .v2-strip{background:#ecdcae;color:#5b4300}
+html[data-theme=dim] .v2-strip .v2-btn{color:#5b4300}
+html[data-theme=dim] .v2-err{background:#f3dcd7;color:#9c1f17;border-color:#9c1f17}
+html[data-theme=dim] dialog,html[data-theme=dim] .v2-sheet{background:#f1eee7!important;color:#272b32!important;border-color:#b9b4a5!important}
+html[data-theme=dim] dialog #dBody,html[data-theme=dim] dialog .mut,html[data-theme=dim] .v2-sheet .v2-sum dt,html[data-theme=dim] .v2-sheet .mut{color:#444a55!important}
+html[data-theme=dim] .v2-sheet .v2-sum dd,html[data-theme=dim] .v2-sheet h4{color:#272b32}
+html[data-theme=dim] dialog input,html[data-theme=dim] .v2-sheet .v2-q input{background:#e6e3d9!important;color:#272b32!important;border-color:#b9b4a5!important}
+html[data-theme=dim] dialog button.sec,html[data-theme=dim] dialog #dNo,html[data-theme=dim] .v2-sheet .v2-s{background:#e4e0d5!important;color:#272b32!important;border-color:#9f9a8b!important}
+html[data-theme=dim] .v2-sheet .chip{background:#e6e3d9;color:#272b32;border-color:#b9b4a5}
+html[data-theme=dim] .v2-sheet .v2-sum{border-color:#cfcabd}
+html[data-theme=dim] .v2-dim,html[data-theme=dim] dialog::backdrop{background:rgba(30,28,20,.62)!important}
+html[data-theme=dim] .v2-fab{box-shadow:0 6px 18px rgba(40,35,20,.35)}
+
 </style>
 <script>
 (function(){
 var ACC={blue:null,padat:{l:['#0a7a5a','#e3f4ee'],d:['#4fd1a5','#15332a']},teal:{l:['#1f918d','#e1f3f2'],d:['#4cc9c2','#12302f']},sage:{l:['#4a9468','#e5f2ea'],d:['#6cc48a','#15301f']},lavender:{l:['#7e66d0','#eeeafa'],d:['#a894f0','#251e40']},rose:{l:['#d2627f','#fbe9ee'],d:['#f08aa6','#3a1c27']},peach:{l:['#cf7a30','#fcefdf'],d:['#f0a45a','#3a2812']}};
 window.ACC=ACC;
 window.applyTheme=function(theme,acc,bg){
-  theme=theme==='dark'||theme==='light'?theme:'auto';bg=bg==='white'?'white':'soft';window.__th=[theme,acc,bg];
+  theme=theme==='dark'||theme==='light'||theme==='dim'?theme:'auto';bg=bg==='white'?'white':'soft';window.__th=[theme,acc,bg];
   var root=document.documentElement;
   try{if(!window.__mr){window.__mr=[];for(var i=0;i<document.styleSheets.length;i++){var rules;try{rules=document.styleSheets[i].cssRules}catch(e){continue}
       for(var j=0;j<rules.length;j++){var q=rules[j];if(q.type===4&&/prefers-color-scheme/.test(q.media.mediaText))window.__mr.push([q,q.media.mediaText])}}}
-    window.__mr.forEach(function(x){x[0].media.mediaText=theme==='dark'?'all':theme==='light'?'not all':x[1]})}catch(e){}
+    window.__mr.forEach(function(x){x[0].media.mediaText=theme==='dark'?'all':(theme==='light'||theme==='dim')?'not all':x[1]})}catch(e){}
   var dark=theme==='dark'||(theme==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches);
-  root.style.colorScheme=theme==='auto'?'':theme;
+  root.style.colorScheme=theme==='auto'?'':(theme==='dim'?'light':theme);root.setAttribute('data-theme',theme);
   var m=document.querySelectorAll('meta[name=theme-color]');
-  for(var k=0;k<m.length;k++){if(m[k].__o===undefined)m[k].__o=m[k].getAttribute('content');m[k].setAttribute('content',theme==='auto'?m[k].__o:(dark?'#161b23':'#ffffff'))}
-  if(bg==='white'&&!dark)root.setAttribute('data-bg','white');else root.removeAttribute('data-bg');
+  for(var k=0;k<m.length;k++){if(m[k].__o===undefined)m[k].__o=m[k].getAttribute('content');m[k].setAttribute('content',theme==='auto'?m[k].__o:(dark?'#161b23':(theme==='dim'?'#e2dfd6':'#ffffff')))}
+  if(bg==='white'&&!dark&&theme!=='dim')root.setAttribute('data-bg','white');else root.removeAttribute('data-bg');
   var a=ACC[acc];
   if(a){root.style.setProperty('--pri',a[dark?'d':'l'][0]);root.style.setProperty('--chip',a[dark?'d':'l'][1])}
   else{root.style.removeProperty('--pri');root.style.removeProperty('--chip')}};
@@ -2655,7 +2674,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 7';
+const APPV='v2 beta 8';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -2875,7 +2894,7 @@ if(NATIVE){try{NATIVE.getVersion().then(v=>{$('appV').textContent=v.versionName+
 /* ---------- appearance ---------- */
 const ACCN={padat:'Hijau tegas',blue:'Biru',teal:'Teal',sage:'Hijau lembut',lavender:'Lavender',rose:'Rose',peach:'Peach'};
 const ACCS={padat:'#0a7a5a',blue:'#1766d6',teal:'#1f918d',sage:'#4a9468',lavender:'#7e66d0',rose:'#d2627f',peach:'#cf7a30'};
-if(!ACCN[D.accent])D.accent='blue';if(!['auto','light','dark'].includes(D.theme))D.theme='auto';
+if(!ACCN[D.accent])D.accent='blue';if(!['auto','light','dark','dim'].includes(D.theme))D.theme='auto';
 function renderLook(){
   $('thmSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.th===D.theme));
   $('accRow').innerHTML=Object.keys(ACCN).map(k=>`<button class="acc${D.accent===k?' on':''}" data-ac="${k}" style="--c:${ACCS[k]}" aria-label="${ACCN[k]}" title="${ACCN[k]}">${D.accent===k?'<i class="fa-solid fa-check"></i>':''}</button>`).join('');
@@ -3093,6 +3112,12 @@ rc.addEventListener('click',e=>{
   const b=document.createElement('button');b.className='v2-btn v2-t v2-w';b.style.marginTop='8px';b.textContent='Cari / ubah penerima';b.onclick=openRc;host.insertAdjacentElement('afterend',b)});
 window.v2Back=()=>{if(!rc.classList.contains('hide')){closeRc();return true}if(!sheet.classList.contains('hide')){closeSheet();return true}return false};
 
+/* ---------- tema Redup: tombol ke-4 di pilihan tema ---------- */
+(function(){
+  const seg=g('thmSeg');if(!seg||seg.querySelector('[data-th=dim]'))return;
+  const b=document.createElement('button');b.dataset.th='dim';b.innerHTML='<i class="fa-solid fa-cloud-sun"></i><span>Redup</span>';
+  seg.insertBefore(b,seg.querySelector('[data-th=dark]'));
+})();
 /* ---------- gaya (Padat / Tenang) di Pengaturan -> Tampilan ---------- */
 (function(){
   const bg=g('bgSeg');if(!bg)return;
