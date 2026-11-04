@@ -2655,7 +2655,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 6';
+const APPV='v2 beta 7';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -2976,14 +2976,15 @@ function renderBeranda(){
   let rows='';
   D.shortcuts.slice(0,5).forEach(s=>{
     const items=(s.items||[]).map(i=>i.item+(i.qty?' ×'+i.qty:'')).join(', ');
-    rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(s.name||scLabel(s))}</b><small><span class="v2-tag">Order</span>${esc2(items||'tanpa barang')}</small></span><button class="v2-btn v2-p" data-sc="${esc2(s.id)}">${fa('send')}Kirim</button></div>`});
+    rows+=`<div class="v2-row" data-del="sc:${esc2(s.id)}"><span class="v2-l"><b>${esc2(s.name||scLabel(s))}</b><small><span class="v2-tag">Order</span>${esc2(items||'tanpa barang')}</small></span><button class="v2-btn v2-p" data-sc="${esc2(s.id)}">${fa('send')}Kirim</button></div>`});
   sph.forEach(it=>{const f=it.snap.form||{};
-    rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2((f.instansi||'SPH')+(f.produk?' · '+f.produk:''))}</b><small><span class="v2-tag">SPH</span>${(it.snap.groups||[]).reduce((n,x)=>n+(x.items||[]).length,0)} item</small></span><button class="v2-btn v2-t" data-spc="${esc2(it.id)}">${fa('copy')}Salin</button></div>`});
-  D.events.slice(0,2).forEach(ev=>{rows+=`<div class="v2-row"><span class="v2-l"><b>${esc2(ev.name)}</b><small><span class="v2-tag">Sponsor</span>${esc2(ev.form.manufacturer||'event tersimpan')}</small></span><button class="v2-btn v2-t" data-evc="${esc2(ev.id)}">${fa('copy')}Salin</button></div>`});
+    rows+=`<div class="v2-row" data-del="sph:${esc2(it.id)}"><span class="v2-l"><b>${esc2((f.instansi||'SPH')+(f.produk?' · '+f.produk:''))}</b><small><span class="v2-tag">SPH</span>${(it.snap.groups||[]).reduce((n,x)=>n+(x.items||[]).length,0)} item</small></span><button class="v2-btn v2-t" data-spc="${esc2(it.id)}">${fa('copy')}Salin</button></div>`});
+  D.events.slice(0,2).forEach(ev=>{rows+=`<div class="v2-row" data-del="ev:${esc2(ev.id)}"><span class="v2-l"><b>${esc2(ev.name)}</b><small><span class="v2-tag">Sponsor</span>${esc2(ev.form.manufacturer||'event tersimpan')}</small></span><button class="v2-btn v2-t" data-evc="${esc2(ev.id)}">${fa('copy')}Salin</button></div>`});
   const quick=rows?`<div class="v2-list">${rows}</div>`:`<div class="v2-list"><div class="v2-empty">${fa('send')}<b>Belum ada pintasan</b><p>Buat satu order, lalu simpan sebagai pintasan agar berikutnya cukup 2 ketukan.</p><button class="v2-btn v2-p" data-go="o">Buat Order</button></div></div>`;
   const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button></div>`:'';
   const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('clock')}Riwayat</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
-  el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}${window.__BETA?'<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>':''}`}
+  const hint=(strip||rows)?'<div class="mut" style="margin-top:8px">Geser ke kiri atau kanan untuk menghapus draf atau baris Kirim cepat.</div>':'';
+  el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}${hint}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}${window.__BETA?'<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>':''}`}
 window.renderBeranda=renderBeranda;
 
 g('vHome').addEventListener('click',e=>{
@@ -3133,15 +3134,24 @@ function clearDraft(){
   g('note').value='';g('date').value=todayISO();renderAll();saveDraft();renderBeranda();toast('Draf dihapus')}
 function askClearDraft(){
   confirmBox('Hapus draf Order?','Isian order yang belum dikirim (merk, jenis, RS, barang, jumlah, catatan, lampiran) dikosongkan. Pilihan penerima tidak berubah.','Hapus',clearDraft)}
+function askDelRow(v){
+  const i=v.indexOf(':'),k=v.slice(0,i),id=v.slice(i+1);
+  const cfg={
+    sc:{t:'Hapus pintasan?',m:'Pintasan ini dihapus dari Kirim cepat. Data order dan kontak tidak berubah.',run:()=>{D.shortcuts=D.shortcuts.filter(x=>x.id!==id)}},
+    ev:{t:'Hapus event Sponsor?',m:'Event ini dihapus dari Kirim cepat. Email yang sudah dikirim tidak terpengaruh.',run:()=>{D.events=D.events.filter(x=>x.id!==id)}},
+    sph:{t:'Hapus SPH tersimpan?',m:'SPH ini dihapus permanen dari daftar SPH tersimpan, bukan hanya dari Kirim cepat.',run:()=>{D.sph.saved=D.sph.saved.filter(x=>x.id!==id);if(D.sph.cur===id)D.sph.cur=null}}}[k];
+  if(!cfg)return;
+  confirmBox(cfg.t,cfg.m,'Hapus',()=>{cfg.run();save();renderBeranda();toast('Dihapus')})}
+window.askDelRow=askDelRow;
 (function(){
   const host=g('vHome');let sx=0,sy=0,el=null,dx=0,moving=false;
-  host.addEventListener('touchstart',e=>{el=e.target.closest('.v2-strip');if(!el)return;const t=e.touches[0];sx=t.clientX;sy=t.clientY;dx=0;moving=false},{passive:true});
+  host.addEventListener('touchstart',e=>{el=e.target.closest('.v2-strip,[data-del]');if(!el)return;const t=e.touches[0];sx=t.clientX;sy=t.clientY;dx=0;moving=false},{passive:true});
   host.addEventListener('touchmove',e=>{if(!el)return;const t=e.touches[0];dx=t.clientX-sx;const dy=t.clientY-sy;
     if(!moving&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.5)moving=true;
     if(moving){el.style.transition='none';el.style.transform=`translateX(${dx}px)`;el.style.opacity=String(Math.max(.35,1-Math.abs(dx)/360))}},{passive:true});
   host.addEventListener('touchend',()=>{if(!el)return;const s2=el;el=null;
     s2.style.transition='transform .15s,opacity .15s';s2.style.transform='';s2.style.opacity='';
-    if(moving&&Math.abs(dx)>100)askClearDraft();moving=false});
+    if(moving&&Math.abs(dx)>100){if(s2.dataset.del)askDelRow(s2.dataset.del);else askClearDraft()}moving=false});
 })();
 window.clearDraft=clearDraft;
 
