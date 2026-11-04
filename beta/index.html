@@ -569,6 +569,56 @@ button.pk,.sepi,#isep{min-height:44px!important}
 .v2-strip{touch-action:pan-y}
 .v2-strip .v2-x{min-width:48px;padding:0 12px}
 
+/* ===== tipografi seragam v2.0.4: kontrol = 16px, keterangan = 14px, judul kartu = 17px ===== */
+button,.btn,.chip,input,select,textarea,.seg button,.thm button,.add,.sec,.rt .n,.tg span,.pv .sj,.prev,.pr .v,.pr .k,summary,.fbm b{font-size:16px!important}
+.mut,.hint,small,label.f,label.f>span,.pr .k,.sech,.fbhint,.thm span{font-size:14px!important}
+.pr .k{font-size:14px!important}
+h3{font-size:17px!important;font-weight:650}
+.v2-btn,.v2-new button,.v2-foot button{font-size:16px!important}
+.v2-foot button{font-size:14px!important}
+.pv .hd h3{font-size:16px!important}
+textarea,input,select{line-height:1.35}
+/* dialog dan lembar kirim: terpisah jelas dari latar */
+dialog{background:#fff!important;color:#161a22!important;border:1px solid #c9ced8!important;border-top:4px solid var(--pri)!important;border-radius:18px!important;box-shadow:0 18px 60px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.08)!important}
+dialog::backdrop{background:rgba(8,10,14,.72)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+dialog h4{font-size:20px}
+dialog #dBody,dialog .mut{color:#3a4350!important}
+dialog input,dialog select,dialog textarea{background:#f1f3f7!important;color:#161a22!important;border:1.5px solid #c9ced8!important}
+dialog button.sec,dialog #dNo{background:#e8ecf3!important;color:#161a22!important}
+@media (prefers-color-scheme:dark){
+  dialog{background:#2a3342!important;color:#f2f5fa!important;border:1px solid #5b6a82!important;border-top:4px solid var(--pri)!important}
+  dialog #dBody,dialog .mut{color:#c9d2e0!important}
+  dialog input,dialog select,dialog textarea{background:#1a212c!important;color:#f2f5fa!important;border:1.5px solid #5b6a82!important}
+  dialog button.sec,dialog #dNo{background:#3a465a!important;color:#f2f5fa!important}
+}
+.v2-dim{background:rgba(8,10,14,.74)}
+.v2-sheet{background:#fff;border-top:4px solid var(--pri);box-shadow:0 -12px 48px rgba(0,0,0,.5)}
+.v2-sheet .v2-sum dd,.v2-sheet h4{color:#161a22}
+.v2-sheet .v2-sum dt{color:#4b5565}
+.v2-sheet .v2-sum{border-color:#d5dae3}
+.v2-sheet .v2-q input{background:#f1f3f7;color:#161a22;border:1.5px solid #c9ced8}
+.v2-sheet .v2-s{background:#fff;color:#161a22;border:1.5px solid #9aa3b2}
+.v2-sheet .chip{background:#f1f3f7;color:#161a22;border:1px solid #c9ced8}
+.v2-sheet .chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.v2-sheet .mut{color:#4b5565}
+@media (prefers-color-scheme:dark){
+  .v2-sheet{background:#2a3342;border-top-color:var(--pri)}
+  .v2-sheet .v2-sum dd,.v2-sheet h4{color:#f2f5fa}
+  .v2-sheet .v2-sum dt,.v2-sheet .mut{color:#c9d2e0}
+  .v2-sheet .v2-sum{border-color:#46526a}
+  .v2-sheet .v2-q input{background:#1a212c;color:#f2f5fa;border-color:#5b6a82}
+  .v2-sheet .v2-s{background:#3a465a;color:#f2f5fa;border-color:#6b7a94}
+  .v2-sheet .chip{background:#1a212c;color:#f2f5fa;border-color:#5b6a82}
+}
+.v2-done{opacity:1!important;background:var(--chip)!important;color:var(--pri)!important}
+#toast{z-index:80!important;bottom:96px!important}
+/* tombol Buka Outlook */
+.v2-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:20;min-height:56px;padding:0 20px;border-radius:99px;border:0;background:var(--pri);color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.v2-fab.hide{display:none!important}
+.v2-fab i{font-size:20px}
+#vHome{padding-bottom:96px}
+#toast{top:72px!important;bottom:auto!important}
+
 </style>
 <script>
 (function(){
@@ -2605,7 +2655,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 5';
+const APPV='v2 beta 6';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -2876,7 +2926,7 @@ const tab=(t,dir)=>{if(t==='f'&&'osp'.includes(MODE))FB.ctx=MODE;MODE=t;
   [['vHome','h'],['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vFile','f'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
   [['tOrder','o'],['tSph','s'],['tSpon','p'],['tPO','q'],['tFile','f'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
   const nb=t==='h'||t==='d'||t==='q'||t==='f';document.querySelector('.bar').classList.toggle('hide',nb);$('pv').classList.toggle('hide',nb);$('pvSp').classList.toggle('hide',nb);
-  $('hBack').classList.toggle('hide',t==='h');document.body.classList.toggle('inwork',t!=='h');
+  $('hBack').classList.toggle('hide',t==='h');document.body.classList.toggle('inwork',t!=='h');var fb=document.getElementById('v2fab');if(fb)fb.classList.toggle('hide',t!=='h');
   scrollTo(0,0);
   if(dir){const m=document.querySelector('main:not(.hide)');if(m){m.classList.remove('slL','slR');void m.offsetWidth;m.classList.add(dir==='l'?'slL':'slR');setTimeout(()=>m.classList.remove('slL','slR'),260)}}
   if(t==='h')renderBeranda();else if(t==='d')renderData();else if(t==='f')renderFileTab();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
@@ -2895,7 +2945,7 @@ window.__BETA=true;
 /* InLook v2 beta: Beranda, pintasan, lembar kirim (+ pilihan PO), pilih penerima, gaya. Dibuat tools/mkbeta.py */
 (function(){
 const g=id=>document.getElementById(id);
-const IC={trash:'trash-can',mail:'envelope-open-text',doc:'file-invoice-dollar',cal:'handshake',send:'paper-plane',clock:'clock-rotate-left',folder:'folder-open',dl:'floppy-disk',copy:'copy',warn:'triangle-exclamation',plus:'plus'};
+const IC={check:'circle-check',outlook:'envelope',trash:'trash-can',mail:'envelope-open-text',doc:'file-invoice-dollar',cal:'handshake',send:'paper-plane',clock:'clock-rotate-left',folder:'folder-open',dl:'floppy-disk',copy:'copy',warn:'triangle-exclamation',plus:'plus'};
 const fa=n=>`<i class="fa-solid fa-${IC[n]||n}"></i>`;
 
 D.shortcuts=Array.isArray(D.shortcuts)?D.shortcuts:[];D.groups=Array.isArray(D.groups)?D.groups:[];D.events=Array.isArray(D.events)?D.events:[];
@@ -2958,9 +3008,9 @@ function saveShortcut(){
   const name=[F.brand,F.jenis,F.rs].filter(Boolean).join(' · ')||'Order';
   const sig=JSON.stringify([F.brand,F.jenis,F.rs,items,to,cc]);
   const dup=D.shortcuts.find(s=>JSON.stringify([s.brand,s.jenis,s.rs,s.items,s.to,s.cc])===sig);
-  if(dup){toast('Pintasan ini sudah ada');return}
+  if(dup){toast('Pintasan ini sudah ada');return 'dup'}
   D.shortcuts.unshift({id:'p'+Math.random().toString(36).slice(2,8),name,brand:F.brand,jenis:F.jenis,rs:F.rs,items,to,cc});
-  D.shortcuts=D.shortcuts.slice(0,20);save();toast('Disimpan sebagai pintasan')}
+  D.shortcuts=D.shortcuts.slice(0,20);save();toast('Disimpan sebagai pintasan. Muncul di Beranda > Kirim cepat.');return 'ok'}
 
 /* ---------- lembar kirim (ringkasan + pilihan PO) ---------- */
 const sheet=document.createElement('div');sheet.id='v2sheet';sheet.className='v2-dim hide';document.body.appendChild(sheet);
@@ -2985,7 +3035,7 @@ sheet.addEventListener('click',e=>{
   if(e.target===sheet)return closeSheet();
   const b=e.target.closest('[data-sh]');if(!b)return;const k=b.dataset.sh;
   if(k==='x')return closeSheet();
-  if(k==='sc'){saveShortcut();return}
+  if(k==='sc'){const ok=saveShortcut();b.innerHTML=(ok==='dup'?fa('check')+' Pintasan sudah ada':fa('check')+' Tersimpan sebagai pintasan');b.disabled=true;b.classList.add('v2-done');return}
   renderItems();renderPrev();closeSheet();
   window.__sheetOk=true;window.__poYes=(k==='yes');
   g('go').click();window.__sheetOk=false});
@@ -3113,6 +3163,16 @@ window.clearDraft=clearDraft;
 function groupChips(){
   const gs=D.groups.map(gr=>`<span class="v2-gc"><button data-gp="${esc2(gr.id)}">${esc2(gr.name)}</button><button data-gx="${esc2(gr.id)}" aria-label="Hapus grup ${esc2(gr.name)}">×</button></span>`).join('');
   return `<div class="v2-grp">${gs}<button class="v2-btn v2-t" data-gnew="1">${fa('plus')}Simpan grup</button></div>`}
+
+
+/* ---------- tombol Buka Outlook (Beranda) ---------- */
+function openOutlookApp(){
+  const fb=()=>{location.href='ms-outlook://emails'};
+  try{if(NATIVE&&NATIVE.openOutlook){NATIVE.openOutlook().catch(fb);return}}catch(e){}
+  fb()}
+const fab=document.createElement('button');fab.id='v2fab';fab.className='v2-fab';fab.setAttribute('aria-label','Buka aplikasi Outlook');
+fab.innerHTML=`<i class="fa-solid fa-envelope"></i><span>Outlook</span>`;fab.onclick=openOutlookApp;document.body.appendChild(fab);
+window.openOutlookApp=openOutlookApp;
 
 /* mulai di Beranda (kecuali habis perbarui ke Pengaturan) */
 if(MODE!=='d')tab('h');
