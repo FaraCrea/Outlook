@@ -2674,7 +2674,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 8';
+const APPV='v2 beta 9';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3185,7 +3185,7 @@ window.clearDraft=clearDraft;
   const root=g('vData');if(!root)return;
   const ds=[...root.querySelectorAll(':scope > details.dsec')];
   const by=t=>ds.find(d=>d.querySelector('summary').textContent.trim().startsWith(t));
-  const plan=[['Tampilan','palette',['Tampilan','Bahasa']],['Data kerja','database',['Kontak Penerima','Merk','Jenis Order','Kategori Barang','Rumah Sakit','Format Subjek','Kalimat Isi Email']],['Pengiriman','paper-plane',['Data PO','Folder Lampiran']]];
+  const plan=[['Tampilan &amp; bahasa','palette',['Tampilan','Bahasa']],['Data kerja','database',['Kontak Penerima','Merk','Jenis Order','Kategori Barang','Rumah Sakit','Format Subjek','Kalimat Isi Email']],['Pengiriman','paper-plane',['Data PO','Folder Lampiran']]];
   plan.forEach(([title,icon,names])=>{
     const parts=names.map(by).filter(Boolean);if(parts.length<2)return;
     const w=document.createElement('details');w.className='card dsec v2g';
