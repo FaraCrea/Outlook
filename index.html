@@ -703,7 +703,8 @@ html[data-gaya=mint] .chip.on{background:var(--chip);color:var(--tx);border-colo
 .v2-sr.pick .v2-ft::after,.fbr.pick .fi::after{content:'\f00c';font:900 20px 'Font Awesome 6 Free';position:absolute;inset:0;display:grid;place-items:center;background:var(--pri);color:var(--on-pri,#fff);border-radius:inherit}
 .fbr .fi{position:relative}
 .v2-ft{position:relative;background-size:cover;background-position:center;overflow:hidden}
-.v2-ft.ph{color:transparent;text-shadow:none}
+.v2-ft.ph{color:transparent!important;text-shadow:none}
+.v2-m code{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v2-more,.fbr .fbm{width:44px;height:44px;min-height:44px;border:0;background:none;color:var(--mut);padding:0;border-radius:99px;flex:none;font-size:16px;display:grid;place-items:center}
 .fbr.pick{background:var(--chip)}
 .v2-selrow{display:flex;gap:8px;align-items:center;max-width:640px;margin:0 auto}
@@ -2778,7 +2779,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2.2.0';
+const APPV='v2.2.1';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3429,6 +3430,7 @@ function renderBanner(){
   else if(st&&!st.allFiles&&D.find.all&&S.scope==='all')h=`<div class="v2-err" role="alert">${fa('shield-halved')}<div><b>Dokumen di luar folder pilihan belum terlihat</b><br>Untuk mencari di seluruh HP, InLook perlu izin "Akses semua file".<div class="v2-two"><button class="v2-btn v2-p" data-fx="perm">Beri izin</button><button class="v2-btn v2-s" data-fx="folders">Folder pilihan saja</button></div></div></div>`;
   else if(st&&st.count===0&&!trees().length&&!(st.allFiles&&D.find.all))h=`<div class="v2-err" role="alert">${fa('folder-plus')}<div><b>Belum ada yang bisa dicari</b><br>Tambahkan folder, atau beri izin untuk seluruh HP.<div class="v2-two"><button class="v2-btn v2-p" data-fx="addfolder">Tambah folder</button><button class="v2-btn v2-s" data-fx="perm">Seluruh HP</button></div></div></div>`;
   el.innerHTML=h}
+function shortPath(p){const s=String(p).split('/');return s.length>3||p.length>30?'…/'+s.slice(-2).join('/'):p}
 function renderList(){
   const el=g('v2flist');if(!el)return;renderCtl();
   if(S.unsupported){el.innerHTML='';return}
@@ -3436,7 +3438,7 @@ function renderList(){
     el.innerHTML=`<div class="v2-empty">${fa('magnifying-glass')}<b>${S.q?'Tidak ada file bernama "'+esc2(S.q)+'"':'Belum ada file'}</b><p>${S.q?'Coba kata lebih pendek, hapus filter, atau cari di seluruh HP.':'Indeks masih kosong atau sedang dibuat.'}</p>${(S.type!=='all'||S.size||S.date)?'<button class="v2-btn v2-t" data-fx="clearfilter">Hapus filter</button>':''}</div>`;g('v2fhint').textContent='';return}
   el.innerHTML=S.items.map((x,i)=>{
     const k=KIND(x.ext||''),on=S.sel.has(x.uri);
-    return `<div class="v2-sr${on?' pick':''}" data-i="${i}" role="button" tabindex="0"><span class="v2-ft ${k[0]}"${k[0]==='img'?` data-thumb="${esc2(x.uri)}"`:''}>${k[1]}</span><span class="v2-m"><b>${hl(x.name)}</b><code>${esc2(x.folder||'/')}</code></span><span class="v2-r"><span>${fm(x.size)}</span><span>${dfmt(x.mod)}</span></span><button class="v2-more" data-more="${i}" aria-label="Opsi ${esc2(x.name)}">${fa('ellipsis-vertical')}</button></div>`}).join('');
+    return `<div class="v2-sr${on?' pick':''}" data-i="${i}" role="button" tabindex="0"><span class="v2-ft ${k[0]}"${k[0]==='img'?` data-thumb="${esc2(x.uri)}"`:''}>${k[1]}</span><span class="v2-m"><b>${hl(x.name)}</b><code title="${esc2(x.folder||'/')}">${esc2(shortPath(x.folder||'/'))}</code></span><span class="v2-r"><span>${fm(x.size)}</span><span>${dfmt(x.mod)}</span></span><button class="v2-more" data-more="${i}" aria-label="Opsi ${esc2(x.name)}">${fa('ellipsis-vertical')}</button></div>`}).join('');
   g('v2fhint').innerHTML=(S.q?'':(S.st&&S.st.count?`${(S.st.count).toLocaleString('id-ID')} file diindeks. `:''))+'Ketuk: pratinjau · Tahan: pilih banyak · ⋮: opsi'+(S.q?'':'<br>Operator: <code class="v2-k">ext:pdf</code> <code class="v2-k">size:&gt;1mb</code> <code class="v2-k">date:7d</code> <code class="v2-k">-draft</code>');
   thumbs()}
 const THC=new Map();let thQ=[],thBusy=0,thIO=null;
