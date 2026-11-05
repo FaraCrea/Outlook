@@ -699,6 +699,18 @@ html[data-gaya=mint] .chip.on{background:var(--chip);color:var(--tx);border-colo
 .v2-sr{display:flex;align-items:center;gap:12px;padding:8px 12px;min-height:76px}
 .v2-sr+.v2-sr{border-top:1px solid var(--bd)}
 .v2-sr.pick{background:var(--chip)}
+.v2-sr.pick .v2-ft{position:relative}
+.v2-sr.pick .v2-ft::after,.fbr.pick .fi::after{content:'\f00c';font:900 20px 'Font Awesome 6 Free';position:absolute;inset:0;display:grid;place-items:center;background:var(--pri);color:var(--on-pri,#fff);border-radius:inherit}
+.fbr .fi{position:relative}
+.v2-ft{position:relative;background-size:cover;background-position:center;overflow:hidden}
+.v2-ft.ph{color:transparent;text-shadow:none}
+.v2-more,.fbr .fbm{width:44px;height:44px;min-height:44px;border:0;background:none;color:var(--mut);padding:0;border-radius:99px;flex:none;font-size:16px;display:grid;place-items:center}
+.fbr.pick{background:var(--chip)}
+.v2-selrow{display:flex;gap:8px;align-items:center;max-width:640px;margin:0 auto}
+.v2-selt{flex:none;font-weight:700;color:var(--tx);white-space:nowrap;font-size:14px}
+.v2-selrow .v2-p{flex:1}
+.v2-tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;line-height:1}
+.v2-tb small{font-size:12px!important;font-weight:600}
 .v2-ft{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:14px;font-weight:800;flex:none}
 .v2-ft.pdf{background:#FDECEA;color:#B42318}.v2-ft.xls{background:#E3F4EE;color:#0A7A5A}.v2-ft.doc{background:#E8EEFB;color:#1D4ED8}
 .v2-ft.img{background:#F0EAFB;color:#6D28D9}.v2-ft.vid{background:#FBEFDD;color:#9A4A06}.v2-ft.zip{background:#ECEEF1;color:#4B5563}
@@ -941,7 +953,7 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
       <div class="fseg" id="fbSeg" role="group" aria-label="Urutkan"></div></div>
     <div id="fbListW" class="hide"><div id="fbPath" class="fbpath hide"></div>
       <div class="fbbar"><span class="fbsum mut" id="fbSum"></span><div class="vsw" id="fbView"><button data-v="list" aria-label="Tampilan daftar"><i class="fa-solid fa-list"></i></button><button data-v="grid" aria-label="Tampilan kisi"><i class="fa-solid fa-table-cells-large"></i></button></div></div>
-      <div class="card fbl" id="fbList"></div><div class="fbhint">Tahan file untuk pratinjau, ketuk untuk opsi</div></div>
+      <div class="card fbl" id="fbList"></div><div class="fbhint">Ketuk: pratinjau · Tahan: pilih banyak · &#8942;: opsi</div></div>
   </div>
 </main>
 
@@ -1423,7 +1435,7 @@ function fbRender(){
   L.innerHTML=show.map(x=>{const i=FB.items.indexOf(x);
     if(x.dir)return `<div class="fbr" data-fr="${i}" role="button" tabindex="0"><span class="fi" style="color:#d9a21b;background:#d9a21b1f"><i class="fa-solid fa-folder"></i></span><div class="fm"><b>${esc(x.name)}</b><small>Folder</small></div><i class="fa-solid fa-chevron-right c"></i></div>`;
     const t=FT[ftype(x.name)];
-    return `<div class="fbr" data-fr="${i}" role="button" tabindex="0"><span class="fi" style="color:${t.c};background:${t.c}1f"${ftype(x.name)==='img'?` data-thumb="${esc(x.uri)}"`:''}><i class="fa-solid ${t.i}"></i></span><div class="fm"><b>${esc(x.name)}</b><small>${esc(t.l)} · ${fsize(x.size||0)}${x.mod?' · '+fdate(x.mod):''}</small></div><i class="fa-solid fa-ellipsis-vertical c"></i></div>`}).join('')
+    return `<div class="fbr${FB.sel&&FB.sel.has(x.uri)?' pick':''}" data-fr="${i}" role="button" tabindex="0"><span class="fi" style="color:${t.c};background:${t.c}1f"${ftype(x.name)==='img'?` data-thumb="${esc(x.uri)}"`:''}><i class="fa-solid ${t.i}"></i></span><div class="fm"><b>${esc(x.name)}</b><small>${esc(t.l)} · ${fsize(x.size||0)}${x.mod?' · '+fdate(x.mod):''}</small></div><button class="ib fbm" data-fm="1" aria-label="Opsi file"><i class="fa-solid fa-ellipsis-vertical"></i></button></div>`}).join('')
     +(all.length>show.length?`<button class="sec add" data-fa="more">Tampilkan lebih banyak (${all.length-show.length})</button>`:'');fbThumbs()}
 
 async function fbLoad(){
@@ -1460,7 +1472,7 @@ $('fbList').onclick=async e=>{
   const r=e.target.closest('[data-fr]');if(!r)return;
   const it=FB.items[+r.dataset.fr];if(!it)return;
   if(it.dir){FB.stack.push({id:it.id,name:it.name});FB.q='';$('fbQ').value='';fbLoad();return}
-  fbSheet(it)};
+  if(window.fbTap)window.fbTap(it,e);else fbSheet(it)};
 $('fbList').onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset.fr!==undefined){e.preventDefault();e.target.click()}};
 
 function fbManage(){
@@ -1500,7 +1512,7 @@ function fbRename(it){
     if(/[\\/:*?"<>|]/.test(nn)){$('dErr').textContent='Nama tidak boleh berisi \\ / : * ? " < > |';return}
     if(nn===it.name){$('dlg').close();return}
     $('dOk').disabled=true;
-    try{await NATIVE.renameUri({uri:it.uri,name:nn});$('dlg').close();toast('Nama diubah: '+nn);fbLoad()}
+    try{await NATIVE.renameUri({uri:it.uri,name:nn});$('dlg').close();toast('Nama diubah: '+nn);(window.fbAfterRename?window.fbAfterRename():fbLoad())}
     catch(e){const m=nativeErr(e);$('dOk').disabled=false;
       if(m==='need_write'){
         $('rnNote').textContent='InLook perlu izin mengubah isi folder ini. Ketuk Beri izin, pilih folder yang sama, lalu ketuk Gunakan folder ini.';
@@ -1576,7 +1588,7 @@ async function pvText(it,B){
 (()=>{let lp=null;const L=$('fbList');
   L.addEventListener('pointerdown',e=>{FB.lpFired=false;const r=e.target.closest('[data-fr]');if(!r||e.pointerType==='mouse'&&e.button!==0)return;
     const it=FB.items[+r.dataset.fr];if(!it||it.dir)return;
-    lp={x:e.clientX,y:e.clientY,t:setTimeout(()=>{FB.lpFired=true;try{navigator.vibrate&&navigator.vibrate(18)}catch(er){}fbPreview(it)},450)}});
+    lp={x:e.clientX,y:e.clientY,t:setTimeout(()=>{FB.lpFired=true;try{navigator.vibrate&&navigator.vibrate(18)}catch(er){}(window.fbHold?window.fbHold(it):fbPreview(it))},450)}});
   const cancel=()=>{if(lp){clearTimeout(lp.t);lp=null}};
   L.addEventListener('pointermove',e=>{if(lp&&Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>10)cancel()});
   L.addEventListener('pointerup',()=>{cancel();if(FB.lpFired)setTimeout(()=>{FB.lpFired=false},400)});L.addEventListener('pointercancel',cancel);L.addEventListener('scroll',cancel,true);
@@ -2767,7 +2779,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 13';
+const APPV='v2 beta 14';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3038,7 +3050,7 @@ const tab=(t,dir)=>{if(t==='f'&&'osp'.includes(MODE))FB.ctx=MODE;MODE=t;
   [['vHome','h'],['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vFile','f'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
   [['tOrder','o'],['tSph','s'],['tSpon','p'],['tPO','q'],['tFile','f'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
   const nb=t==='h'||t==='d'||t==='q'||t==='f';document.querySelector('.bar').classList.toggle('hide',nb);$('pv').classList.toggle('hide',nb);$('pvSp').classList.toggle('hide',nb);
-  $('hBack').classList.toggle('hide',t==='h');document.body.classList.toggle('inwork',t!=='h');var fb=document.getElementById('v2fab');if(fb)fb.classList.toggle('hide',t!=='h');
+  $('hBack').classList.toggle('hide',t==='h');document.body.classList.toggle('inwork',t!=='h');var fb=document.getElementById('v2fab');if(fb)fb.classList.toggle('hide',t!=='h');if(window.fbSelClear)fbSelClear();
   scrollTo(0,0);
   if(dir){const m=document.querySelector('main:not(.hide)');if(m){m.classList.remove('slL','slR');void m.offsetWidth;m.classList.add(dir==='l'?'slL':'slR');setTimeout(()=>m.classList.remove('slL','slR'),260)}}
   if(t==='h')renderBeranda();else if(t==='d')renderData();else if(t==='f')renderFileTab();else if(t==='q')renderPO();else if(t==='s'){renderSph();renderPrev()}else if(t==='p'){renderSpon();renderPrev()}else{renderFiles();renderPrev()}
@@ -3318,7 +3330,7 @@ D.find=(D.find&&typeof D.find==='object')?D.find:{on:false,all:true};
 if(D.find.all===undefined)D.find.all=true;
 
 const TYPES=[['all','Semua','table-cells-large',[]],['doc','Dokumen','file-lines',['pdf','doc','docx','xls','xlsx','csv','ppt','pptx','txt','rtf','odt','ods','eml','msg']],
-  ['img','Gambar','image',['jpg','jpeg','png','gif','webp','heic','bmp']],['vid','Video','film',['mp4','mkv','mov','3gp','avi','webm']],['zip','Arsip','box-archive',['zip','rar','7z','tar','gz']]];
+  ['img','Foto','image',['jpg','jpeg','png','gif','webp','heic','bmp']],['vid','Video','film',['mp4','mkv','mov','3gp','avi','webm']],['zip','Arsip','box-archive',['zip','rar','7z','tar','gz']]];
 const KIND=e=>/^(jpe?g|png|gif|webp|heic|bmp)$/.test(e)?['img',e.toUpperCase().slice(0,3)]:/^(mp4|mkv|mov|3gp|avi|webm)$/.test(e)?['vid',e.toUpperCase().slice(0,3)]:/^(xlsx?|csv|ods)$/.test(e)?['xls',e.toUpperCase().slice(0,3)]:/^(docx?|rtf|odt|txt|eml|msg)$/.test(e)?['doc',e.toUpperCase().slice(0,3)]:e==='pdf'?['pdf','PDF']:/^(zip|rar|7z|tar|gz)$/.test(e)?['zip',e.toUpperCase().slice(0,3)]:['zip',(e||'FILE').toUpperCase().slice(0,3)];
 const SIZES=[['','Semua'],['lt1','< 1 MB'],['1-10','1–10 MB'],['gt10','> 10 MB']];
 const DATES=[['','Kapan saja'],['1','24 jam'],['7','7 hari'],['30','30 hari']];
@@ -3401,7 +3413,7 @@ const root=document.createElement('div');root.id='v2find';root.className='v2-rc 
 function shell(){
   g('v2fin').innerHTML=`<div class="v2-rctop"><button class="v2-ibk" data-fx="back" aria-label="Kembali">${fa('chevron-left')}</button><b>Cari lampiran</b></div>
   <div class="v2-sf">${fa('magnifying-glass')}<input id="v2fq" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cari nama file" aria-label="Cari nama file"></div>
-  <div class="v2-tr" role="group" aria-label="Jenis file">${TYPES.map(t=>`<button class="v2-tb" data-type="${t[0]}" aria-label="${t[1]}">${fa(t[2])}</button>`).join('')}</div>
+  <div class="v2-tr" role="group" aria-label="Jenis file">${TYPES.map(t=>`<button class="v2-tb" data-type="${t[0]}" aria-label="${t[1]}">${fa(t[2])}<small>${t[1]}</small></button>`).join('')}</div>
   <div class="v2-ctl"><span class="v2-cnt" id="v2fcnt"></span><span class="v2-sc2" id="v2fsc"></span><button class="v2-ib2" data-fx="scope" aria-label="Cakupan pencarian">${fa('mobile-screen')}${fa('chevron-down')}</button><button class="v2-ib2" data-fx="filter" aria-label="Filter">${fa('sliders')}</button><button class="v2-ib2" data-fx="dir" id="v2fdir" aria-label="Urutan">${fa('arrow-down')}</button></div>
   <div id="v2fban"></div><div class="v2-list" id="v2flist"></div><div class="mut" id="v2fhint" style="margin-top:8px"></div>`;
   const q=g('v2fq');q.value=S.q;q.oninput=()=>{S.q=q.value;later()}}
@@ -3426,11 +3438,24 @@ function renderList(){
     el.innerHTML=`<div class="v2-empty">${fa('magnifying-glass')}<b>${S.q?'Tidak ada file bernama "'+esc2(S.q)+'"':'Belum ada file'}</b><p>${S.q?'Coba kata lebih pendek, hapus filter, atau cari di seluruh HP.':'Indeks masih kosong atau sedang dibuat.'}</p>${(S.type!=='all'||S.size||S.date)?'<button class="v2-btn v2-t" data-fx="clearfilter">Hapus filter</button>':''}</div>`;g('v2fhint').textContent='';return}
   el.innerHTML=S.items.map((x,i)=>{
     const k=KIND(x.ext||''),on=S.sel.has(x.uri);
-    return `<div class="v2-sr${on?' pick':''}" data-i="${i}" role="checkbox" aria-checked="${on}" tabindex="0"><span class="v2-ft ${k[0]}">${k[1]}</span><span class="v2-m"><b>${hl(x.name)}</b><code>${esc2(x.folder||'/')}</code></span><span class="v2-r"><span>${fm(x.size)}</span><span>${dfmt(x.mod)}</span></span><span class="v2-cb${on?' on':''}">${on?fa('check'):''}</span></div>`}).join('');
-  g('v2fhint').innerHTML=S.q?'':(S.st&&S.st.count?`${(S.st.count).toLocaleString('id-ID')} file diindeks. `:'')+'Operator: <code class="v2-k">ext:pdf</code> <code class="v2-k">size:&gt;1mb</code> <code class="v2-k">date:7d</code> <code class="v2-k">-draft</code>'}
+    return `<div class="v2-sr${on?' pick':''}" data-i="${i}" role="button" tabindex="0"><span class="v2-ft ${k[0]}"${k[0]==='img'?` data-thumb="${esc2(x.uri)}"`:''}>${k[1]}</span><span class="v2-m"><b>${hl(x.name)}</b><code>${esc2(x.folder||'/')}</code></span><span class="v2-r"><span>${fm(x.size)}</span><span>${dfmt(x.mod)}</span></span><button class="v2-more" data-more="${i}" aria-label="Opsi ${esc2(x.name)}">${fa('ellipsis-vertical')}</button></div>`}).join('');
+  g('v2fhint').innerHTML=(S.q?'':(S.st&&S.st.count?`${(S.st.count).toLocaleString('id-ID')} file diindeks. `:''))+'Ketuk: pratinjau · Tahan: pilih banyak · ⋮: opsi'+(S.q?'':'<br>Operator: <code class="v2-k">ext:pdf</code> <code class="v2-k">size:&gt;1mb</code> <code class="v2-k">date:7d</code> <code class="v2-k">-draft</code>');
+  thumbs()}
+const THC=new Map();let thQ=[],thBusy=0,thIO=null;
+function thRun(){
+  while(thBusy<3&&thQ.length){const el=thQ.shift(),u=el.dataset.thumb;if(!el.isConnected)continue;
+    if(THC.has(u)){thSet(el,THC.get(u));continue}
+    thBusy++;
+    NATIVE.getThumb({uri:u,size:200}).then(x=>{THC.set(u,x.b64);if(THC.size>300)THC.delete(THC.keys().next().value);thSet(el,x.b64)}).catch(()=>THC.set(u,'')).finally(()=>{thBusy--;thRun()})}}
+function thSet(el,b){if(!b||!el.isConnected)return;el.style.backgroundImage=`url(data:image/jpeg;base64,${b})`;el.classList.add('ph')}
+function thumbs(){
+  if(thIO){thIO.disconnect();thIO=null}thQ=[];
+  const els=[...document.querySelectorAll('#v2flist [data-thumb]')];if(!els.length)return;
+  thIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){thIO.unobserve(e.target);thQ.push(e.target)}});thRun()},{rootMargin:'300px'});
+  els.forEach(el=>{const c=THC.get(el.dataset.thumb);if(c)thSet(el,c);else thIO.observe(el)})}
 function renderBar(){
   const n=S.sel.size;let tot=0;S.sel.forEach(x=>tot+=x.size);
-  g('v2fbar').innerHTML=`<div class="v2-rcbar">${tot>25*MB?`<div class="v2-warnb">${fa('triangle-exclamation')} Total ${fm(tot)} melebihi batas umum email (25 MB). Tetap bisa dilampirkan.</div>`:''}<button class="v2-btn ${n?'v2-p':'v2-s'}" data-fx="attach" ${n?'':'disabled'}>${fa('paperclip')}${n?`Lampirkan ${n} file (${fm(tot)})`:'Pilih file untuk dilampirkan'}</button></div>`}
+  g('v2fbar').innerHTML=n?`<div class="v2-rcbar">${tot>25*MB?`<div class="v2-warnb">${fa('triangle-exclamation')} Total ${fm(tot)} melebihi batas umum email (25 MB). Tetap bisa dilampirkan.</div>`:''}<div class="v2-selrow"><button class="v2-btn v2-s" data-fx="unsel" aria-label="Batal pilih">${fa('xmark')}</button><button class="v2-btn v2-p" style="flex:1" data-fx="attach">${fa('paperclip')}Lampirkan ${n} file (${fm(tot)})</button></div></div>`:''}
 function paint(){renderTypes();renderCtl();renderBanner();renderList();renderBar()}
 
 /* ---------- lembar filter ---------- */
@@ -3472,9 +3497,25 @@ async function attach(){
   if(window.__findTarget==='vSph')renderFilesS();else if(window.__findTarget==='vSpon')renderFilesP();else renderFiles();renderPrev();closeFind();toast(ok+' file dilampirkan');
   if(S.fromSheet){S.fromSheet=false;openSheet()}}
 function closeFind(){root.classList.add('hide');fsheet.classList.add('hide');clearInterval(S.poll);S.poll=null}
+const ITEM=x=>({uri:x.uri,name:x.name,size:x.size,mod:(x.mod||0)*1000,mime:'',dir:false});
+const ctxKey=()=>window.__findTarget==='vSph'?'s':window.__findTarget==='vSpon'?'p':'o';
+let lpT=null,lpFired=false,lpXY=null;
+root.addEventListener('pointerdown',e=>{
+  lpFired=false;const row=e.target.closest('.v2-sr');if(!row||(e.pointerType==='mouse'&&e.button!==0))return;
+  const x=S.items[+row.dataset.i];if(!x)return;lpXY={x:e.clientX,y:e.clientY};
+  lpT=setTimeout(()=>{lpFired=true;try{navigator.vibrate&&navigator.vibrate(18)}catch(er){}S.sel.set(x.uri,x);row.classList.add('pick');renderBar()},450)});
+const lpCancel=()=>{if(lpT){clearTimeout(lpT);lpT=null}};
+root.addEventListener('pointermove',e=>{if(lpT&&lpXY&&Math.hypot(e.clientX-lpXY.x,e.clientY-lpXY.y)>10)lpCancel()});
+root.addEventListener('pointerup',()=>{lpCancel();if(lpFired)setTimeout(()=>{lpFired=false},400)});root.addEventListener('pointercancel',lpCancel);root.addEventListener('scroll',lpCancel,true);
+root.addEventListener('contextmenu',e=>{if(e.target.closest('.v2-sr'))e.preventDefault()});
 root.addEventListener('click',async e=>{
+  if(lpFired){lpFired=false;e.preventDefault();return}
+  const more=e.target.closest('[data-more]');
+  if(more){const x=S.items[+more.dataset.more];if(x){FB.ctx=ctxKey();window.__inFind=true;fbSheet(ITEM(x))}return}
   const row=e.target.closest('.v2-sr');
-  if(row){const x=S.items[+row.dataset.i];if(!x)return;if(S.sel.has(x.uri))S.sel.delete(x.uri);else S.sel.set(x.uri,x);row.classList.toggle('pick');row.setAttribute('aria-checked',S.sel.has(x.uri));const cb=row.querySelector('.v2-cb');cb.classList.toggle('on',S.sel.has(x.uri));cb.innerHTML=S.sel.has(x.uri)?fa('check'):'';renderBar();return}
+  if(row){const x=S.items[+row.dataset.i];if(!x)return;
+    if(S.sel.size){if(S.sel.has(x.uri))S.sel.delete(x.uri);else S.sel.set(x.uri,x);row.classList.toggle('pick',S.sel.has(x.uri));renderBar();return}
+    FB.ctx=ctxKey();window.__inFind=true;fbPreview(ITEM(x));return}
   const t=e.target.closest('[data-type]');if(t){S.type=t.dataset.type;renderTypes();runSearch();return}
   const b=e.target.closest('[data-fx]');if(!b)return;const a=b.dataset.fx;
   if(a==='back'){closeFind();if(S.fromSheet){S.fromSheet=false;openSheet()}return}
@@ -3486,8 +3527,10 @@ root.addEventListener('click',async e=>{
   if(a==='addfolder'){try{const f=await fdAdd(false);if(f){await startScan(true);poll()}}catch(er){}paint();return}
   if(a==='stop'){try{await NATIVE.idxCancel()}catch(er){}return}
   if(a==='clearfilter'){S.type='all';S.size='';S.date='';paint();runSearch();return}
-  if(a==='attach'){attach();return}});
-window.v2FindBack=()=>{if(!fsheet.classList.contains('hide')){fsheet.classList.add('hide');return true}if(!root.classList.contains('hide')){closeFind();if(S.fromSheet){S.fromSheet=false;openSheet()}return true}return false};
+  if(a==='attach'){attach();return}
+  if(a==='unsel'){S.sel=new Map();document.querySelectorAll('#v2flist .v2-sr.pick').forEach(r=>r.classList.remove('pick'));renderBar();return}});
+window.fbAfterRename=()=>{if(!root.classList.contains('hide')){startScan(true).then(()=>{poll();runSearch()})}else fbLoad()};
+window.v2FindBack=()=>{if(!fsheet.classList.contains('hide')){fsheet.classList.add('hide');return true}if(!root.classList.contains('hide')&&S.sel.size){S.sel=new Map();document.querySelectorAll('#v2flist .v2-sr.pick').forEach(r=>r.classList.remove('pick'));renderBar();return true}if(!root.classList.contains('hide')){closeFind();if(S.fromSheet){S.fromSheet=false;openSheet()}return true}return false};
 
 async function openFind(fromSheet,target){
   window.__findTarget=target||(fromSheet?'vOrder':window.__findTarget)||'vOrder';
@@ -3547,6 +3590,38 @@ det.addEventListener('toggle',()=>{if(det.open)renderSet()});
 /* ---------- perbarui otomatis saat dibuka (maks tiap 30 menit, tanpa layanan latar) ---------- */
 (async()=>{if(!D.find.on)return;try{if(await startScan(false))poll()}catch(e){}})();
 window.v2FindPrime=()=>{};
+})();
+
+/* InLook v2.2: tab File: ketuk = pratinjau, tahan = pilih banyak, titik tiga = opsi. Dibuat tools/mkbeta.py */
+(function(){
+if(!NATIVE)return;
+const g=id=>document.getElementById(id);
+FB.sel=new Set();FB.selItems=new Map();
+const bar=document.createElement('div');bar.id='v2fsel';bar.className='v2-rcbar hide';bar.style.zIndex='25';document.body.appendChild(bar);
+const ctxName=()=>({o:'Order',s:'SPH',p:'Sponsor'}[FB.ctx]||'Order');
+function renderSel(){
+  const n=FB.sel.size;bar.classList.toggle('hide',!(n&&MODE==='f'));if(!n)return;
+  let tot=0;FB.selItems.forEach(x=>tot+=x.size||0);
+  bar.innerHTML=`<div class="v2-selrow"><button class="v2-btn v2-s" data-sel="cancel" aria-label="Batal pilih"><i class="fa-solid fa-xmark"></i></button><span class="v2-selt">${n} dipilih · ${fsize(tot)}</span><button class="v2-btn v2-p" data-sel="att"><i class="fa-solid fa-paperclip"></i>Lampirkan ke ${ctxName()}</button></div>`}
+window.fbSelClear=()=>{if(FB.sel.size){FB.sel.clear();FB.selItems.clear();renderSel();if(MODE==='f')fbRender()}else bar.classList.add('hide')};
+window.fbHold=it=>{FB.sel.add(it.uri);FB.selItems.set(it.uri,it);renderSel();fbRender()};
+window.fbTap=(it,e)=>{
+  if(e.target.closest('[data-fm]')){fbSheet(it);return}
+  if(FB.sel.size){if(FB.sel.has(it.uri)){FB.sel.delete(it.uri);FB.selItems.delete(it.uri)}else{FB.sel.add(it.uri);FB.selItems.set(it.uri,it)}renderSel();fbRender();return}
+  fbPreview(it)};
+bar.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-sel]');if(!b)return;
+  if(b.dataset.sel==='cancel'){fbSelClear();return}
+  const items=[...FB.selItems.values()];toast('Membaca '+items.length+' file…');let ok=0;
+  for(const it of items){
+    try{
+      const x=await NATIVE.readUri({uri:it.uri}),mime=fmime(it),f=new File([b64ToAb(x.b64)],it.name,{type:mime==='*/*'?'':mime});
+      if(FB.ctx==='s'){FILES2.push(f)}else if(FB.ctx==='p'){FILES3.push(f)}else FILES.push(f);ok++}
+    catch(er){toast(it.name+': '+nativeErr(er));return}}
+  if(FB.ctx==='s')renderFilesS();else if(FB.ctx==='p')renderFilesP();else renderFiles();
+  renderPrev();fbSelClear();toast(ok+' file dilampirkan ke '+ctxName())});
+const _vb=window.v2Back;
+window.v2Back=()=>{if(FB.sel&&FB.sel.size&&MODE==='f'){fbSelClear();return true}return _vb?_vb():false};
 })();
 
 </script>
