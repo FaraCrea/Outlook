@@ -683,9 +683,9 @@ html[data-gaya=mint] .chip.on{background:var(--chip);color:var(--tx);border-colo
 .v2-af{display:inline-flex;align-items:center;gap:4px;padding:4px 4px 4px 14px;margin:0 6px 6px 0;max-width:100%}
 .v2-afn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
 .v2-afx{flex:none;width:44px;height:44px;margin:-4px 0;border:0;background:transparent;color:inherit;font-size:16px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%}
-.poa{flex-direction:column;gap:2px}
-.poa .ib{width:auto;min-width:44px;min-height:44px;font-size:14px;font-weight:700;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.poa .ib.del{border:1px solid currentColor;border-radius:10px}
+.poa{flex-direction:column;gap:6px;justify-content:center;align-items:center}
+.poa .ib{width:44px;min-width:44px;height:44px;min-height:44px;font-size:16px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:var(--chip)}
+.poa .ib.del{background:rgba(192,57,43,.1)}
 
 /* ===== Cari file untuk lampiran (v2.1) ===== */
 .v2-ibk{width:48px;height:48px;border-radius:12px;background:none;border:0;color:var(--tx);font-size:18px;margin-left:-12px}
@@ -2571,7 +2571,7 @@ function poLineHtml(r,rsName){
     return `<div class="poi"><span class="poc">${esc(i.code)}</span><span class="pon">${i.name?esc(i.name)+' · ':''}×${nf(q)} ${esc(i.unit||'')}</span>${p?`<em class="pot2">${rpf(p*q)}</em>`:`<span class="warnb sm">tanpa harga</span>`}</div>`}).join('');
   return `<div class="po2"><div class="pod"><b>${dd.d}</b><span>${dd.m}</span><small>${dd.y}</small></div>
     <div class="pob"><div class="pohd"><b>${dd.hari}, ${dd.long}</b>${sub?`<em class="pot2">${rpf(sub)}</em>`:''}</div>${items}</div>
-    <div class="poa"><button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i> Hapus</button></div></div>`}
+    <div class="poa"><button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i></button></div></div>`}
 
 /* ---------- beranda ---------- */
 function renderHome(rows,A){
@@ -2794,7 +2794,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 18';
+const APPV='v2 beta 19';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
