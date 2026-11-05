@@ -744,6 +744,9 @@ label.tg2 input:checked+i{background:var(--pri)}
 label.tg2 input:checked+i::after{left:24px}
 #v2find{z-index:34}
 
+.v2-ft.ph i{display:none}
+.v2-ft.img{font-size:20px}
+
 </style>
 <script>
 (function(){
@@ -2779,7 +2782,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2.2.1';
+const APPV='v2.2.2';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3011,9 +3014,9 @@ $('bgSeg').onclick=e=>{const b=e.target.closest('[data-bgv]');if(!b)return;D.bg=
 renderLook();
 /* hardware back (APK): close/return one level, else double-press to exit */
 window.__back=()=>{
-  if(window.v2Back&&window.v2Back())return true;
   const dl=$('dlg');if(dl&&dl.open){dl.close();return true}
   if(pvIsOpen()){pvClose();return true}
+  if(window.v2Back&&window.v2Back())return true;
   if(MODE==='q'&&PQ.screen!=='home'){poBack();return true}
   if(MODE==='f'&&FB.stack.length){FB.stack.pop();fbLoad();return true}
   if(MODE!=='h'){tab('h');return true}
@@ -3438,7 +3441,7 @@ function renderList(){
     el.innerHTML=`<div class="v2-empty">${fa('magnifying-glass')}<b>${S.q?'Tidak ada file bernama "'+esc2(S.q)+'"':'Belum ada file'}</b><p>${S.q?'Coba kata lebih pendek, hapus filter, atau cari di seluruh HP.':'Indeks masih kosong atau sedang dibuat.'}</p>${(S.type!=='all'||S.size||S.date)?'<button class="v2-btn v2-t" data-fx="clearfilter">Hapus filter</button>':''}</div>`;g('v2fhint').textContent='';return}
   el.innerHTML=S.items.map((x,i)=>{
     const k=KIND(x.ext||''),on=S.sel.has(x.uri);
-    return `<div class="v2-sr${on?' pick':''}" data-i="${i}" role="button" tabindex="0"><span class="v2-ft ${k[0]}"${k[0]==='img'?` data-thumb="${esc2(x.uri)}"`:''}>${k[1]}</span><span class="v2-m"><b>${hl(x.name)}</b><code title="${esc2(x.folder||'/')}">${esc2(shortPath(x.folder||'/'))}</code></span><span class="v2-r"><span>${fm(x.size)}</span><span>${dfmt(x.mod)}</span></span><button class="v2-more" data-more="${i}" aria-label="Opsi ${esc2(x.name)}">${fa('ellipsis-vertical')}</button></div>`}).join('');
+    return `<div class="v2-sr${on?' pick':''}" data-i="${i}" role="button" tabindex="0"><span class="v2-ft ${k[0]}"${k[0]==='img'?` data-thumb="${esc2(x.uri)}"`:''}>${k[0]==='img'?fa('image'):k[1]}</span><span class="v2-m"><b>${hl(x.name)}</b><code title="${esc2(x.folder||'/')}">${esc2(shortPath(x.folder||'/'))}</code></span><span class="v2-r"><span>${fm(x.size)}</span><span>${dfmt(x.mod)}</span></span><button class="v2-more" data-more="${i}" aria-label="Opsi ${esc2(x.name)}">${fa('ellipsis-vertical')}</button></div>`}).join('');
   g('v2fhint').innerHTML=(S.q?'':(S.st&&S.st.count?`${(S.st.count).toLocaleString('id-ID')} file diindeks. `:''))+'Ketuk: pratinjau · Tahan: pilih banyak · ⋮: opsi'+(S.q?'':'<br>Operator: <code class="v2-k">ext:pdf</code> <code class="v2-k">size:&gt;1mb</code> <code class="v2-k">date:7d</code> <code class="v2-k">-draft</code>');
   thumbs()}
 const THC=new Map();let thQ=[],thBusy=0,thIO=null;
