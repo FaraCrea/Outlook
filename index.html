@@ -680,6 +680,13 @@ html[data-gaya=mint] .bar button.dis{background:var(--bd);color:var(--tx)}
 html[data-gaya=mint][data-mode=dark] #wipeAll,html[data-gaya=mint][data-mode=dark] .btn.dd{color:#2B0A07}
 html[data-gaya=mint] .chip.on{background:var(--chip);color:var(--tx);border-color:var(--pri)}
 
+.v2-af{display:inline-flex;align-items:center;gap:4px;padding:4px 4px 4px 14px;margin:0 6px 6px 0;max-width:100%}
+.v2-afn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+.v2-afx{flex:none;width:44px;height:44px;margin:-4px 0;border:0;background:transparent;color:inherit;font-size:16px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%}
+.poa{flex-direction:column;gap:2px}
+.poa .ib{width:auto;min-width:44px;min-height:44px;font-size:14px;font-weight:700;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.poa .ib.del{border:1px solid currentColor;border-radius:10px}
+
 /* ===== Cari file untuk lampiran (v2.1) ===== */
 .v2-ibk{width:48px;height:48px;border-radius:12px;background:none;border:0;color:var(--tx);font-size:18px;margin-left:-12px}
 .v2-sf{display:flex;align-items:center;gap:8px;min-height:52px;padding:0 12px;background:var(--card);border:2px solid var(--pri);border-radius:12px;color:var(--pri)}
@@ -2563,7 +2570,7 @@ function poLineHtml(r,rsName){
     return `<div class="poi"><span class="poc">${esc(i.code)}</span><span class="pon">${i.name?esc(i.name)+' · ':''}×${nf(q)} ${esc(i.unit||'')}</span>${p?`<em class="pot2">${rpf(p*q)}</em>`:`<span class="warnb sm">tanpa harga</span>`}</div>`}).join('');
   return `<div class="po2"><div class="pod"><b>${dd.d}</b><span>${dd.m}</span><small>${dd.y}</small></div>
     <div class="pob"><div class="pohd"><b>${dd.hari}, ${dd.long}</b>${sub?`<em class="pot2">${rpf(sub)}</em>`:''}</div>${items}</div>
-    <div class="poa"><button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i></button></div></div>`}
+    <div class="poa"><button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i> Hapus</button></div></div>`}
 
 /* ---------- beranda ---------- */
 function renderHome(rows,A){
@@ -2782,7 +2789,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2.2.2';
+const APPV='v2.2.3';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3144,7 +3151,7 @@ const sheet=document.createElement('div');sheet.id='v2sheet';sheet.className='v2
 function openSheet(){
   const to=rcpt('to'),cc=rcpt('cc'),bad=to.concat(cc).filter(x=>!x.includes('@'));
   const items=F.items.map((i,n)=>i.item?`<div class="v2-q"><b>${esc2(i.item)}</b><input inputmode="numeric" data-q="${n}" value="${esc2(i.qty)}" aria-label="Jumlah ${esc2(i.item)}"><span>${esc2(i.unit||'ea')}</span></div>`:'').join('')||'<span class="mut">Belum ada barang</span>';
-  const files=FILES.length?FILES.map(f=>esc2(f.name)).join(', '):'<span class="mut">Tidak ada</span>';
+  const files=attHtml();
   sheet.innerHTML=`<div class="v2-sheet" role="dialog" aria-modal="true" aria-label="Kirim order ke Outlook"><div class="v2-grab"></div><h4>Kirim order ke Outlook</h4>
     ${bad.length?`<div class="v2-err" role="alert">${fa('warn')}<div>Belum ada email: ${esc2(bad.join(', '))}. To/CC tidak akan terisi di Outlook. Isi di Pengaturan → Kontak Penerima.</div></div>`:''}
     <dl style="margin:0"><div class="v2-sum"><dt>To</dt><dd>${to.length?esc2(to.join(', ')):'<span class="mut">Kosong</span>'}</dd></div>
@@ -3168,7 +3175,8 @@ sheet.addEventListener('click',e=>{
   g('go').click();window.__sheetOk=false});
 
 
-async function loadRecent(){
+function attHtml(){return FILES.length?FILES.map((f,n)=>`<span class="chip on v2-af"><span class="v2-afn">${esc2(f.name)}</span><button class="v2-afx" data-rmf="${n}" aria-label="Hapus lampiran ${esc2(f.name)}">${fa('xmark')}</button></span>`).join(''):'<span class="mut">Tidak ada lampiran</span>'}
+async function loadRecent_old(){
   const box=g('v2recent');if(!NATIVE||!box)return;
   const findChip='<button class="chip" data-find="1" style="border-color:var(--pri);color:var(--pri);font-weight:700">'+fa('magnifying-glass')+' Cari file…</button>';
   box.innerHTML=findChip;
@@ -3320,6 +3328,14 @@ window.openOutlookApp=openOutlookApp;
 
 /* mulai di Beranda (kecuali habis perbarui ke Pengaturan) */
 if(MODE!=='d')tab('h');
+
+/* v2.2.3: lampiran nyata di lembar kirim */
+function loadRecent(){
+  const box=g('v2recent');if(!box)return;
+  box.innerHTML=(NATIVE?'<button class="chip" data-find="1" style="border-color:var(--pri);color:var(--pri);font-weight:700">'+fa('magnifying-glass')+' Cari file…</button>':'')+'<button class="chip" data-rmore="1">'+fa('plus')+' Pilih lainnya</button>'}
+sheet.addEventListener('click',e=>{
+  const x=e.target.closest('[data-rmf]');if(!x)return;
+  FILES.splice(+x.dataset.rmf,1);renderFiles();renderPrev();const a=g('v2att');if(a)a.innerHTML=attHtml()});
 })();
 
 /* InLook v2.1: cari file untuk lampiran (indeks native FileIndex). Hanya APK 2.0.0+. Dibuat tools/mkbeta.py */
@@ -3339,7 +3355,7 @@ const DATES=[['','Kapan saja'],['1','24 jam'],['7','7 hari'],['30','30 hari']];
 const SORTS=[['auto','Relevan / terbaru'],['mod','Tanggal'],['name','Nama'],['size','Ukuran']];
 const MB=1048576;
 
-const S={q:'',type:'all',sort:'auto',dir:'desc',size:'',date:'',scope:'all',sel:new Map(),items:[],st:null,seq:0,timer:null,poll:null,unsupported:false,fromSheet:false,lastCount:-1,ms:0,loading:false};
+const S={q:'',type:'all',sort:'auto',dir:'desc',size:'',date:'',scope:'all',sel:new Map(),items:[],st:null,seq:0,timer:null,poll:null,unsupported:false,fromSheet:false,comp:false,lastCount:-1,ms:0,loading:false};
 
 /* ---------- parse kueri ---------- */
 function parseQ(str){
@@ -3440,9 +3456,9 @@ function renderList(){
   if(!S.items.length){
     el.innerHTML=`<div class="v2-empty">${fa('magnifying-glass')}<b>${S.q?'Tidak ada file bernama "'+esc2(S.q)+'"':'Belum ada file'}</b><p>${S.q?'Coba kata lebih pendek, hapus filter, atau cari di seluruh HP.':'Indeks masih kosong atau sedang dibuat.'}</p>${(S.type!=='all'||S.size||S.date)?'<button class="v2-btn v2-t" data-fx="clearfilter">Hapus filter</button>':''}</div>`;g('v2fhint').textContent='';return}
   el.innerHTML=S.items.map((x,i)=>{
-    const k=KIND(x.ext||''),on=S.sel.has(x.uri);
-    return `<div class="v2-sr${on?' pick':''}" data-i="${i}" role="button" tabindex="0"><span class="v2-ft ${k[0]}"${k[0]==='img'?` data-thumb="${esc2(x.uri)}"`:''}>${k[0]==='img'?fa('image'):k[1]}</span><span class="v2-m"><b>${hl(x.name)}</b><code title="${esc2(x.folder||'/')}">${esc2(shortPath(x.folder||'/'))}</code></span><span class="v2-r"><span>${fm(x.size)}</span><span>${dfmt(x.mod)}</span></span><button class="v2-more" data-more="${i}" aria-label="Opsi ${esc2(x.name)}">${fa('ellipsis-vertical')}</button></div>`}).join('');
-  g('v2fhint').innerHTML=(S.q?'':(S.st&&S.st.count?`${(S.st.count).toLocaleString('id-ID')} file diindeks. `:''))+'Ketuk: pratinjau · Tahan: pilih banyak · ⋮: opsi'+(S.q?'':'<br>Operator: <code class="v2-k">ext:pdf</code> <code class="v2-k">size:&gt;1mb</code> <code class="v2-k">date:7d</code> <code class="v2-k">-draft</code>');
+    const k=KIND(x.ext||''),on=S.comp?isAtt(x):S.sel.has(x.uri);
+    return `<div class="v2-sr${on?' pick':''}" data-i="${i}" role="button" tabindex="0"><span class="v2-ft ${k[0]}"${k[0]==='img'?` data-thumb="${esc2(x.uri)}"`:''}>${k[0]==='img'?fa('image'):k[1]}</span><span class="v2-m"><b>${hl(x.name)}</b><code title="${esc2(x.folder||'/')}">${esc2(shortPath(x.folder||'/'))}</code></span><span class="v2-r"><span>${fm(x.size)}</span><span>${dfmt(x.mod)}</span></span>${S.comp?'':`<button class="v2-more" data-more="${i}" aria-label="Opsi ${esc2(x.name)}">${fa('ellipsis-vertical')}</button>`}</div>`}).join('');
+  g('v2fhint').innerHTML=(S.q?'':(S.st&&S.st.count?`${(S.st.count).toLocaleString('id-ID')} file diindeks. `:''))+(S.comp?'Ketuk: lampirkan / lepas · Tahan: pratinjau':'Ketuk: pratinjau · Tahan: pilih banyak · ⋮: opsi')+(S.q?'':'<br>Operator: <code class="v2-k">ext:pdf</code> <code class="v2-k">size:&gt;1mb</code> <code class="v2-k">date:7d</code> <code class="v2-k">-draft</code>');
   thumbs()}
 const THC=new Map();let thQ=[],thBusy=0,thIO=null;
 function thRun(){
@@ -3457,6 +3473,7 @@ function thumbs(){
   thIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){thIO.unobserve(e.target);thQ.push(e.target)}});thRun()},{rootMargin:'300px'});
   els.forEach(el=>{const c=THC.get(el.dataset.thumb);if(c)thSet(el,c);else thIO.observe(el)})}
 function renderBar(){
+  if(S.comp){const n=arrT().length;g('v2fbar').innerHTML=`<div class="v2-rcbar"><div class="v2-selrow"><button class="v2-btn v2-p" style="flex:1" data-fx="done">${fa('check')}Selesai · ${n} lampiran</button></div></div>`;return}
   const n=S.sel.size;let tot=0;S.sel.forEach(x=>tot+=x.size);
   g('v2fbar').innerHTML=n?`<div class="v2-rcbar">${tot>25*MB?`<div class="v2-warnb">${fa('triangle-exclamation')} Total ${fm(tot)} melebihi batas umum email (25 MB). Tetap bisa dilampirkan.</div>`:''}<div class="v2-selrow"><button class="v2-btn v2-s" data-fx="unsel" aria-label="Batal pilih">${fa('xmark')}</button><button class="v2-btn v2-p" style="flex:1" data-fx="attach">${fa('paperclip')}Lampirkan ${n} file (${fm(tot)})</button></div></div>`:''}
 function paint(){renderTypes();renderCtl();renderBanner();renderList();renderBar()}
@@ -3486,6 +3503,17 @@ function permDialog(){
   $('dOk').style.display='';$('dOk').disabled=false;$('dOk').textContent='Buka pengaturan';$('dNo').textContent='Nanti';
   $('dOk').onclick=async()=>{$('dlg').close();D.find.all=true;save();try{await NATIVE.idxRequestPerm()}catch(e){toast(nativeErr(e))}};
   $('dNo').onclick=()=>$('dlg').close();$('dlg').showModal()}
+const arrT=()=>window.__findTarget==='vSph'?FILES2:window.__findTarget==='vSpon'?FILES3:FILES;
+const same=(f,x)=>f._src===x.uri||(!f._src&&f.name===x.name&&f.size===x.size);
+const isAtt=x=>arrT().some(f=>same(f,x));
+function redrawFiles(){if(window.__findTarget==='vSph')renderFilesS();else if(window.__findTarget==='vSpon')renderFilesP();else renderFiles();renderPrev()}
+async function toggleAtt(x,row){
+  const arr=arrT(),at=arr.findIndex(f=>same(f,x));
+  if(at>=0){arr.splice(at,1);redrawFiles();row.classList.remove('pick');renderBar();toast('Dilepas: '+x.name);return}
+  try{const r=x.uri[0]==='/'?await NATIVE.readPath({path:x.uri}):await NATIVE.readUri({uri:x.uri});
+    const type=(r.mime&&r.mime!=='application/octet-stream')?r.mime:(MIMEX[fext(x.name)]||'');
+    const nf=new File([b64ToAb(r.b64)],x.name,{type});nf._src=x.uri;arr.push(nf);redrawFiles();row.classList.add('pick');renderBar();toast('Terlampir: '+x.name)}
+  catch(e){toast(x.name+': '+nativeErr(e))}}
 async function attach(){
   const items=[...S.sel.values()];if(!items.length)return;
   toast('Membaca '+items.length+' file…');let ok=0;
@@ -3494,8 +3522,8 @@ async function attach(){
       const r=x.uri[0]==='/'?await NATIVE.readPath({path:x.uri}):await NATIVE.readUri({uri:x.uri});
       const type=(r.mime&&r.mime!=='application/octet-stream')?r.mime:(MIMEX[fext(x.name)]||'');
       const arr=window.__findTarget==='vSph'?FILES2:window.__findTarget==='vSpon'?FILES3:FILES;
-      if(arr.some(f=>f.name===x.name&&f.size===x.size))continue;
-      arr.push(new File([b64ToAb(r.b64)],x.name,{type}));ok++}
+      if(arr.some(f=>same(f,x)))continue;
+      const nf=new File([b64ToAb(r.b64)],x.name,{type});nf._src=x.uri;arr.push(nf);ok++}
     catch(e){toast(x.name+': '+nativeErr(e));return}}
   if(window.__findTarget==='vSph')renderFilesS();else if(window.__findTarget==='vSpon')renderFilesP();else renderFiles();renderPrev();closeFind();toast(ok+' file dilampirkan');
   if(S.fromSheet){S.fromSheet=false;openSheet()}}
@@ -3506,7 +3534,9 @@ let lpT=null,lpFired=false,lpXY=null;
 root.addEventListener('pointerdown',e=>{
   lpFired=false;const row=e.target.closest('.v2-sr');if(!row||(e.pointerType==='mouse'&&e.button!==0))return;
   const x=S.items[+row.dataset.i];if(!x)return;lpXY={x:e.clientX,y:e.clientY};
-  lpT=setTimeout(()=>{lpFired=true;try{navigator.vibrate&&navigator.vibrate(18)}catch(er){}S.sel.set(x.uri,x);row.classList.add('pick');renderBar()},450)});
+  lpT=setTimeout(()=>{lpFired=true;try{navigator.vibrate&&navigator.vibrate(18)}catch(er){}
+    if(S.comp){FB.ctx=ctxKey();window.__inFind=true;fbPreview(ITEM(x));return}
+    S.sel.set(x.uri,x);row.classList.add('pick');renderBar()},450)});
 const lpCancel=()=>{if(lpT){clearTimeout(lpT);lpT=null}};
 root.addEventListener('pointermove',e=>{if(lpT&&lpXY&&Math.hypot(e.clientX-lpXY.x,e.clientY-lpXY.y)>10)lpCancel()});
 root.addEventListener('pointerup',()=>{lpCancel();if(lpFired)setTimeout(()=>{lpFired=false},400)});root.addEventListener('pointercancel',lpCancel);root.addEventListener('scroll',lpCancel,true);
@@ -3517,6 +3547,7 @@ root.addEventListener('click',async e=>{
   if(more){const x=S.items[+more.dataset.more];if(x){FB.ctx=ctxKey();window.__inFind=true;fbSheet(ITEM(x))}return}
   const row=e.target.closest('.v2-sr');
   if(row){const x=S.items[+row.dataset.i];if(!x)return;
+    if(S.comp){toggleAtt(x,row);return}
     if(S.sel.size){if(S.sel.has(x.uri))S.sel.delete(x.uri);else S.sel.set(x.uri,x);row.classList.toggle('pick',S.sel.has(x.uri));renderBar();return}
     FB.ctx=ctxKey();window.__inFind=true;fbPreview(ITEM(x));return}
   const t=e.target.closest('[data-type]');if(t){S.type=t.dataset.type;renderTypes();runSearch();return}
@@ -3531,13 +3562,14 @@ root.addEventListener('click',async e=>{
   if(a==='stop'){try{await NATIVE.idxCancel()}catch(er){}return}
   if(a==='clearfilter'){S.type='all';S.size='';S.date='';paint();runSearch();return}
   if(a==='attach'){attach();return}
+  if(a==='done'){closeFind();if(S.fromSheet){S.fromSheet=false;openSheet()}return}
   if(a==='unsel'){S.sel=new Map();document.querySelectorAll('#v2flist .v2-sr.pick').forEach(r=>r.classList.remove('pick'));renderBar();return}});
 window.fbAfterRename=()=>{if(!root.classList.contains('hide')){startScan(true).then(()=>{poll();runSearch()})}else fbLoad()};
 window.v2FindBack=()=>{if(!fsheet.classList.contains('hide')){fsheet.classList.add('hide');return true}if(!root.classList.contains('hide')&&S.sel.size){S.sel=new Map();document.querySelectorAll('#v2flist .v2-sr.pick').forEach(r=>r.classList.remove('pick'));renderBar();return true}if(!root.classList.contains('hide')){closeFind();if(S.fromSheet){S.fromSheet=false;openSheet()}return true}return false};
 
-async function openFind(fromSheet,target){
+async function openFind(fromSheet,target,free){
   window.__findTarget=target||(fromSheet?'vOrder':window.__findTarget)||'vOrder';
-  S.fromSheet=!!fromSheet;S.sel=new Map();S.q='';S.type='all';S.size='';S.date='';S.sort='auto';S.dir='desc';
+  S.fromSheet=!!fromSheet;S.comp=!free;S.sel=new Map();S.q='';S.type='all';S.size='';S.date='';S.sort='auto';S.dir='desc';
   shell();root.classList.remove('hide');paint();
   const st=await status();
   S.scope=st&&st.allFiles&&D.find.all?'all':'folders';
@@ -3553,7 +3585,7 @@ document.addEventListener('visibilitychange',async()=>{
     if(!root.classList.contains('hide')){S.scope=st&&st.allFiles&&D.find.all?'all':'folders';paint();runSearch()}}});
 
 /* ---------- titik masuk ---------- */
-g('vHome').addEventListener('click',e=>{if(e.target.closest('[data-findhome]'))openFind(false,'vOrder')});
+g('vHome').addEventListener('click',e=>{if(e.target.closest('[data-findhome]'))openFind(false,'vOrder',true)});
 if(typeof renderBeranda==='function'&&MODE==='h')renderBeranda();
 const sheetEl=g('v2sheet');
 sheetEl.addEventListener('click',e=>{const b=e.target.closest('[data-find]');if(!b)return;
