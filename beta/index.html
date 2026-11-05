@@ -2767,7 +2767,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 12';
+const APPV='v2 beta 13';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3094,7 +3094,7 @@ function renderBeranda(){
   D.events.slice(0,2).forEach(ev=>{rows+=`<div class="v2-row" data-del="ev:${esc2(ev.id)}"><span class="v2-l"><b>${esc2(ev.name)}</b><small><span class="v2-tag">Sponsor</span>${esc2(ev.form.manufacturer||'event tersimpan')}</small></span><button class="v2-btn v2-t" data-evc="${esc2(ev.id)}">${fa('copy')}Salin</button></div>`});
   const quick=rows?`<div class="v2-list">${rows}</div>`:`<div class="v2-list"><div class="v2-empty">${fa('send')}<b>Belum ada pintasan</b><p>Buat satu order, lalu simpan sebagai pintasan agar berikutnya cukup 2 ketukan.</p><button class="v2-btn v2-p" data-go="o">Buat Order</button></div></div>`;
   const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button></div>`:'';
-  const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('clock')}Riwayat</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
+  const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('clock')}Riwayat</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}${NATIVE&&window.openFind?`<button data-findhome="1">${fa('magnifying-glass')}Cari</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
   const hint=(strip||rows)?'<div class="mut" style="margin-top:8px">Geser ke kiri atau kanan untuk menghapus draf atau baris Kirim cepat.</div>':'';
   el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}${hint}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}${window.__BETA?'<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>':''}`}
 window.renderBeranda=renderBeranda;
@@ -3507,6 +3507,8 @@ document.addEventListener('visibilitychange',async()=>{
     if(!root.classList.contains('hide')){S.scope=st&&st.allFiles&&D.find.all?'all':'folders';paint();runSearch()}}});
 
 /* ---------- titik masuk ---------- */
+g('vHome').addEventListener('click',e=>{if(e.target.closest('[data-findhome]'))openFind(false,'vOrder')});
+if(typeof renderBeranda==='function'&&MODE==='h')renderBeranda();
 const sheetEl=g('v2sheet');
 sheetEl.addEventListener('click',e=>{const b=e.target.closest('[data-find]');if(!b)return;
   const el=g('v2sheet');el.classList.add('hide');openFind(true)});
@@ -3519,7 +3521,9 @@ sobs.forEach(l=>{if(!l)return;const b=document.createElement('button');b.classNa
 /* ---------- Pengaturan: Pencarian file ---------- */
 const vd=g('vData');
 const det=document.createElement('details');det.className='card dsec';
-det.innerHTML=`<summary>${fa('magnifying-glass')} Pencarian file ${fa('chevron-down c')}</summary><div class="in" id="v2fset"></div>`;vd.appendChild(det);
+det.innerHTML=`<summary>${fa('magnifying-glass')} Pencarian file ${fa('chevron-down c')}</summary><div class="in" id="v2fset"></div>`;
+const grp=[...vd.querySelectorAll(':scope > details.v2g')].find(d=>/Pengiriman/.test(d.querySelector('summary').textContent));
+(grp?grp.querySelector('.in'):vd).appendChild(det);
 async function renderSet(){
   const el=g('v2fset');if(!el)return;const st=S.st||await status();
   const fl=(D.folders||[]).map((f,i)=>`<div class="v2-row" style="padding-right:12px"><span class="v2-l"><b>${esc2(f.name||'Folder')}</b><small>${esc2(treePrefix(f.tree)||'folder pilihan')}</small></span><label class="tg2"><input type="checkbox" data-fsw="${i}" ${f.nosearch?'':'checked'} aria-label="Cari di ${esc2(f.name||'folder')}"><i></i></label></div>`).join('')||'<div class="v2-empty"><p>Belum ada folder pilihan.</p></div>';
