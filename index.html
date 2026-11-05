@@ -943,7 +943,7 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
     </div>
     <div class="sumrow" id="poSum"></div>
     <div id="poWarn"></div>
-    <div class="seg" id="poView" style="display:flex;margin-bottom:8px"><button data-pv="prod" style="flex:1">Semua Produk</button><button data-pv="rs" style="flex:1">Rumah Sakit</button></div>
+    <div class="seg" id="poView" style="display:flex;margin-bottom:8px"><button data-pv="prod" style="flex:1">Semua Produk</button><button data-pv="rs" style="flex:1">Rumah Sakit</button><button data-pv="all" style="flex:1">Per PO</button></div>
     <div id="poList"></div>
     <div class="row" style="margin-top:4px"><button class="sec" id="poCsv" style="flex:1"><i class="fa-solid fa-file-csv"></i> Unduh CSV</button></div>
   </div>
@@ -2588,6 +2588,10 @@ function renderHome(rows,A){
       h+=`<div class="card prow ${p.noRs.size?'nop':''}" data-go="pr:${esc(p.code)}"><div class="prl"><div style="flex:1;min-width:0"><div class="pogt">${esc(p.code)}</div>${p.name?`<div class="mut pnm">${esc(p.name)}</div>`:''}</div><div class="pm"><b>${nf(p.qty)}</b><span>qty</span></div></div>
         <div class="prb"><div class="prp"><span class="mut">Harga standar</span>${priceInput('*',p.code,0)}</div><div class="prs">${nominalHtml(p.sales,p.noRs.size,'RS')}</div></div>
         <div class="mut prm">${Object.keys(p.rs).length} RS · terakhir ${poD(p.last).full} <i class="fa-solid fa-chevron-right"></i></div></div>`})}
+  else if(PQ.tab==='all'){
+    const L=rows.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.ts||0)-(a.ts||0));
+    if(!L.length)h='<div class="card mut" style="text-align:center;padding:18px">Belum ada PO.</div>';
+    L.forEach(r=>{h+=`<div class="card" style="padding:8px 12px"><div class="pogt">${esc(r.rs||'-')}</div><div class="mut">${esc([r.brand,r.jenis].filter(Boolean).join(' · '))}</div>${poLineHtml(r,r.rs)}</div>`})}
   else{
     let list=Object.values(A.rs).sort((a,b)=>b.rows[0].date.localeCompare(a.rows[0].date));if(PQ.onlyNo)list=list.filter(g=>g.noPrice.size>0);
     if(!list.length)h='<div class="card mut" style="text-align:center;padding:18px">Semua RS sudah berharga.</div>';
