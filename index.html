@@ -702,6 +702,9 @@ html[data-gaya=mint] .chip.on{background:var(--chip);color:var(--tx);border-colo
 #poq.hide{display:none}
 .v2-remc{margin:12px 0 0}
 
+.v2-poct .chips{order:0;flex:1}
+.v2-poct .ib.bx{order:1}
+
 /* ===== Cari file untuk lampiran (v2.1) ===== */
 .v2-ibk{width:48px;height:48px;border-radius:12px;background:none;border:0;color:var(--tx);font-size:18px;margin-left:-12px}
 .v2-sf{display:flex;align-items:center;gap:8px;min-height:52px;padding:0 12px;background:var(--card);border:2px solid var(--pri);border-radius:12px;color:var(--pri)}
@@ -2516,7 +2519,7 @@ function shareDialog(data,note){
   $('dOk').onclick=()=>{
     $('dErr').textContent='';$('shFb').innerHTML='';
     let pr;try{pr=navigator.share(data)}catch(e){fail(e);return}
-    pr.then(()=>{$('dlg').close();window.v2Sent&&v2Sent(sm)}).catch(e=>{if(e&&e.name==='AbortError')return;fail(e)})};
+    window.v2Sent&&v2Sent(sm);pr.then(()=>$('dlg').close()).catch(e=>{window.v2SentCancel&&v2SentCancel();if(e&&e.name==='AbortError')return;fail(e)})};
   $('dNo').onclick=()=>$('dlg').close();
   $('dlg').showModal()}
 $('wipeAll').onclick=()=>confirmBox('Hapus Semua Data','Semua data di HP ini dihapus permanen: kontak, merk, barang, RS, SPH tersimpan, template Excel, dan draf. Tidak bisa dibatalkan.','Hapus Semua',async()=>{
@@ -2811,7 +2814,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2.4.0';
+const APPV='v2.4.1';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3157,13 +3160,25 @@ window.v2Head=function(){const b=g('hBack');if(!b)return;let t=TT[MODE]||'Berand
   b.innerHTML='<i class="fa-solid fa-chevron-left"></i> '+esc2(t);b.setAttribute('aria-label','Kembali dari '+t);
   if(window.v2RemRow)window.v2RemRow()};
 /* setelah email dibuka/dibagikan: kosongkan form supaya tidak jadi draf */
-window.v2Sent=function(k){setTimeout(()=>{
+const SENTK='inlook.sent';
+function sentDo(k){
+  try{localStorage.removeItem(SENTK)}catch(e){}
   try{
     if(k==='o'){F.brand=null;F.jenis=null;F.rs='';F.items=[{item:'',qty:'',unit:'ea'}];FILES=[];g('note').value='';g('date').value=todayISO();if(window.v2RemReset)v2RemReset();renderAll();saveDraft()}
     else if(k==='s'){sphClear()}
     else if(k==='p'){saveSponEvent();D.spon.form=sponSeed().form;sponManual=false;FILES3=[];save();renderSpon()}
   }catch(e){}
-  tab('h');renderBeranda();toast('Sudah dikirim ke Outlook. Form dikosongkan.')},400)};
+  tab('h');renderBeranda();toast('Sudah dikirim ke Outlook. Form dikosongkan.')}
+let sentPend=null,sentLeft=false;
+/* Outlook dibuka -> InLook ke latar -> kembali: baru form dikosongkan. Batal (tidak sempat keluar) = form tetap. */
+window.v2Sent=function(k){sentPend=k;sentLeft=!!document.hidden;try{localStorage.setItem(SENTK,JSON.stringify({k,ts:Date.now()}))}catch(e){}};
+window.v2SentCancel=function(){sentPend=null;sentLeft=false;try{localStorage.removeItem(SENTK)}catch(e){}};
+document.addEventListener('visibilitychange',()=>{
+  if(!sentPend)return;
+  if(document.hidden){sentLeft=true;return}
+  if(sentLeft){const k=sentPend;sentPend=null;sentLeft=false;setTimeout(()=>sentDo(k),150)}});
+/* proses sempat dimatikan Android saat Outlook terbuka: bersihkan saat dibuka lagi */
+try{const m=JSON.parse(localStorage.getItem(SENTK)||'null');if(m&&m.k){if(Date.now()-m.ts<6*3600*1000&&document.hidden===false&&!sentPend)setTimeout(()=>sentDo(m.k),600);else localStorage.removeItem(SENTK)}}catch(e){}
 
 function runShortcut(id){
   const s=D.shortcuts.find(x=>x.id===id);if(!s)return;
