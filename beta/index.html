@@ -2571,7 +2571,7 @@ function poLineHtml(r,rsName){
     return `<div class="poi"><span class="poc">${esc(i.code)}</span><span class="pon">${i.name?esc(i.name)+' · ':''}×${nf(q)} ${esc(i.unit||'')}</span>${p?`<em class="pot2">${rpf(p*q)}</em>`:`<span class="warnb sm">tanpa harga</span>`}</div>`}).join('');
   return `<div class="po2"><div class="pod"><b>${dd.d}</b><span>${dd.m}</span><small>${dd.y}</small></div>
     <div class="pob"><div class="pohd"><b>${dd.hari}, ${dd.long}</b>${sub?`<em class="pot2">${rpf(sub)}</em>`:''}</div>${items}</div>
-    <div class="poa"><button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i></button></div></div>`}
+    <div class="poa">${window.v2RemBtn?window.v2RemBtn(r):''}<button class="ib pri" data-poa="reuse" data-id="${r.id}" title="Pakai lagi untuk order baru" aria-label="Pakai lagi"><i class="fa-solid fa-rotate-right"></i></button><button class="ib del" data-poa="del" data-id="${r.id}" title="Hapus PO" aria-label="Hapus PO"><i class="fa-solid fa-trash"></i></button></div></div>`}
 
 /* ---------- beranda ---------- */
 function renderHome(rows,A){
@@ -2684,6 +2684,7 @@ $('vPO').addEventListener('click',e=>{
   if(e.target.closest('[data-back]')){poBack();return}
   const act=e.target.closest('[data-poa]');
   if(act){const id=act.dataset.id,r=D.po.rows.find(x=>x.id===id);if(!r)return;
+    if(act.dataset.poa==='rem'){window.v2RemEdit&&window.v2RemEdit(r);return}
     if(act.dataset.poa==='reuse')poReuse(r);
     else confirmBox('Hapus PO','PO tanggal '+poD(r.date).full+' untuk '+poKey(r)+' dihapus dari Data PO. Tidak bisa dibatalkan.','Hapus',()=>{D.po.rows=D.po.rows.filter(x=>x.id!==id);save();renderPO();toast('PO dihapus')});
     return}
@@ -2794,7 +2795,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2 beta 19';
+const APPV='v2 beta 20';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3663,6 +3664,124 @@ bar.addEventListener('click',async e=>{
   renderPrev();fbSelClear();toast(ok+' file dilampirkan ke '+ctxName())});
 const _vb=window.v2Back;
 window.v2Back=()=>{if(FB.sel&&FB.sel.size&&MODE==='f'){fbSelClear();return true}return _vb?_vb():false};
+})();
+
+/* InLook v2.3: pengingat invoice per PO (notifikasi lokal, APK 2.1.0+). Dibuat tools/mkbeta.py */
+(function(){
+const g=id=>document.getElementById(id);
+const esc2=s=>esc(String(s==null?'':s));
+const fa=n=>`<i class="fa-solid fa-${n}"></i>`;
+D.rem=(D.rem&&typeof D.rem==='object')?D.rem:{auto:false,def:{hari:0,jam:'09:00',tone:'',toneName:'Bawaan'}};
+if(!D.rem.def)D.rem.def={hari:0,jam:'09:00',tone:'',toneName:'Bawaan'};
+const HARI=[[0,'Hari PO'],[1,'1 hari setelah PO'],[2,'2 hari setelah PO'],[3,'3 hari setelah PO'],[5,'5 hari setelah PO'],[7,'7 hari setelah PO']];
+const hariLbl=h=>(HARI.find(x=>x[0]===+h)||[0,h+' hari setelah PO'])[1];
+const supported=()=>!!(NATIVE&&NATIVE.remSet);
+
+/* pengaturan efektif satu PO: milik sendiri, atau default bila "otomatis" aktif */
+function eff(r){
+  if(r.rem&&typeof r.rem==='object')return r.rem;
+  return D.rem.auto?Object.assign({},D.rem.def,{on:true}):{on:false}}
+window.v2RemOn=r=>!!eff(r).on;
+window.v2RemBtn=r=>{
+  if(!supported())return '';
+  const on=eff(r).on;
+  return `<button class="ib ${on?'pri':''}" data-poa="rem" data-id="${esc2(r.id)}" title="Pengingat invoice" aria-label="Pengingat invoice ${on?'aktif':'mati'}">${fa(on?'bell':'bell-slash')}</button>`};
+
+/* ---------- jadwal ---------- */
+function atOf(r,e){
+  const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(r.date||'');if(!m)return 0;
+  const t=/^(\d{1,2}):(\d{2})$/.exec(e.jam||'09:00')||['','9','0'];
+  return new Date(+m[1],+m[2]-1,+m[3]+(+e.hari||0),+t[1],+t[2],0).getTime()}
+function desired(){
+  const out={},now=Date.now();
+  (D.po&&D.po.rows||[]).forEach(r=>{
+    const e=eff(r);if(!e.on)return;const at=atOf(r,e);if(at<=now)return;
+    const its=(r.items||[]).slice(0,3).map(i=>i.code+' ×'+i.qty).join(', ')+((r.items||[]).length>3?' …':'');
+    const bj=[r.brand,r.jenis].filter(Boolean).join(' ');
+    out['po-'+r.id]={id:'po-'+r.id,at,title:(+e.hari===0?'Proses PO hari ini: ':'Segera invoice: ')+(r.rs||'PO'),body:[bj,its].filter(Boolean).join(' · ')+' — buat invoice sekarang.',tone:e.tone||''}});
+  return out}
+let lastSig='',busy=false;
+async function sync(force){
+  if(!supported()||busy)return;
+  const want=desired(),sig=JSON.stringify(want);
+  if(!force&&sig===lastSig)return;
+  busy=true;
+  try{
+    const cur=await NATIVE.remList(),have={};(cur.items||[]).forEach(x=>have[x.id]=x);
+    for(const id of Object.keys(have))if(!want[id])await NATIVE.remCancel({id});
+    for(const id of Object.keys(want)){
+      const w=want[id],h=have[id];
+      if(h&&h.at===w.at&&h.title===w.title&&h.body===w.body&&(h.tone||'')===w.tone)continue;
+      await NATIVE.remSet(w)}
+    lastSig=sig}
+  catch(er){}
+  busy=false}
+window.v2RemSync=sync;
+if(supported()){sync(true);setInterval(()=>{if(!document.hidden)sync()},3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync(true)})}
+
+/* ---------- izin ---------- */
+async function ensurePerm(){
+  try{const st=await NATIVE.remStatus();
+    if(!st.notif){await NATIVE.remRequestPerm({what:'notif'});toast('Izinkan notifikasi InLook, lalu aktifkan lagi')}
+    else if(!st.exact)toast('Agar tepat waktu, nyalakan "Alarm & pengingat" untuk InLook di Pengaturan HP')}
+  catch(er){}}
+
+/* ---------- dialog atur pengingat (per PO atau default) ---------- */
+function dlg(title,E,onSave,withOn){
+  const st=Object.assign({on:true,hari:0,jam:'09:00',tone:'',toneName:'Bawaan'},E);
+  const body=()=>`${withOn?`<label class="v2-row" style="padding:8px 0"><span class="v2-l"><b>Ingatkan invoice</b><small>Notifikasi dari InLook pada waktu di bawah</small></span><span class="tg2"><input type="checkbox" id="rmOn" ${st.on?'checked':''}></span></label>`:''}
+    <label class="v2f"><span>Kapan</span><select id="rmHari">${HARI.map(h=>`<option value="${h[0]}"${+st.hari===h[0]?' selected':''}>${h[1]}</option>`).join('')}</select></label>
+    <label class="v2f"><span>Jam</span><input type="time" id="rmJam" value="${esc2(st.jam)}"></label>
+    <div class="v2f"><span>Nada</span><div class="chips"><button class="chip${!st.tone?' on':''}" data-rt="def">Bawaan</button><button class="chip${st.tone==='silent'?' on':''}" data-rt="silent">Senyap</button><button class="chip${st.tone&&st.tone!=='silent'?' on':''}" data-rt="pick">${fa('music')} ${st.tone&&st.tone!=='silent'?esc2(st.toneName||'Nada pilihan'):'Pilih nada…'}</button></div></div>
+    <button class="v2-btn v2-t v2-w" id="rmTest" style="margin-top:8px">${fa('volume-high')} Tes bunyi</button>`;
+  $('dTitle').textContent=title;$('dTitle').dataset.k='';$('dErr').textContent='';
+  const paint=()=>{$('dBody').innerHTML=body()};
+  const grab=()=>{const o=g('rmOn'),h=g('rmHari'),j=g('rmJam');if(o)st.on=o.checked;if(h)st.hari=+h.value;if(j&&j.value)st.jam=j.value};
+  paint();
+  $('dBody').onclick=async e=>{
+    const t=e.target.closest('[data-rt]');
+    if(t){grab();
+      if(t.dataset.rt==='def'){st.tone='';st.toneName='Bawaan'}
+      else if(t.dataset.rt==='silent'){st.tone='silent';st.toneName='Senyap'}
+      else{try{const r=await NATIVE.remPickTone({tone:st.tone});if(!r.cancel){st.tone=r.tone;st.toneName=r.name||'Nada pilihan'}}catch(er){toast(nativeErr(er))}}
+      paint();return}
+    if(e.target.closest('#rmTest')){grab();try{await NATIVE.remTest({tone:st.tone,title:'Tes pengingat invoice'})}catch(er){toast(nativeErr(er))}}};
+  $('dOk').style.display='';$('dOk').disabled=false;$('dOk').textContent='Simpan';$('dNo').textContent='Batal';
+  $('dOk').onclick=async()=>{grab();$('dBody').onclick=null;$('dlg').close();onSave(st);save();if(st.on!==false)ensurePerm();sync(true)};
+  $('dNo').onclick=()=>{$('dBody').onclick=null;$('dlg').close()};
+  $('dlg').showModal()}
+
+window.v2RemEdit=r=>{
+  if(!supported()){toast('Pengingat hanya jalan di aplikasi InLook di HP');return}
+  const e=eff(r),has=!!(r.rem&&typeof r.rem==='object');
+  dlg('Pengingat invoice',has||e.on?e:Object.assign({},D.rem.def,{on:true}),st=>{r.rem={on:!!st.on,hari:st.hari,jam:st.jam,tone:st.tone,toneName:st.toneName};if(typeof renderPO==='function')renderPO()},true)};
+
+/* ---------- Pengaturan ---------- */
+if(supported()){
+  const vd=g('vData');
+  const det=document.createElement('details');det.className='card dsec';
+  det.innerHTML=`<summary>${fa('bell')} Pengingat invoice ${fa('chevron-down c')}</summary><div class="in" id="v2rset"></div>`;
+  const grp=[...vd.querySelectorAll(':scope > details.v2g')].find(d=>/Pengiriman/.test(d.querySelector('summary').textContent));
+  (grp?grp.querySelector('.in'):vd).appendChild(det);
+  async function render(){
+    const el=g('v2rset');if(!el)return;let st={notif:true,exact:true};try{st=await NATIVE.remStatus()}catch(er){}
+    const d=D.rem.def;
+    el.innerHTML=`<div class="mut">Notifikasi untuk mengingatkan membuat invoice setelah PO. Atur per PO lewat ikon lonceng di Riwayat → Per PO. Tanpa layanan latar belakang.</div>
+    <div class="v2-list"><label class="v2-row" style="padding-right:12px"><span class="v2-l"><b>Otomatis untuk PO baru</b><small>Setiap PO yang dicatat langsung diingatkan</small></span><span class="tg2"><input type="checkbox" id="rsAuto" ${D.rem.auto?'checked':''}></span></label></div>
+    <span class="v2-h3">Pengaturan bawaan</span>
+    <div class="v2-list" style="padding:8px 16px"><div class="v2-kv"><span>Kapan</span><span>${esc2(hariLbl(d.hari))}</span></div><div class="v2-kv"><span>Jam</span><span>${esc2(d.jam)}</span></div><div class="v2-kv"><span>Nada</span><span>${esc2(d.tone?(d.tone==='silent'?'Senyap':d.toneName||'Nada pilihan'):'Bawaan')}</span></div></div>
+    <div class="v2-two"><button class="v2-btn v2-t" id="rsEdit">${fa('sliders')} Ubah bawaan</button><button class="v2-btn v2-t" id="rsTest">${fa('volume-high')} Tes bunyi</button></div>
+    <span class="v2-h3">Izin</span>
+    <div class="v2-list"><div class="v2-row" style="padding-right:12px"><span class="v2-l"><b>Notifikasi</b><small>${st.notif?'Diizinkan':'Belum diizinkan'}</small></span>${st.notif?'':`<button class="v2-btn v2-p" id="rsPerm">Izinkan</button>`}</div>
+    <div class="v2-row" style="padding-right:12px"><span class="v2-l"><b>Alarm &amp; pengingat</b><small>${st.exact?'Tepat waktu':'Belum diizinkan, bisa telat beberapa menit'}</small></span>${st.exact?'':`<button class="v2-btn v2-p" id="rsExact">Izinkan</button>`}</div></div>`}
+  det.addEventListener('toggle',()=>{if(det.open)render()});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&det.open)render()});
+  vd.addEventListener('change',e=>{if(e.target.id==='rsAuto'){D.rem.auto=e.target.checked;save();if(D.rem.auto)ensurePerm();sync(true)}});
+  vd.addEventListener('click',async e=>{
+    if(e.target.closest('#rsEdit')){dlg('Pengingat bawaan',D.rem.def,st=>{D.rem.def={hari:st.hari,jam:st.jam,tone:st.tone,toneName:st.toneName};render()},false);return}
+    if(e.target.closest('#rsTest')){try{await NATIVE.remTest({tone:D.rem.def.tone})}catch(er){toast(nativeErr(er))}return}
+    if(e.target.closest('#rsPerm')){try{await NATIVE.remRequestPerm({what:'notif'})}catch(er){}return}
+    if(e.target.closest('#rsExact')){try{await NATIVE.remRequestPerm({what:'exact'})}catch(er){}return}})}
 })();
 
 </script>
