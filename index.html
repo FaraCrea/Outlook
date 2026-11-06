@@ -687,6 +687,21 @@ html[data-gaya=mint] .chip.on{background:var(--chip);color:var(--tx);border-colo
 .poa .ib{width:44px;min-width:44px;height:44px;min-height:44px;font-size:16px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:var(--chip)}
 .poa .ib.del{background:rgba(192,57,43,.1)}
 
+.po2{flex-wrap:wrap}
+.po2 .poa{flex:1 0 100%;order:3;flex-direction:row;justify-content:flex-end;gap:8px;border-top:1px solid var(--bd);padding-top:8px;margin-top:2px}
+.po2 .poa .ib{width:44px}
+.v2-poct{display:flex;align-items:center;gap:8px}
+.v2-poct .ib.bx{flex:none;width:40px;height:44px;min-height:44px;min-width:40px;border-radius:12px}
+#poHome>.card:first-child{padding:8px!important}
+.v2-poct{gap:4px}
+.v2-poct .chips{gap:4px!important}
+.v2-poct .chips{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;min-width:0;margin:0!important}
+.v2-poct .chips::-webkit-scrollbar{display:none}
+.v2-poct .chip{flex:none;padding:8px 6px!important;font-size:14px!important;min-width:0}
+.v2-poct .ib.on{background:var(--chip);color:var(--pri)}
+#poq.hide{display:none}
+.v2-remc{margin:12px 0 0}
+
 /* ===== Cari file untuk lampiran (v2.1) ===== */
 .v2-ibk{width:48px;height:48px;border-radius:12px;background:none;border:0;color:var(--tx);font-size:18px;margin-left:-12px}
 .v2-sf{display:flex;align-items:center;gap:8px;min-height:52px;padding:0 12px;background:var(--card);border:2px solid var(--pri);border-radius:12px;color:var(--pri)}
@@ -817,6 +832,7 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
     <label class="sec add" style="display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--pri);color:var(--pri);border-radius:8px;min-height:38px;cursor:pointer;font-size:14px"><i class="fa-solid fa-paperclip"></i> Tambah Gambar / PDF / File<input type="file" id="fileIn" multiple hidden></label>
     <div class="mut" id="fileNote" style="margin-top:6px"></div></div>
   <div class="card"><h3><i class="fa-solid fa-note-sticky"></i> Catatan</h3><textarea id="note"></textarea></div>
+  <div id="remRow"></div>
   <button class="sec reset" id="resetOrder"><i class="fa-solid fa-rotate-left"></i> Kosongkan Form Order</button>
 </main>
 
@@ -936,10 +952,9 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function
 <!-- ================= DATA PO ================= -->
 <main id="vPO" class="hide">
   <div id="poHome">
-    <button class="sec add" id="poNew" style="margin:0 0 12px"><i class="fa-solid fa-plus"></i> Tambah PO Manual</button>
     <div class="card" style="padding:10px">
-      <input id="poq" placeholder="Cari RS, produk, atau kode" autocomplete="off" aria-label="Cari PO">
-      <div class="chips" id="poPer" style="margin-top:8px"></div>
+      <div class="v2-poct"><button class="ib bx pri" id="poNew" aria-label="Tambah PO manual" title="Tambah PO manual"><i class="fa-solid fa-plus"></i></button><button class="ib bx" id="poSearchBtn" aria-label="Cari PO" title="Cari"><i class="fa-solid fa-magnifying-glass"></i></button><div class="chips" id="poPer"></div></div>
+      <input id="poq" class="hide" placeholder="Cari RS, produk, atau kode" autocomplete="off" aria-label="Cari PO" style="margin-top:8px">
     </div>
     <div class="sumrow" id="poSum"></div>
     <div id="poWarn"></div>
@@ -1247,7 +1262,7 @@ $('go').onclick=async()=>{
   const m=r=>rcpt(r).map(encodeURIComponent).join(',');
   const q=['subject='+encodeURIComponent(subject()),'body='+encodeURIComponent(body())];
   if(m('cc'))q.unshift('cc='+m('cc'));
-  location.href='mailto:'+m('to')+'?'+q.join('&')};
+  location.href='mailto:'+m('to')+'?'+q.join('&');window.v2Sent&&v2Sent('o')};
 
 /* ---------- preview collapse ---------- */
 let pvOpen=false;try{pvOpen=localStorage.getItem('oc.pv')==='1'}catch(e){}
@@ -1960,8 +1975,7 @@ function afterSend(){
 async function sphSend(){
   if(sphProblems().length)return jumpMissing();
   if(D.sph.form.instansi.trim())sphSave();
-  await sphSend0();
-  setTimeout(afterSend,700)}
+  await sphSend0()}
 
 /* ---------- kelengkapan interaktif & pilihan ---------- */
 const parsePrice=v=>{let t=String(v||'').replace(/[^0-9.,]/g,'');if(!t)return 0;
@@ -2099,11 +2113,11 @@ async function sphSend0(){
   if(S.trial===1){
     const ok=await copyRich(html,txt);
     toast(ok?'Tabel tersalin. Di email, tekan lama lalu Tempel.':'Gagal menyalin tabel');
-    location.href=mailtoUrl(to,cc,sub,ok?'':txt);return}
+    location.href=mailtoUrl(to,cc,sub,ok?'':txt);window.v2Sent&&v2Sent('s');return}
   if(S.trial===3){
     const url='https://outlook.office.com/mail/deeplink/compose?to='+enc(to.join(';'))+(cc.length?'&cc='+enc(cc.join(';')):'')+'&subject='+enc(sub)+'&body='+enc(html);
-    if(!window.open(url,'_blank'))location.href=url;return}
-  location.href=mailtoUrl(to,cc,sub,txt)}
+    if(!window.open(url,'_blank'))location.href=url;window.v2Sent&&v2Sent('s');return}
+  location.href=mailtoUrl(to,cc,sub,txt);window.v2Sent&&v2Sent('s')}
 
 /* ---------- simpan otomatis (draf kerja) ---------- */
 const DKEY='outlookcepat.draft.v1';
@@ -2484,13 +2498,14 @@ async function sponSend(){
     dl(xf);toast('HP ini tidak bisa membagikan file. Excel diunduh ke folder Download.');return}
   const eml=await buildEml(rcpt('to'),rcpt('cc'),sub,sponHtml(),files);
   const fn=sub.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,110)+'.eml';
-  dl(new File([eml],fn,{type:'message/rfc822'}));toast('Tersimpan di folder Download: '+fn)}
+  dl(new File([eml],fn,{type:'message/rfc822'}));toast('Tersimpan di folder Download: '+fn);window.v2Sent&&v2Sent('p')}
 
 $('resetSpon').onclick=()=>confirmBox('Reset Semua Kolom Sponsorship','Semua kolom sponsorship dikosongkan, termasuk pilihan penerima. File template tetap tersimpan.','Reset',()=>{
   const z=sponSeed(),S=D.spon;S.form=z.form;['subj','greet','intro','closing'].forEach(k=>{S[k]=z[k]});sponManual=false;FILES3=[];
   D.contacts.forEach(c=>{c.sp='off'});save();renderSpon();renderPrev();scrollTo(0,0);toast('Semua kolom sponsorship direset')});
 function shareDialog(data,note){
   if(NATIVE&&data&&data.files&&data.files.length&&/Outlook/.test(note||'')){navigator.share(data).catch(e=>{if(!(e&&e.name==='AbortError'))toast('Gagal membuka Outlook: '+nativeErr(e))});return}
+  const sm=MODE;
   $('dTitle').textContent='Siap Dibagikan';$('dTitle').dataset.k='';$('dErr').textContent='';$('dBody').onclick=null;
   $('dBody').innerHTML='<div style="margin-top:8px;font-size:14px;line-height:1.45">'+esc(note)+'</div><div id="shFb"></div>';
   $('dOk').style.display='';$('dOk').textContent='Bagikan';$('dNo').textContent='Tutup';
@@ -2501,7 +2516,7 @@ function shareDialog(data,note){
   $('dOk').onclick=()=>{
     $('dErr').textContent='';$('shFb').innerHTML='';
     let pr;try{pr=navigator.share(data)}catch(e){fail(e);return}
-    pr.then(()=>$('dlg').close()).catch(e=>{if(e&&e.name==='AbortError')return;fail(e)})};
+    pr.then(()=>{$('dlg').close();window.v2Sent&&v2Sent(sm)}).catch(e=>{if(e&&e.name==='AbortError')return;fail(e)})};
   $('dNo').onclick=()=>$('dlg').close();
   $('dlg').showModal()}
 $('wipeAll').onclick=()=>confirmBox('Hapus Semua Data','Semua data di HP ini dihapus permanen: kontak, merk, barang, RS, SPH tersimpan, template Excel, dan draf. Tidak bisa dibatalkan.','Hapus Semua',async()=>{
@@ -2531,6 +2546,7 @@ function poRecord(){
   const b=brandObj(),items=validItems().map(i=>{const it=b&&b.items.find(x=>x.code===i.item);return{code:i.item,name:it?(it.name||''):'',qty:Number(i.qty)||0,unit:i.unit||'ea'}});
   if(!items.length)return;
   const rec={id:poUid(),ts:Date.now(),date:$('date').value||todayISO(),brand:F.brand||'',jenis:F.jenis||'',rs:F.rs||'',items};
+  if(window.v2RemNew){const rm=window.v2RemNew();if(rm)rec.rem=rm}
   const sig=x=>[x.date,x.brand,x.jenis,x.rs,JSON.stringify(x.items)].join('|');
   const dup=D.po.rows.find(x=>sig(x)===sig(rec)&&rec.ts-x.ts<120000);
   if(dup)dup.ts=rec.ts;else D.po.rows.push(rec);
@@ -2605,7 +2621,7 @@ function renderRsDetail(name,rows,A){
   const g=A.rs[name];
   if(!g){PQ.screen='home';return renderPO()}
   const dts=g.rows.map(r=>r.date).sort(),noN=g.noPrice.size;
-  let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</button>
+  let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Kembali ke Data PO</button>
     <div class="card"><div class="dtitle">${esc(g.rs)}</div><div class="mut">${g.rows.length} PO · pertama ${poD(dts[0]).full} · terakhir ${poD(dts[dts.length-1]).full}</div>
     <div class="sumrow" style="margin:10px 0 0">${tile('Jumlah PO',g.rows.length)}${tile('Total Qty',nf(g.qty))}${tile('Nominal',g.sales?rpf(g.sales):'—')}</div>
     ${noN?`<div class="warnbar" style="margin:10px 0 0"><i class="fa-solid fa-triangle-exclamation"></i> <b>${noN} produk</b> di RS ini belum diberi harga. Isi di kolom Harga di bawah.</div>`:''}</div>
@@ -2625,7 +2641,7 @@ function renderProdDetail(code,rows,A){
   const o=A.prod[code];
   if(!o){PQ.screen='home';return renderPO()}
   const std=D.po.price['*']&&D.po.price['*'][code],noN=o.noRs.size;
-  let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</button>
+  let h=`<button class="sec backb" data-back><i class="fa-solid fa-arrow-left"></i> Kembali ke Data PO</button>
     <div class="card"><div class="dtitle">${esc(o.code)}</div>${o.name?`<div class="mut">${esc(o.name)}</div>`:''}
     <div class="sumrow" style="margin:10px 0 0">${tile('Total Qty',nf(o.qty))}${tile('Jumlah RS',Object.keys(o.rs).length)}${tile('Nominal',o.sales?rpf(o.sales):'—')}</div>
     <div class="pr2p" style="margin-top:12px"><span class="mut">Harga standar</span>${priceInput('*',code,0)}</div>
@@ -2640,7 +2656,8 @@ function renderProdDetail(code,rows,A){
   $('poDetail').innerHTML=h}
 
 function renderPO(){
-  $('poPer').innerHTML=[['all','Semua'],['30','30 Hari'],['month','Bulan Ini'],['year','Tahun Ini']].map(x=>`<button class="chip ${PQ.per===x[0]?'on':''}" data-pper="${x[0]}">${x[1]}</button>`).join('');
+  window.v2Head&&v2Head();
+  $('poPer').innerHTML=[['all','Semua'],['30','30 hr'],['month','Bulan'],['year','Tahun']].map(x=>`<button class="chip ${PQ.per===x[0]?'on':''}" data-pper="${x[0]}">${x[1]}</button>`).join('');
   if(PQ.screen==='new'){$('poHome').classList.add('hide');$('poDetail').classList.remove('hide');renderNewPO();return}
   const home=PQ.screen==='home';
   $('poHome').classList.toggle('hide',!home);$('poDetail').classList.toggle('hide',home);
@@ -2794,7 +2811,7 @@ function previewImport(bi,list,skipped){
   }
 const upd_=()=>{save();renderData();renderAll()};
 
-const APPV='v2.3.0';
+const APPV='v2.4.0';
 $('appV').textContent=APPV;
 $('appUpd').onclick=async()=>{
   if(NATIVE){toast('Memeriksa pembaruan…');await apkCheck(true);return}
@@ -3061,10 +3078,11 @@ document.addEventListener('touchend',e=>{
   tab(v[n],dx<0?'l':'r')},{passive:true});
 
 /* ---------- tabs ---------- */
-const tab=(t,dir)=>{if(t==='f'&&'osp'.includes(MODE))FB.ctx=MODE;MODE=t;
+const tab=(t,dir)=>{if(t==='f'){FB.free=!'osp'.includes(MODE);if(!FB.free)FB.ctx=MODE}MODE=t;
   [['vHome','h'],['vOrder','o'],['vSph','s'],['vSpon','p'],['vPO','q'],['vFile','f'],['vData','d']].forEach(([id,k])=>$(id).classList.toggle('hide',t!==k));
   [['tOrder','o'],['tSph','s'],['tSpon','p'],['tPO','q'],['tFile','f'],['tData','d']].forEach(([id,k])=>$(id).classList.toggle('on',t===k));
   const nb=t==='h'||t==='d'||t==='q'||t==='f';document.querySelector('.bar').classList.toggle('hide',nb);$('pv').classList.toggle('hide',nb);$('pvSp').classList.toggle('hide',nb);
+  window.v2Head&&v2Head();
   $('hBack').classList.toggle('hide',t==='h');document.body.classList.toggle('inwork',t!=='h');var fb=document.getElementById('v2fab');if(fb)fb.classList.toggle('hide',t!=='h');if(window.fbSelClear)fbSelClear();
   scrollTo(0,0);
   if(dir){const m=document.querySelector('main:not(.hide)');if(m){m.classList.remove('slL','slR');void m.offsetWidth;m.classList.add(dir==='l'?'slL':'slR');setTimeout(()=>m.classList.remove('slL','slR'),260)}}
@@ -3120,7 +3138,7 @@ function renderBeranda(){
   D.events.slice(0,2).forEach(ev=>{rows+=`<div class="v2-row" data-del="ev:${esc2(ev.id)}"><span class="v2-l"><b>${esc2(ev.name)}</b><small><span class="v2-tag">Sponsor</span>${esc2(ev.form.manufacturer||'event tersimpan')}</small></span><button class="v2-btn v2-t" data-evc="${esc2(ev.id)}">${fa('copy')}Salin</button></div>`});
   const quick=rows?`<div class="v2-list">${rows}</div>`:`<div class="v2-list"><div class="v2-empty">${fa('send')}<b>Belum ada pintasan</b><p>Buat satu order, lalu simpan sebagai pintasan agar berikutnya cukup 2 ketukan.</p><button class="v2-btn v2-p" data-go="o">Buat Order</button></div></div>`;
   const strip=draftFilled()?`<div class="v2-strip"><span><strong>Draf Order belum dikirim</strong>${esc2([F.brand,F.jenis].filter(Boolean).join(' · ')||'isian tersimpan')}</span><button class="v2-btn" data-go="o">Lanjutkan</button></div>`:'';
-  const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('clock')}Riwayat</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}${NATIVE&&window.openFind?`<button data-findhome="1">${fa('magnifying-glass')}Cari</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
+  const foot=`<div class="v2-foot">${D.po.on?`<button data-go="q">${fa('receipt')}Data PO</button>`:''}${NATIVE?`<button data-go="f">${fa('folder')}File</button>`:''}${NATIVE&&window.openFind?`<button data-findhome="1">${fa('magnifying-glass')}Cari</button>`:''}<button data-go="d">${fa('dl')}Pengaturan</button></div>`;
   const hint=(strip||rows)?'<div class="mut" style="margin-top:8px">Geser ke kiri atau kanan untuk menghapus draf atau baris Kirim cepat.</div>':'';
   el.innerHTML=`${strip}<span class="v2-h3">Kirim cepat</span>${quick}${hint}<span class="v2-h3">Buat baru</span><div class="v2-new"><button data-go="o">${fa('mail')}Order</button><button data-go="s">${fa('doc')}SPH</button><button data-go="p">${fa('cal')}Sponsor</button></div>${foot}${window.__BETA?'<div class="mut" style="text-align:center;margin-top:16px">InLook Beta · data terpisah dari versi biasa</div>':''}`}
 window.renderBeranda=renderBeranda;
@@ -3132,7 +3150,20 @@ g('vHome').addEventListener('click',e=>{
   if(b.dataset.dd)return askClearDraft();
   if(b.dataset.evc)return runEvent(b.dataset.evc);
   if(b.dataset.go)tab(b.dataset.go)});
-g('hBack').onclick=()=>tab('h');
+g('hBack').onclick=()=>{if(MODE==='q'&&PQ.screen!=='home'){poBack();return}tab('h')};
+const TT={o:'Order',s:'SPH',p:'Sponsor',q:'Data PO',f:'File',d:'Pengaturan'};
+window.v2Head=function(){const b=g('hBack');if(!b)return;let t=TT[MODE]||'Beranda';
+  if(MODE==='q'&&PQ.screen!=='home')t=PQ.screen==='new'?'Tambah PO':String(PQ.screen).startsWith('rs:')?'Detail RS':'Detail Produk';
+  b.innerHTML='<i class="fa-solid fa-chevron-left"></i> '+esc2(t);b.setAttribute('aria-label','Kembali dari '+t);
+  if(window.v2RemRow)window.v2RemRow()};
+/* setelah email dibuka/dibagikan: kosongkan form supaya tidak jadi draf */
+window.v2Sent=function(k){setTimeout(()=>{
+  try{
+    if(k==='o'){F.brand=null;F.jenis=null;F.rs='';F.items=[{item:'',qty:'',unit:'ea'}];FILES=[];g('note').value='';g('date').value=todayISO();if(window.v2RemReset)v2RemReset();renderAll();saveDraft()}
+    else if(k==='s'){sphClear()}
+    else if(k==='p'){saveSponEvent();D.spon.form=sponSeed().form;sponManual=false;FILES3=[];save();renderSpon()}
+  }catch(e){}
+  tab('h');renderBeranda();toast('Sudah dikirim ke Outlook. Form dikosongkan.')},400)};
 
 function runShortcut(id){
   const s=D.shortcuts.find(x=>x.id===id);if(!s)return;
@@ -3341,6 +3372,7 @@ function loadRecent(){
 sheet.addEventListener('click',e=>{
   const x=e.target.closest('[data-rmf]');if(!x)return;
   FILES.splice(+x.dataset.rmf,1);renderFiles();renderPrev();const a=g('v2att');if(a)a.innerHTML=attHtml()});
+(function(){const b=g('poSearchBtn'),q=g('poq');if(!b||!q)return;b.onclick=()=>{q.classList.toggle('hide');const open=!q.classList.contains('hide');b.classList.toggle('on',open);if(open)q.focus()}})();
 })();
 
 /* InLook v2.1: cari file untuk lampiran (indeks native FileIndex). Hanya APK 2.0.0+. Dibuat tools/mkbeta.py */
@@ -3519,8 +3551,16 @@ async function toggleAtt(x,row){
     const type=(r.mime&&r.mime!=='application/octet-stream')?r.mime:(MIMEX[fext(x.name)]||'');
     const nf=new File([b64ToAb(r.b64)],x.name,{type});nf._src=x.uri;arr.push(nf);redrawFiles();row.classList.add('pick');renderBar();toast('Terlampir: '+x.name)}
   catch(e){toast(x.name+': '+nativeErr(e))}}
+window.v2PickDest=function(cb){
+  $('dTitle').textContent='Lampirkan ke mana?';$('dTitle').dataset.k='';$('dErr').textContent='';
+  $('dBody').innerHTML='<div class="v2-two" style="flex-direction:column;margin-top:10px">'+[['o','mail','Order'],['s','doc','SPH'],['p','cal','Sponsor']].map(x=>`<button class="v2-btn v2-t v2-w" data-dest="${x[0]}">${fa(x[1])} ${x[2]}</button>`).join('')+'</div>';
+  $('dBody').onclick=e=>{const b=e.target.closest('[data-dest]');if(!b)return;$('dBody').onclick=null;$('dOk').style.display='';$('dlg').close();cb(b.dataset.dest)};
+  $('dOk').style.display='none';$('dNo').textContent='Batal';$('dNo').onclick=()=>{$('dBody').onclick=null;$('dOk').style.display='';$('dlg').close()};
+  $('dlg').showModal()};
+const DESTID={o:'vOrder',s:'vSph',p:'vSpon'};
 async function attach(){
   const items=[...S.sel.values()];if(!items.length)return;
+  if(!S.comp&&!S.destDone){v2PickDest(d=>{window.__findTarget=DESTID[d];S.destDone=d;attach()});return}
   toast('Membaca '+items.length+' file…');let ok=0;
   for(const x of items){
     try{
@@ -3531,7 +3571,8 @@ async function attach(){
       const nf=new File([b64ToAb(r.b64)],x.name,{type});nf._src=x.uri;arr.push(nf);ok++}
     catch(e){toast(x.name+': '+nativeErr(e));return}}
   if(window.__findTarget==='vSph')renderFilesS();else if(window.__findTarget==='vSpon')renderFilesP();else renderFiles();renderPrev();closeFind();toast(ok+' file dilampirkan');
-  if(S.fromSheet){S.fromSheet=false;openSheet()}}
+  if(S.fromSheet){S.fromSheet=false;openSheet()}
+  else if(S.destDone){const d=S.destDone;S.destDone=null;tab(d)}}
 function closeFind(){root.classList.add('hide');fsheet.classList.add('hide');clearInterval(S.poll);S.poll=null}
 const ITEM=x=>({uri:x.uri,name:x.name,size:x.size,mod:(x.mod||0)*1000,mime:'',dir:false});
 const ctxKey=()=>window.__findTarget==='vSph'?'s':window.__findTarget==='vSpon'?'p':'o';
@@ -3574,7 +3615,7 @@ window.v2FindBack=()=>{if(!fsheet.classList.contains('hide')){fsheet.classList.a
 
 async function openFind(fromSheet,target,free){
   window.__findTarget=target||(fromSheet?'vOrder':window.__findTarget)||'vOrder';
-  S.fromSheet=!!fromSheet;S.comp=!free;S.sel=new Map();S.q='';S.type='all';S.size='';S.date='';S.sort='auto';S.dir='desc';
+  S.fromSheet=!!fromSheet;S.comp=!free;S.destDone=null;S.sel=new Map();S.q='';S.type='all';S.size='';S.date='';S.sort='auto';S.dir='desc';
   shell();root.classList.remove('hide');paint();
   const st=await status();
   S.scope=st&&st.allFiles&&D.find.all?'all':'folders';
@@ -3642,7 +3683,7 @@ const ctxName=()=>({o:'Order',s:'SPH',p:'Sponsor'}[FB.ctx]||'Order');
 function renderSel(){
   const n=FB.sel.size;bar.classList.toggle('hide',!(n&&MODE==='f'));if(!n)return;
   let tot=0;FB.selItems.forEach(x=>tot+=x.size||0);
-  bar.innerHTML=`<div class="v2-selrow"><button class="v2-btn v2-s" data-sel="cancel" aria-label="Batal pilih"><i class="fa-solid fa-xmark"></i></button><span class="v2-selt">${n} dipilih · ${fsize(tot)}</span><button class="v2-btn v2-p" data-sel="att"><i class="fa-solid fa-paperclip"></i>Lampirkan ke ${ctxName()}</button></div>`}
+  bar.innerHTML=`<div class="v2-selrow"><button class="v2-btn v2-s" data-sel="cancel" aria-label="Batal pilih"><i class="fa-solid fa-xmark"></i></button><span class="v2-selt">${n} dipilih · ${fsize(tot)}</span><button class="v2-btn v2-p" data-sel="att"><i class="fa-solid fa-paperclip"></i>${FB.free?'Lampirkan ke…':'Lampirkan ke '+ctxName()}</button></div>`}
 window.fbSelClear=()=>{if(FB.sel.size){FB.sel.clear();FB.selItems.clear();renderSel();if(MODE==='f')fbRender()}else bar.classList.add('hide')};
 window.fbHold=it=>{FB.sel.add(it.uri);FB.selItems.set(it.uri,it);renderSel();fbRender()};
 window.fbTap=(it,e)=>{
@@ -3652,6 +3693,8 @@ window.fbTap=(it,e)=>{
 bar.addEventListener('click',async e=>{
   const b=e.target.closest('[data-sel]');if(!b)return;
   if(b.dataset.sel==='cancel'){fbSelClear();return}
+  if(FB.free&&!bar.dataset.dest){v2PickDest(d=>{FB.ctx=d==='s'?'s':d==='p'?'p':'o';bar.dataset.dest=d;bar.querySelector('[data-sel=att]').click()});return}
+  const dest=bar.dataset.dest;delete bar.dataset.dest;
   const items=[...FB.selItems.values()];toast('Membaca '+items.length+' file…');let ok=0;
   for(const it of items){
     try{
@@ -3659,7 +3702,7 @@ bar.addEventListener('click',async e=>{
       if(FB.ctx==='s'){FILES2.push(f)}else if(FB.ctx==='p'){FILES3.push(f)}else FILES.push(f);ok++}
     catch(er){toast(it.name+': '+nativeErr(er));return}}
   if(FB.ctx==='s')renderFilesS();else if(FB.ctx==='p')renderFilesP();else renderFiles();
-  renderPrev();fbSelClear();toast(ok+' file dilampirkan ke '+ctxName())});
+  renderPrev();fbSelClear();toast(ok+' file dilampirkan ke '+ctxName());if(dest)tab(dest)});
 const _vb=window.v2Back;
 window.v2Back=()=>{if(FB.sel&&FB.sel.size&&MODE==='f'){fbSelClear();return true}return _vb?_vb():false};
 })();
@@ -3683,7 +3726,7 @@ window.v2RemOn=r=>!!eff(r).on;
 window.v2RemBtn=r=>{
   if(!supported())return '';
   const on=eff(r).on;
-  return `<button class="ib ${on?'pri':''}" data-poa="rem" data-id="${esc2(r.id)}" title="Pengingat invoice" aria-label="Pengingat invoice ${on?'aktif':'mati'}">${fa(on?'bell':'bell-slash')}</button>`};
+  return `<button class="ib ${on?'pri':''}" data-poa="rem" data-id="${esc2(r.id)}" title="Pengingat invoice" aria-label="Pengingat invoice ${on?'aktif':'mati'}"><i class="fa-${on?'solid':'regular'} fa-clock"></i></button>`};
 
 /* ---------- jadwal ---------- */
 function atOf(r,e){
@@ -3727,7 +3770,7 @@ async function ensurePerm(){
 /* ---------- dialog atur pengingat (per PO atau default) ---------- */
 function dlg(title,E,onSave,withOn){
   const st=Object.assign({on:true,hari:0,jam:'09:00',tone:'',toneName:'Bawaan'},E);
-  const body=()=>`${withOn?`<label class="v2-row" style="padding:8px 0"><span class="v2-l"><b>Ingatkan invoice</b><small>Notifikasi dari InLook pada waktu di bawah</small></span><span class="tg2"><input type="checkbox" id="rmOn" ${st.on?'checked':''}></span></label>`:''}
+  const body=()=>`${withOn?`<label class="v2-row" style="padding:8px 0"><span class="v2-l"><b>Ingatkan invoice</b><small>Notifikasi dari InLook pada waktu di bawah</small></span><label class="tg2"><input type="checkbox" id="rmOn" ${st.on?'checked':''}><i></i></label></label>`:''}
     <label class="v2f"><span>Kapan</span><select id="rmHari">${HARI.map(h=>`<option value="${h[0]}"${+st.hari===h[0]?' selected':''}>${h[1]}</option>`).join('')}</select></label>
     <label class="v2f"><span>Jam</span><input type="time" id="rmJam" value="${esc2(st.jam)}"></label>
     <div class="v2f"><span>Nada</span><div class="chips"><button class="chip${!st.tone?' on':''}" data-rt="def">Bawaan</button><button class="chip${st.tone==='silent'?' on':''}" data-rt="silent">Senyap</button><button class="chip${st.tone&&st.tone!=='silent'?' on':''}" data-rt="pick">${fa('music')} ${st.tone&&st.tone!=='silent'?esc2(st.toneName||'Nada pilihan'):'Pilih nada…'}</button></div></div>
@@ -3754,18 +3797,33 @@ window.v2RemEdit=r=>{
   const e=eff(r),has=!!(r.rem&&typeof r.rem==='object');
   dlg('Pengingat invoice',has||e.on?e:Object.assign({},D.rem.def,{on:true}),st=>{r.rem={on:!!st.on,hari:st.hari,jam:st.jam,tone:st.tone,toneName:st.toneName};if(typeof renderPO==='function')renderPO()},true)};
 
+/* ---------- saklar alarm di composer Order ---------- */
+const cur=()=>{if(!D.rem.cur)D.rem.cur=Object.assign({},D.rem.def,{on:!!D.rem.auto});return D.rem.cur};
+const sumOf=c=>hariLbl(c.hari)+' · '+c.jam+' · '+(c.tone?(c.tone==='silent'?'Senyap':c.toneName||'Nada pilihan'):'Nada bawaan');
+window.v2RemNew=()=>{if(!supported())return undefined;const c=cur();return{on:!!c.on,hari:c.hari,jam:c.jam,tone:c.tone,toneName:c.toneName}};
+window.v2RemReset=()=>{delete D.rem.cur;save()};
+window.v2RemRow=()=>{
+  const el=g('remRow');if(!el)return;
+  if(!supported()){el.innerHTML='';return}
+  const c=cur();
+  el.innerHTML=`<div class="card v2-remc"><div class="v2-row"><span class="v2-l" id="remEdit" role="button" tabindex="0" aria-label="Atur alarm invoice"><b>${fa('clock')} Alarm invoice</b><small>${c.on?esc2(sumOf(c)):'Mati. Ketuk saklar untuk menyalakan'}</small></span><label class="tg2"><input type="checkbox" id="remOnC" ${c.on?'checked':''} aria-label="Alarm invoice untuk order ini"><i></i></label></div>${c.on?'<div class="mut" style="font-size:14px;padding:0 0 4px">Ketuk tulisan untuk ubah waktu dan nada. Alarm dipasang saat order dikirim.</div>':''}</div>`};
+(function(){const el=g('remRow');if(!el)return;
+  el.addEventListener('change',e=>{if(e.target.id==='remOnC'){cur().on=e.target.checked;save();if(e.target.checked)ensurePerm();window.v2RemRow()}});
+  el.addEventListener('click',e=>{if(e.target.closest('#remEdit'))dlg('Alarm invoice order ini',cur(),st=>{const c=cur();c.hari=st.hari;c.jam=st.jam;c.tone=st.tone;c.toneName=st.toneName;window.v2RemRow()},false)});
+  window.v2RemRow()})();
+
 /* ---------- Pengaturan ---------- */
 if(supported()){
   const vd=g('vData');
   const det=document.createElement('details');det.className='card dsec';
-  det.innerHTML=`<summary>${fa('bell')} Pengingat invoice ${fa('chevron-down c')}</summary><div class="in" id="v2rset"></div>`;
+  det.innerHTML=`<summary>${fa('clock')} Pengingat invoice ${fa('chevron-down c')}</summary><div class="in" id="v2rset"></div>`;
   const grp=[...vd.querySelectorAll(':scope > details.v2g')].find(d=>/Pengiriman/.test(d.querySelector('summary').textContent));
   (grp?grp.querySelector('.in'):vd).appendChild(det);
   async function render(){
     const el=g('v2rset');if(!el)return;let st={notif:true,exact:true};try{st=await NATIVE.remStatus()}catch(er){}
     const d=D.rem.def;
-    el.innerHTML=`<div class="mut">Notifikasi untuk mengingatkan membuat invoice setelah PO. Atur per PO lewat ikon lonceng di Riwayat → Per PO. Tanpa layanan latar belakang.</div>
-    <div class="v2-list"><label class="v2-row" style="padding-right:12px"><span class="v2-l"><b>Otomatis untuk PO baru</b><small>Setiap PO yang dicatat langsung diingatkan</small></span><span class="tg2"><input type="checkbox" id="rsAuto" ${D.rem.auto?'checked':''}></span></label></div>
+    el.innerHTML=`<div class="mut">Notifikasi untuk mengingatkan membuat invoice setelah PO. Atur per PO lewat ikon jam di Data PO → Per PO. Tanpa layanan latar belakang.</div>
+    <div class="v2-list"><label class="v2-row" style="padding-right:12px"><span class="v2-l"><b>Otomatis untuk PO baru</b><small>Setiap PO yang dicatat langsung diingatkan</small></span><label class="tg2"><input type="checkbox" id="rsAuto" ${D.rem.auto?'checked':''}><i></i></label></label></div>
     <span class="v2-h3">Pengaturan bawaan</span>
     <div class="v2-list" style="padding:8px 16px"><div class="v2-kv"><span>Kapan</span><span>${esc2(hariLbl(d.hari))}</span></div><div class="v2-kv"><span>Jam</span><span>${esc2(d.jam)}</span></div><div class="v2-kv"><span>Nada</span><span>${esc2(d.tone?(d.tone==='silent'?'Senyap':d.toneName||'Nada pilihan'):'Bawaan')}</span></div></div>
     <div class="v2-two"><button class="v2-btn v2-t" id="rsEdit">${fa('sliders')} Ubah bawaan</button><button class="v2-btn v2-t" id="rsTest">${fa('volume-high')} Tes bunyi</button></div>
